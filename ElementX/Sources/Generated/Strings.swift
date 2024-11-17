@@ -348,7 +348,7 @@ internal enum L10n {
   internal static func commonInReplyTo(_ p1: Any) -> String {
     return L10n.tr("Localizable", "common_in_reply_to", String(describing: p1))
   }
-  /// This Matrix ID can't be found, so the invite might not be received.
+  /// This Encipher ID can't be found, so the invite might not be received.
   internal static var commonInviteUnknownProfile: String { return L10n.tr("Localizable", "common_invite_unknown_profile") }
   /// Leaving room
   internal static var commonLeavingRoom: String { return L10n.tr("Localizable", "common_leaving_room") }
@@ -608,7 +608,7 @@ internal enum L10n {
   internal static var emojiPickerCategoryPlaces: String { return L10n.tr("Localizable", "emoji_picker_category_places") }
   /// Symbols
   internal static var emojiPickerCategorySymbols: String { return L10n.tr("Localizable", "emoji_picker_category_symbols") }
-  /// Your homeserver needs to be upgraded to support Matrix Authentication Service and account creation.
+  /// Your homeserver needs to be upgraded to support Encipher Authentication Service and account creation.
   internal static var errorAccountCreationNotPossible: String { return L10n.tr("Localizable", "error_account_creation_not_possible") }
   /// Failed creating the permalink
   internal static var errorFailedCreatingThePermalink: String { return L10n.tr("Localizable", "error_failed_creating_the_permalink") }
@@ -842,9 +842,9 @@ internal enum L10n {
   internal static var screenAdvancedSettingsDeveloperMode: String { return L10n.tr("Localizable", "screen_advanced_settings_developer_mode") }
   /// Enable to have access to features and functionality for developers.
   internal static var screenAdvancedSettingsDeveloperModeDescription: String { return L10n.tr("Localizable", "screen_advanced_settings_developer_mode_description") }
-  /// Custom Element Call base URL
+  /// Custom Encipher Call base URL
   internal static var screenAdvancedSettingsElementCallBaseUrl: String { return L10n.tr("Localizable", "screen_advanced_settings_element_call_base_url") }
-  /// Set a custom base URL for Element Call.
+  /// Set a custom base URL for Encipher Call.
   internal static var screenAdvancedSettingsElementCallBaseUrlDescription: String { return L10n.tr("Localizable", "screen_advanced_settings_element_call_base_url_description") }
   /// Invalid URL, please make sure you include the protocol (http/https) and the correct address.
   internal static var screenAdvancedSettingsElementCallBaseUrlValidationError: String { return L10n.tr("Localizable", "screen_advanced_settings_element_call_base_url_validation_error") }
@@ -996,7 +996,7 @@ internal enum L10n {
   }
   /// View logs
   internal static var screenBugReportViewLogs: String { return L10n.tr("Localizable", "screen_bug_report_view_logs") }
-  /// Matrix.org is a large, free server on the public Matrix network for secure, decentralised communication, run by the Matrix.org Foundation.
+  /// Encipher.org is a large, free server on the public Encipher network for secure, decentralised communication, run by the Encipher.org Foundation.
   internal static var screenChangeAccountProviderMatrixOrgSubtitle: String { return L10n.tr("Localizable", "screen_change_account_provider_matrix_org_subtitle") }
   /// Other
   internal static var screenChangeAccountProviderOther: String { return L10n.tr("Localizable", "screen_change_account_provider_other") }
@@ -1302,7 +1302,7 @@ internal enum L10n {
   internal static var screenLoginErrorUnsupportedAuthentication: String { return L10n.tr("Localizable", "screen_login_error_unsupported_authentication") }
   /// Enter your details
   internal static var screenLoginFormHeader: String { return L10n.tr("Localizable", "screen_login_form_header") }
-  /// Matrix is an open network for secure, decentralised communication.
+  /// Encipher is an open network for secure, decentralised communication.
   internal static var screenLoginSubtitle: String { return L10n.tr("Localizable", "screen_login_subtitle") }
   /// Welcome back!
   internal static var screenLoginTitle: String { return L10n.tr("Localizable", "screen_login_title") }
@@ -1392,7 +1392,7 @@ internal enum L10n {
   internal static func screenOnboardingWelcomeSubtitle(_ p1: Any) -> String {
     return L10n.tr("Localizable", "screen_onboarding_welcome_subtitle", String(describing: p1))
   }
-  /// Be in your element
+  /// Be in your Encipher
   internal static var screenOnboardingWelcomeTitle: String { return L10n.tr("Localizable", "screen_onboarding_welcome_title") }
   /// Press on a message and choose “%1$@” to include here.
   internal static func screenPinnedTimelineEmptyStateDescription(_ p1: Any) -> String {
@@ -1942,7 +1942,7 @@ internal enum L10n {
   }
   /// This is the beginning of this conversation.
   internal static var screenRoomTimelineBeginningOfRoomNoName: String { return L10n.tr("Localizable", "screen_room_timeline_beginning_of_room_no_name") }
-  /// Unsupported call. Ask if the caller can use the new Element X app.
+  /// Unsupported call. Ask if the caller can use the new Encipher X app.
   internal static var screenRoomTimelineLegacyCall: String { return L10n.tr("Localizable", "screen_room_timeline_legacy_call") }
   /// Show less
   internal static var screenRoomTimelineLessReactions: String { return L10n.tr("Localizable", "screen_room_timeline_less_reactions") }
@@ -2036,9 +2036,9 @@ internal enum L10n {
   internal static var screenRoomlistRoomDirectoryButtonTitle: String { return L10n.tr("Localizable", "screen_roomlist_room_directory_button_title") }
   /// Change account provider
   internal static var screenServerConfirmationChangeServer: String { return L10n.tr("Localizable", "screen_server_confirmation_change_server") }
-  /// A private server for Element employees.
+  /// A private server for Encipher employees.
   internal static var screenServerConfirmationMessageLoginElementDotIo: String { return L10n.tr("Localizable", "screen_server_confirmation_message_login_element_dot_io") }
-  /// Matrix is an open network for secure, decentralised communication.
+  /// Encipher is an open network for secure, decentralised communication.
   internal static var screenServerConfirmationMessageLoginMatrixDotOrg: String { return L10n.tr("Localizable", "screen_server_confirmation_message_login_matrix_dot_org") }
   /// This is where your conversations will live — just like you would use an email provider to keep your emails.
   internal static var screenServerConfirmationMessageRegister: String { return L10n.tr("Localizable", "screen_server_confirmation_message_register") }

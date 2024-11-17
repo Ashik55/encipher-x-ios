@@ -37,6 +37,7 @@ options:
 
 settings:
   BASE_BUNDLE_IDENTIFIER: com.plx.encipherX
+  BASE_APP_GROUP_IDENTIFIER: com.plx
   APP_DISPLAY_NAME: EncipherX
   APP_NAME: EncipherX
   CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: true
