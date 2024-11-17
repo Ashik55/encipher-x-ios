@@ -4,56 +4,58 @@ attributes:
   ORGANIZATIONNAME: Element
 
 fileGroups:
-- project.yml
+  - project.yml
 
 options:
   groupSortPosition: bottom
   createIntermediateGroups: true
   deploymentTarget:
-    iOS: '17.6'
-    macOS: '14.6'
+    iOS: "17.6"
+    macOS: "14.6"
   groupOrdering:
-  - order:
-    - ElementX
-    - UnitTests
-    - UITests
-    - IntegrationTests
-    - Tools
-  - pattern: ElementX
-    order:
-    - Sources
-    - Resources
-    - SupportingFiles
-  - pattern: Sources
-    order:
-    - Application
-    - UserSession
-    - Services
-    - FlowCoordinators
-    - Screens
-    - Other
-    - UITests
+    - order:
+        - ElementX
+        - UnitTests
+        - UITests
+        - IntegrationTests
+        - Tools
+    - pattern: ElementX
+      order:
+        - Sources
+        - Resources
+        - SupportingFiles
+    - pattern: Sources
+      order:
+        - Application
+        - UserSession
+        - Services
+        - FlowCoordinators
+        - Screens
+        - Other
+        - UITests
   postGenCommand: cd Tools/XcodeGen && sh postGenCommand.sh
 
 settings:
+  BASE_BUNDLE_IDENTIFIER: com.plx.encipherX
+  APP_DISPLAY_NAME: EncipherX
+  APP_NAME: EncipherX
   CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: true
   ENABLE_BITCODE: false
   APP_GROUP_IDENTIFIER: group.$(BASE_APP_GROUP_IDENTIFIER)
-  APP_NAME: ElementX
   KEYCHAIN_ACCESS_GROUP_IDENTIFIER: "$(AppIdentifierPrefix)$(BASE_BUNDLE_IDENTIFIER)"
   MARKETING_VERSION: 1.9.6
   CURRENT_PROJECT_VERSION: 1
   SUPPORTS_MACCATALYST: false
 
 include:
-- path: app.yml
-- path: ElementX/SupportingFiles/target.yml
-- path: UnitTests/SupportingFiles/target.yml
-- path: PreviewTests/SupportingFiles/target.yml
-- path: UITests/SupportingFiles/target.yml
-- path: IntegrationTests/SupportingFiles/target.yml
-- path: NSE/SupportingFiles/target.yml
-- path: ShareExtension/SupportingFiles/target.yml
+  - path: app.yml
+  - path: ElementX/SupportingFiles/target.yml
+  - path: UnitTests/SupportingFiles/target.yml
+  - path: PreviewTests/SupportingFiles/target.yml
+  - path: UITests/SupportingFiles/target.yml
+  - path: IntegrationTests/SupportingFiles/target.yml
+  - path: NSE/SupportingFiles/target.yml
+  - path: ShareExtension/SupportingFiles/target.yml
 # - path: NCE/SupportingFiles/target.yml (not used yet)
 # - path: MyAppVariant/override.yml
 
@@ -83,7 +85,7 @@ packages:
     url: https://github.com/element-hq/matrix-rich-text-editor-swift
     exactVersion: 2.37.12
     # path: ../matrix-rich-text-editor/platforms/ios/lib/WysiwygComposer
-  
+
   # External dependencies
   Algorithms:
     url: https://github.com/apple/swift-algorithms
@@ -140,8 +142,8 @@ packages:
 aggregateTargets:
   Periphery:
     buildScripts:
-    - name: Scan
-      script: |
-        export PATH="$PATH:/opt/homebrew/bin"
-        periphery scan --format xcode
-      basedOnDependencyAnalysis: false
+      - name: Scan
+        script: |
+          export PATH="$PATH:/opt/homebrew/bin"
+          periphery scan --format xcode
+        basedOnDependencyAnalysis: false

@@ -153,7 +153,7 @@
 "common_gif" = "GIF";
 "common_image" = "Image";
 "common_in_reply_to" = "In reply to %1$@";
-"common_invite_unknown_profile" = "This Matrix ID can't be found, so the invite might not be received.";
+"common_invite_unknown_profile" = "This Encipher ID can't be found, so the invite might not be received.";
 "common_leaving_room" = "Leaving room";
 "common_light" = "Light";
 "common_link_copied_to_clipboard" = "Link copied to clipboard";
@@ -274,7 +274,7 @@
 "emoji_picker_category_people" = "Smileys & People";
 "emoji_picker_category_places" = "Travel & Places";
 "emoji_picker_category_symbols" = "Symbols";
-"error_account_creation_not_possible" = "Your homeserver needs to be upgraded to support Matrix Authentication Service and account creation.";
+"error_account_creation_not_possible" = "Your homeserver needs to be upgraded to support Encipher Authentication Service and account creation.";
 "error_failed_creating_the_permalink" = "Failed creating the permalink";
 "error_failed_loading_map" = "%1$@ could not load the map. Please try again later.";
 "error_failed_loading_messages" = "Failed loading messages";
@@ -345,8 +345,8 @@
 "rich_text_editor_url_placeholder" = "Link";
 "rich_text_editor_a11y_add_attachment" = "Add attachment";
 "rich_text_editor_composer_caption_placeholder" = "Optional caption…";
-"screen_advanced_settings_element_call_base_url" = "Custom Element Call base URL";
-"screen_advanced_settings_element_call_base_url_description" = "Set a custom base URL for Element Call.";
+"screen_advanced_settings_element_call_base_url" = "Custom Encipher Call base URL";
+"screen_advanced_settings_element_call_base_url_description" = "Set a custom base URL for Encipher Call.";
 "screen_advanced_settings_element_call_base_url_validation_error" = "Invalid URL, please make sure you include the protocol (http/https) and the correct address.";
 "screen_create_room_room_access_section_anyone_option_description" = "Anyone can join this room";
 "screen_create_room_room_access_section_anyone_option_title" = "Anyone";
@@ -454,7 +454,7 @@
 "screen_bug_report_include_screenshot" = "Send screenshot";
 "screen_bug_report_logs_description" = "Logs will be included with your message to make sure that everything is working properly. To send your message without logs, turn off this setting.";
 "screen_bug_report_view_logs" = "View logs";
-"screen_change_account_provider_matrix_org_subtitle" = "Matrix.org is a large, free server on the public Matrix network for secure, decentralised communication, run by the Matrix.org Foundation.";
+"screen_change_account_provider_matrix_org_subtitle" = "Encipher.org is a large, free server on the public Encipher network for secure, decentralised communication, run by the Encipher.org Foundation.";
 "screen_change_account_provider_other" = "Other";
 "screen_change_account_provider_subtitle" = "Use a different account provider, such as your own private server or a work account.";
 "screen_change_account_provider_title" = "Change account provider";
@@ -597,7 +597,7 @@
 "screen_onboarding_sign_up" = "Create account";
 "screen_onboarding_welcome_message" = "Welcome to the fastest %1$@ ever. Supercharged for speed and simplicity.";
 "screen_onboarding_welcome_subtitle" = "Welcome to %1$@. Supercharged, for speed and simplicity.";
-"screen_onboarding_welcome_title" = "Be in your element";
+"screen_onboarding_welcome_title" = "Be in your Encipher";
 "screen_polls_history_empty_ongoing" = "Can't find any ongoing polls.";
 "screen_polls_history_empty_past" = "Can't find any past polls.";
 "screen_polls_history_filter_ongoing" = "Ongoing";
@@ -794,7 +794,7 @@
 "screen_room_timeline_add_reaction" = "Add emoji";
 "screen_room_timeline_beginning_of_room" = "This is the beginning of %1$@.";
 "screen_room_timeline_beginning_of_room_no_name" = "This is the beginning of this conversation.";
-"screen_room_timeline_legacy_call" = "Unsupported call. Ask if the caller can use the new Element X app.";
+"screen_room_timeline_legacy_call" = "Unsupported call. Ask if the caller can use the new Encipher X app.";
 "screen_room_timeline_less_reactions" = "Show less";
 "screen_room_timeline_message_copied" = "Message copied";
 "screen_room_timeline_no_permission_to_post" = "You do not have permission to post to this room";
@@ -826,8 +826,8 @@
 "screen_roomlist_mark_as_read" = "Mark as read";
 "screen_roomlist_mark_as_unread" = "Mark as unread";
 "screen_roomlist_room_directory_button_title" = "Browse all rooms";
-"screen_server_confirmation_message_login_element_dot_io" = "A private server for Element employees.";
-"screen_server_confirmation_message_login_matrix_dot_org" = "Matrix is an open network for secure, decentralised communication.";
+"screen_server_confirmation_message_login_element_dot_io" = "A private server for Encipher employees.";
+"screen_server_confirmation_message_login_matrix_dot_org" = "Encipher is an open network for secure, decentralised communication.";
 "screen_server_confirmation_message_register" = "This is where your conversations will live — just like you would use an email provider to keep your emails.";
 "screen_server_confirmation_title_login" = "You’re about to sign in to %1$@";
 "screen_server_confirmation_title_register" = "You’re about to create an account on %1$@";
@@ -1041,7 +1041,7 @@
 "screen_edit_poll_delete_confirmation_title" = "Delete Poll";
 "screen_edit_poll_title" = "Edit poll";
 "screen_identity_use_another_device" = "Use another device";
-"screen_login_subtitle" = "Matrix is an open network for secure, decentralised communication.";
+"screen_login_subtitle" = "Encipher is an open network for secure, decentralised communication.";
 "screen_notification_settings_mentions_section_title" = "Mentions";
 "screen_qr_code_login_invalid_scan_state_retry_button" = "Try again";
 "screen_recovery_key_change_generate_key_description" = "Do not share this with anyone!";
