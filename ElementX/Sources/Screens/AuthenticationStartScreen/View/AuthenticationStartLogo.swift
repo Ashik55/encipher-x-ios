@@ -23,21 +23,24 @@ struct AuthenticationStartLogo: View {
     
     var body: some View {
         Image(asset: Asset.Images.appLogo)
-            .background {
-                Circle()
-                    .inset(by: 1)
-                    .shadow(color: .black.opacity(!isLight && isOnGradient ? 0.3 : 0.4),
-                            radius: 12.57143,
-                            y: 6.28571)
-                
-                Circle()
-                    .inset(by: 1)
-                    .shadow(color: .black.opacity(0.5),
-                            radius: 12.57143,
-                            y: 6.28571)
-                    .blendMode(.overlay)
-            }
-            .padding(24)
+            .resizable() // Ensure the image scales to fit the frame
+            .scaledToFit() // Maintain the aspect ratio of the image
+            .frame(width: 100, height: 100) // Set desired width and height
+//            .background {
+//                Circle()
+//                    .inset(by: 1)
+//                    .shadow(color: .black.opacity(!isLight && isOnGradient ? 0.3 : 0.4),
+//                            radius: 12.57143,
+//                            y: 6.28571)
+//
+//                Circle()
+//                    .inset(by: 1)
+//                    .shadow(color: .black.opacity(0.5),
+//                            radius: 12.57143,
+//                            y: 6.28571)
+//                    .blendMode(.overlay)
+//            }
+            .padding(16)
             .background {
                 Color.white
                     .opacity(isLight ? 0.23 : isOnGradient ? 0.05 : 0.13)

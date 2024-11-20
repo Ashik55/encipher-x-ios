@@ -17,7 +17,10 @@ struct ServerConfirmationScreen: View {
         } bottomContent: {
             buttons
         }
-        .background()
+        .background {
+            AuthenticationStartScreenBackgroundImage()
+                .ignoresSafeArea() // Ensures the image covers the entire background, including safe areas
+        }
         .backgroundStyle(.compound.bgCanvasDefault)
         .alert(item: $context.alertInfo)
         .introspect(.window, on: .supportedVersions) { window in
@@ -54,13 +57,13 @@ struct ServerConfirmationScreen: View {
             }
             .buttonStyle(.compound(.primary))
             .accessibilityIdentifier(A11yIdentifiers.serverConfirmationScreen.continue)
-            
-            Button { context.send(viewAction: .changeServer) } label: {
-                Text(L10n.screenServerConfirmationChangeServer)
-                    .font(.compound.bodyLGSemibold)
-                    .padding(14)
-            }
-            .accessibilityIdentifier(A11yIdentifiers.serverConfirmationScreen.changeServer)
+//
+//            Button { context.send(viewAction: .changeServer) } label: {
+//                Text(L10n.screenServerConfirmationChangeServer)
+//                    .font(.compound.bodyLGSemibold)
+//                    .padding(14)
+//            }
+//            .accessibilityIdentifier(A11yIdentifiers.serverConfirmationScreen.changeServer)
         }
     }
 }

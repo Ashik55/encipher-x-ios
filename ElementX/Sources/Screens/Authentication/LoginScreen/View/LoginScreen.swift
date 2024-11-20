@@ -37,6 +37,11 @@ struct LoginScreen: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
         }
+        .background {
+            AuthenticationStartScreenBackgroundImage()
+                .ignoresSafeArea() // Ensures the image covers the entire background, including safe areas
+        }
+
         .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .alert(item: $context.alertInfo)

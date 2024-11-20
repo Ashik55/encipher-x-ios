@@ -17,7 +17,10 @@ struct NotificationPermissionsScreen: View {
         } bottomContent: {
             buttons
         }
-        .background()
+        .background {
+            AuthenticationStartScreenBackgroundImage()
+        }
+
         .backgroundStyle(.compound.bgCanvasDefault)
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)

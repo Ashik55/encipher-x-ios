@@ -26,7 +26,11 @@ struct IdentityConfirmationScreen: View {
             actionButtons
         }
         .toolbar { toolbar }
-        .background()
+        .background {
+            AuthenticationStartScreenBackgroundImage()
+                .ignoresSafeArea() // Ensures the image covers the entire background, including safe areas
+        }
+
         .backgroundStyle(.compound.bgCanvasDefault)
         .navigationBarBackButtonHidden(true)
         .interactiveDismissDisabled()
@@ -51,11 +55,11 @@ struct IdentityConfirmationScreen: View {
                 .multilineTextAlignment(.center)
                 .foregroundColor(.compound.textSecondary)
             
-            Button(L10n.actionLearnMore) {
-                UIApplication.shared.open(context.viewState.learnMoreURL)
-            }
-            .buttonStyle(.compound(.plain))
-            .padding(.top, 16)
+//            Button(L10n.actionLearnMore) {
+//                UIApplication.shared.open(context.viewState.learnMoreURL)
+//            }
+//            .buttonStyle(.compound(.plain))
+//            .padding(.top, 16)
         }
     }
     

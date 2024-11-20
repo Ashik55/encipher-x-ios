@@ -10,10 +10,26 @@ import SwiftUI
 /// The background gradient shown on the launch, splash and onboarding screens.
 struct AuthenticationStartScreenBackgroundImage: View {
     var body: some View {
-        Image(asset: Asset.Images.launchBackground)
+//        // Background image placed using absolute positioning
+//           Image("ic_lock")
+//               .resizable()
+//               .scaledToFit()
+//               .frame(height:UIScreen.main.bounds.height - 250)
+//               .position(x: UIScreen.main.bounds.width - 160, y: UIScreen.main.bounds.height - 300) // Fixed position based on screen bounds
+//               .ignoresSafeArea() // To allow the image to go beyond safe areas if needed
+//
+        Image(asset: Asset.icLock)
             .resizable()
             .scaledToFill()
+            .frame(width: UIScreen.main.bounds.width - 100, height: UIScreen.main.bounds.height - 250)
+            // .position(x: UIScreen.main.bounds.width - 160, y: UIScreen.main.bounds.height - 300)
             .ignoresSafeArea()
-            .accessibilityHidden(true)
+//            .accessibilityHidden(true)
+        
+//        Image(asset: Asset.Images.launchBackground)
+//            .resizable()
+//            .scaledToFill()
+//            .ignoresSafeArea()
+//            .accessibilityHidden(true)
     }
 }

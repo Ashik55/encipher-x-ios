@@ -23,6 +23,9 @@ struct AuthenticationStartScreen: View {
                     .frame(width: geometry.size.width)
                     .accessibilityIdentifier(A11yIdentifiers.authenticationStartScreen.hidden)
                 
+                Spacer()
+                    .frame(height: UIConstants.spacerHeight(in: geometry))
+                
                 buttons
                     .frame(width: geometry.size.width)
                     .padding(.bottom, UIConstants.actionButtonBottomPadding)
@@ -33,17 +36,17 @@ struct AuthenticationStartScreen: View {
                     .frame(height: UIConstants.spacerHeight(in: geometry))
             }
             .frame(maxHeight: .infinity)
-            .safeAreaInset(edge: .bottom) {
-                Button {
-                    context.send(viewAction: .reportProblem)
-                } label: {
-                    Text(L10n.commonReportAProblem)
-                        .font(.compound.bodySM)
-                        .foregroundColor(.compound.textSecondary)
-                        .padding(.bottom)
-                }
-                .frame(width: geometry.size.width)
-            }
+//            .safeAreaInset(edge: .bottom) {
+//                Button {
+//                    context.send(viewAction: .reportProblem)
+//                } label: {
+//                    Text(L10n.commonReportAProblem)
+//                        .font(.compound.bodySM)
+//                        .foregroundColor(.compound.textSecondary)
+//                        .padding(.bottom)
+//                }
+//                .frame(width: geometry.size.width)
+//            }
         }
         .navigationBarHidden(true)
         .background {
@@ -100,13 +103,13 @@ struct AuthenticationStartScreen: View {
             .buttonStyle(.compound(.primary))
             .accessibilityIdentifier(A11yIdentifiers.authenticationStartScreen.signIn)
             
-            if context.viewState.isWebRegistrationEnabled {
-                Button { context.send(viewAction: .register) } label: {
-                    Text(L10n.screenCreateAccountTitle)
-                        .padding(14)
-                }
-                .buttonStyle(.compound(.plain))
-            }
+//            if context.viewState.isWebRegistrationEnabled {
+//                Button { context.send(viewAction: .register) } label: {
+//                    Text(L10n.screenCreateAccountTitle)
+//                        .padding(14)
+//                }
+//                .buttonStyle(.compound(.plain))
+//            }
         }
         .padding(.horizontal, verticalSizeClass == .compact ? 128 : 24)
         .readableFrame()

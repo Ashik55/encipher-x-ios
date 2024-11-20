@@ -30,7 +30,10 @@ struct HomeScreen: View {
                    message: leaveRoomAlertMessage)
             .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
             .toolbar { toolbar }
-            .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+            .background {
+                AuthenticationStartScreenBackgroundImage()
+            }
+//            .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
             .track(screen: .Home)
             .introspect(.viewController, on: .supportedVersions) { controller in
                 Task {
@@ -128,7 +131,7 @@ struct HomeScreen: View {
         let center = leftBarButtonView.convert(leftBarButtonView.center, to: navigationBarContainer.coordinateSpace)
         bloomView.center = center
     }
-        
+    
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {

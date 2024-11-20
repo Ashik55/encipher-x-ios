@@ -179,7 +179,8 @@ final class AppSettings {
         #endif
     }
     
-    let pushGatewayBaseURL: URL = "https://matrix.org/_matrix/push/v1/notify"
+//    let pushGatewayBaseURL: URL = "https://matrix.org/_matrix/push/v1/notify"
+    let pushGatewayBaseURL: URL = "http://52.28.217.3:5000/_matrix/push/v1/notify" // http://52.28.217.3:5000/_matrix/push/v1/notify
     
     @UserPreference(key: UserDefaultsKeys.enableNotifications, defaultValue: true, storageType: .userDefaults(store))
     var enableNotifications
