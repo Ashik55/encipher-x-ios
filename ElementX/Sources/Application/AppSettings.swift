@@ -244,7 +244,7 @@ final class AppSettings {
 
     // MARK: - Element Call
     
-    let elementCallBaseURL: URL = "https://call.element.io"
+    let elementCallBaseURL: URL = "https://call.enciph-er.com"
     
     @UserPreference(key: UserDefaultsKeys.elementCallBaseURLOverride, defaultValue: nil, storageType: .userDefaults(store))
     var elementCallBaseURLOverride: URL?
