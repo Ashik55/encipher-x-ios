@@ -25,6 +25,10 @@ struct RoomListFiltersView: View {
                         if state.isFiltering {
                             clearButton(scrollViewProxy: proxy)
                         }
+                     
+                        if !state.isFiltering {
+                            DummyFilterView(filterName: "All")
+                        }
                         
                         ForEach(state.activeFilters) { filter in
                             RoomListFilterView(filter: filter,

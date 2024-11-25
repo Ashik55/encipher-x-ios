@@ -104,7 +104,7 @@ struct HomeScreenContent: View {
             .overlay {
                 if context.viewState.shouldShowEmptyFilterState {
                     RoomListFiltersEmptyStateView(state: context.filtersState)
-                        .background(.compound.bgCanvasDefault)
+//                        .background(.compound.bgCanvasDefault)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }

@@ -68,21 +68,36 @@ class AuthenticationFlowCoordinator: FlowCoordinatorProtocol {
     // MARK: - Private
     
     private func showStartScreen() {
-        let parameters = AuthenticationStartScreenParameters(webRegistrationEnabled: appSettings.webRegistrationEnabled)
+        
+        authenticationService.reset()
+        
+        let parameters = AuthenticationStartScreenParameters(
+            webRegistrationEnabled: appSettings.webRegistrationEnabled,
+            authenticationService: authenticationService,
+            authenticationFlow: .login,
+            userIndicatorController: userIndicatorController)
         let coordinator = AuthenticationStartScreenCoordinator(parameters: parameters)
         
         coordinator.actions
             .sink { [weak self] action in
                 guard let self else { return }
                 
+                print("showStartScreen: Received action - \(action)")
+                
                 switch action {
                 case .loginManually:
-                    showServerConfirmationScreen(authenticationFlow: .login)
+                    print("case : Action - loginManually")
+                    //showServerConfirmationScreen(authenticationFlow: .login)
+                
+                    showLoginScreen()
                 case .loginWithQR:
+                    print("case : Action - loginWithQR")
                     startQRCodeLogin()
                 case .register:
+                    print("case : Action - register")
                     showServerConfirmationScreen(authenticationFlow: .register)
                 case .reportProblem:
+                    print("case : Action - reportProblem")
                     showReportProblemScreen()
                 }
             }
@@ -101,6 +116,9 @@ class AuthenticationFlowCoordinator: FlowCoordinatorProtocol {
             guard let self else {
                 return
             }
+            
+            print("startQRCodeLogin: Received action - \(action)")
+            
             switch action {
             case .signInManually:
                 navigationStackCoordinator.setSheetCoordinator(nil)
@@ -133,22 +151,33 @@ class AuthenticationFlowCoordinator: FlowCoordinatorProtocol {
         // we check that registration is supported if it was previously configured for login.
         authenticationService.reset()
         
-        let parameters = ServerConfirmationScreenCoordinatorParameters(authenticationService: authenticationService,
-                                                                       authenticationFlow: authenticationFlow,
-                                                                       slidingSyncLearnMoreURL: appSettings.slidingSyncLearnMoreURL,
-                                                                       userIndicatorController: userIndicatorController)
+        let parameters = ServerConfirmationScreenCoordinatorParameters(
+            authenticationService: authenticationService,
+            authenticationFlow: authenticationFlow,
+            slidingSyncLearnMoreURL: appSettings.slidingSyncLearnMoreURL,
+            userIndicatorController: userIndicatorController)
+        
         let coordinator = ServerConfirmationScreenCoordinator(parameters: parameters)
         
         coordinator.actions.sink { [weak self] action in
             guard let self else { return }
             
+            print("showServerConfirmationScreen ==>: Received action - \(action)")
+            
+            
             switch action {
             case .continue(let window):
+                
+                
                 if authenticationService.homeserver.value.loginMode == .oidc, let window {
                     showOIDCAuthentication(presentationAnchor: window)
                 } else if authenticationFlow == .register {
                     showWebRegistration()
                 } else {
+                    
+                    
+                    print("showLoginScreen ==> ")
+                    
                     showLoginScreen()
                 }
             case .changeServer:
@@ -157,7 +186,7 @@ class AuthenticationFlowCoordinator: FlowCoordinatorProtocol {
         }
         .store(in: &cancellables)
         
-        navigationStackCoordinator.push(coordinator)
+//        navigationStackCoordinator.push(coordinator)
     }
     
     private func showServerSelectionScreen(authenticationFlow: AuthenticationFlow) {

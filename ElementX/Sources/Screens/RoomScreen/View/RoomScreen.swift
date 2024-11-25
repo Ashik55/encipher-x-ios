@@ -201,12 +201,32 @@ struct RoomScreen: View {
             .buttonStyle(ElementCallButtonStyle())
             .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
         } else {
-            Button {
-                roomContext.send(viewAction: .displayCall)
-            } label: {
-                CompoundIcon(\.videoCallSolid)
-            }
-            .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
+//            Button {
+//                roomContext.send(viewAction: .displayCall)
+//            } label: {
+//                CompoundIcon(\.videoCallSolid)
+//            }
+//            .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
+            
+            HStack(spacing: 22) { // Adjust spacing as needed
+                   Button {
+                       roomContext.send(viewAction: .displayCall)
+                   } label: {
+                       
+                       Image(asset: ImageAsset(name: "call"))
+                                   .resizable() // Ensures the image is resizable
+                                   .frame(width: 17, height: 17) // Add size here
+                   }
+                   .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
+
+                   Button {
+                       roomContext.send(viewAction: .displayCall)
+                   } label: {
+                       CompoundIcon(\.videoCallSolid)
+                   }
+                   .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
+               }
+               .padding() // Optional padding for spacing around the buttons
         }
     }
     

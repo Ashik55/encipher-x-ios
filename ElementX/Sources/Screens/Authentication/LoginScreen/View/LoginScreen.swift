@@ -37,10 +37,7 @@ struct LoginScreen: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
         }
-        .background {
-            AuthenticationStartScreenBackgroundImage()
-                .ignoresSafeArea() // Ensures the image covers the entire background, including safe areas
-        }
+       
 
         .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
@@ -50,11 +47,16 @@ struct LoginScreen: View {
     /// The header containing the title and icon.
     var header: some View {
         VStack(spacing: 8) {
-            BigIcon(icon: \.lockSolid)
-                .padding(.bottom, 8)
+//            BigIcon(icon: \.lockSolid)
+//                .padding(.bottom, 8)
+            
+            Text("Sign in")
+                .font(.compound.headingMDBold)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.compound.textPrimary)
+               
             
             Text(L10n.screenLoginTitleWithHomeserver(context.viewState.homeserver.address))
-                .font(.compound.headingMDBold)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.compound.textPrimary)
         }

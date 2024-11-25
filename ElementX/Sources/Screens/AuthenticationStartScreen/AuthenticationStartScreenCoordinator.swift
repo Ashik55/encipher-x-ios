@@ -10,6 +10,10 @@ import SwiftUI
 
 struct AuthenticationStartScreenParameters {
     let webRegistrationEnabled: Bool
+    let authenticationService: AuthenticationServiceProtocol
+    let authenticationFlow: AuthenticationFlow
+    let userIndicatorController: UserIndicatorControllerProtocol
+    
 }
 
 final class AuthenticationStartScreenCoordinator: CoordinatorProtocol {
@@ -22,7 +26,11 @@ final class AuthenticationStartScreenCoordinator: CoordinatorProtocol {
     }
     
     init(parameters: AuthenticationStartScreenParameters) {
-        viewModel = AuthenticationStartScreenViewModel(webRegistrationEnabled: parameters.webRegistrationEnabled)
+        viewModel = AuthenticationStartScreenViewModel(webRegistrationEnabled: parameters.webRegistrationEnabled,authenticationService: parameters.authenticationService,
+                                                       authenticationFlow: parameters.authenticationFlow,
+                                                   
+                                                       userIndicatorController: parameters.userIndicatorController)
+        
     }
     
     // MARK: - Public

@@ -25,7 +25,7 @@ struct AuthenticationStartLogo: View {
         Image(asset: Asset.Images.appLogo)
             .resizable() // Ensure the image scales to fit the frame
             .scaledToFit() // Maintain the aspect ratio of the image
-            .frame(width: 100, height: 100) // Set desired width and height
+            .frame(width: 130, height: 130) // Set desired width and height
 //            .background {
 //                Circle()
 //                    .inset(by: 1)

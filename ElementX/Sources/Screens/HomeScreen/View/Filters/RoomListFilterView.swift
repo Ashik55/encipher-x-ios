@@ -19,6 +19,20 @@ struct RoomListFilterView: View {
     }
 }
 
+
+struct DummyFilterView: View {
+    let filterName: String
+    let isActive: Bool = true // Always true, immutable
+
+    var body: some View {
+        Toggle(isOn: .constant(isActive)) { // Use a constant binding
+            Text(filterName)
+        }
+        .toggleStyle(FilterToggleStyle())
+        .disabled(true) // Prevent interaction
+    }
+}
+
 struct RoomListFilterView_Previews: PreviewProvider, TestablePreview {
     static var previews: some View {
         RoomListFilterView(filter: .people, isActive: .constant(false))

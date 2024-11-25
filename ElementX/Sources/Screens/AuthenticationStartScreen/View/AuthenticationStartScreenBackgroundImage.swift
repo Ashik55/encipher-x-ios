@@ -18,11 +18,11 @@ struct AuthenticationStartScreenBackgroundImage: View {
 //               .position(x: UIScreen.main.bounds.width - 160, y: UIScreen.main.bounds.height - 300) // Fixed position based on screen bounds
 //               .ignoresSafeArea() // To allow the image to go beyond safe areas if needed
 //
-        Image(asset: Asset.icLock)
+        Image(asset:  ImageAsset(name: "auth-background-grad"))
             .resizable()
             .scaledToFill()
-            .frame(width: UIScreen.main.bounds.width - 100, height: UIScreen.main.bounds.height - 250)
-            // .position(x: UIScreen.main.bounds.width - 160, y: UIScreen.main.bounds.height - 300)
+//            .frame(width: UIScreen.main.bounds.width - 100, height: UIScreen.main.bounds.height - 250)
+         
             .ignoresSafeArea()
 //            .accessibilityHidden(true)
         
@@ -31,5 +31,17 @@ struct AuthenticationStartScreenBackgroundImage: View {
 //            .scaledToFill()
 //            .ignoresSafeArea()
 //            .accessibilityHidden(true)
+    }
+}
+
+
+struct HomeScreenBackgroundImage: View {
+    var body: some View {
+        Image(asset:  ImageAsset(name: "home-bg"))
+            .resizable()
+            .scaledToFill()
+            .ignoresSafeArea()
+
+
     }
 }

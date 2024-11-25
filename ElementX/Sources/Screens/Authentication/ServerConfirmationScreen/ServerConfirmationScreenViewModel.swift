@@ -32,8 +32,11 @@ class ServerConfirmationScreenViewModel: ServerConfirmationScreenViewModelType, 
         self.userIndicatorController = userIndicatorController
         
         let homeserver = authenticationService.homeserver.value
-        super.init(initialViewState: ServerConfirmationScreenViewState(homeserverAddress: homeserver.address,
-                                                                       authenticationFlow: authenticationFlow))
+        
+        
+        super.init(initialViewState: ServerConfirmationScreenViewState(
+            homeserverAddress: homeserver.address,
+            authenticationFlow: authenticationFlow))
         
         authenticationService.homeserver
             .receive(on: DispatchQueue.main)

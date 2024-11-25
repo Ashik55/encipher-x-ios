@@ -52,18 +52,11 @@ struct AuthenticationStartScreen: View {
         .background {
             AuthenticationStartScreenBackgroundImage()
         }
+       
     }
     
     var content: some View {
         VStack(spacing: 0) {
-            Spacer()
-            
-            if verticalSizeClass == .regular {
-                Spacer()
-                
-                AuthenticationStartLogo(isOnGradient: true)
-            }
-            
             Spacer()
             
             VStack(spacing: 8) {
@@ -79,6 +72,16 @@ struct AuthenticationStartScreen: View {
             .padding()
             .fixedSize(horizontal: false, vertical: true)
             
+            if verticalSizeClass == .regular {
+                Spacer()
+                
+                AuthenticationStartLogo(isOnGradient: true)
+            }
+            
+            Spacer()
+            
+        
+            
             Spacer()
         }
         .padding(.bottom)
@@ -89,18 +92,19 @@ struct AuthenticationStartScreen: View {
     /// The main action buttons.
     var buttons: some View {
         VStack(spacing: 16) {
-            if context.viewState.isQRCodeLoginEnabled {
-                Button { context.send(viewAction: .loginWithQR) } label: {
-                    Label(L10n.screenOnboardingSignInWithQrCode, icon: \.qrCode)
-                }
-                .buttonStyle(.compound(.primary))
-                .accessibilityIdentifier(A11yIdentifiers.authenticationStartScreen.signInWithQr)
-            }
+//            if context.viewState.isQRCodeLoginEnabled {
+//                Button { context.send(viewAction: .loginWithQR) } label: {
+//                    Label(L10n.screenOnboardingSignInWithQrCode, icon: \.qrCode)
+//                }
+//                .buttonStyle(.compound(.primary))
+//                .accessibilityIdentifier(A11yIdentifiers.authenticationStartScreen.signInWithQr)
+//            }
             
             Button { context.send(viewAction: .loginManually) } label: {
-                Text(context.viewState.isQRCodeLoginEnabled ? L10n.screenOnboardingSignInManually : L10n.actionContinue)
+                Text(L10n.screenOnboardingSignInManually )
             }
             .buttonStyle(.compound(.primary))
+            .background(Color.green) // Set the button background color to green
             .accessibilityIdentifier(A11yIdentifiers.authenticationStartScreen.signIn)
             
 //            if context.viewState.isWebRegistrationEnabled {
@@ -118,10 +122,10 @@ struct AuthenticationStartScreen: View {
 
 // MARK: - Previews
 
-struct AuthenticationStartScreen_Previews: PreviewProvider, TestablePreview {
-    static let viewModel = AuthenticationStartScreenViewModel(webRegistrationEnabled: true)
-    
-    static var previews: some View {
-        AuthenticationStartScreen(context: viewModel.context)
-    }
-}
+//struct AuthenticationStartScreen_Previews: PreviewProvider, TestablePreview {
+//    static let viewModel = AuthenticationStartScreenViewModel(webRegistrationEnabled: true)
+//    
+//    static var previews: some View {
+//        AuthenticationStartScreen(context: viewModel.context)
+//    }
+//}

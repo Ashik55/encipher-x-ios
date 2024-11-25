@@ -31,9 +31,9 @@ struct HomeScreen: View {
             .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
             .toolbar { toolbar }
             .background {
-                AuthenticationStartScreenBackgroundImage()
+                HomeScreenBackgroundImage()
             }
-//            .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+            .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
             .track(screen: .Home)
             .introspect(.viewController, on: .supportedVersions) { controller in
                 Task {
@@ -42,7 +42,8 @@ struct HomeScreen: View {
                     }
                 }
                 let isTopController = controller.navigationController?.topViewController != controller
-                let isHidden = isTopController || context.isSearchFieldFocused
+//                let isHidden = isTopController || context.isSearchFieldFocused
+                let isHidden = true
                 if let bloomView {
                     bloomView.isHidden = isHidden
                     UIView.transition(with: bloomView, duration: 1.75, options: .curveEaseInOut) {
@@ -166,7 +167,10 @@ struct HomeScreen: View {
             Button {
                 context.send(viewAction: .startChat)
             } label: {
-                CompoundIcon(\.compose)
+//                CompoundIcon(\.compose)
+                Image(asset: ImageAsset(name: "add"))
+                            .resizable() // Ensures the image is resizable
+                            .frame(width: 32, height: 32) // Add size here
             }
             .accessibilityLabel(L10n.actionStartChat)
             .accessibilityIdentifier(A11yIdentifiers.homeScreen.startChat)
