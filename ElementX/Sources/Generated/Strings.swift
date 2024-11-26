@@ -1386,7 +1386,7 @@ internal enum L10n {
   internal static var screenOnboardingSignUp: String { return L10n.tr("Localizable", "screen_onboarding_sign_up") }
   /// Welcome to the fastest %1$@ ever. Supercharged for speed and simplicity.
   internal static func screenOnboardingWelcomeMessage(_ p1: Any) -> String {
-    return L10n.tr("Localizable", "screen_onboarding_welcome_message", String(describing: p1))
+    return L10n.tr("Localizable", "screen_onboarding_welcome_message")
   }
   /// Welcome to %1$@. Supercharged, for speed and simplicity.
   internal static func screenOnboardingWelcomeSubtitle(_ p1: Any) -> String {

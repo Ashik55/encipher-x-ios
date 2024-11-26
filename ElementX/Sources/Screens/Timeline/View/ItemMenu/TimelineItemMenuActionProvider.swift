@@ -76,9 +76,9 @@ struct TimelineItemMenuActionProvider {
             actions.append(.copy)
         }
         
-        if item.isRemoteMessage {
-            actions.append(.copyPermalink)
-        }
+//        if item.isRemoteMessage {
+//            actions.append(.copyPermalink)
+//        }
 
         if canRedactItem(item), let poll = item.pollIfAvailable, !poll.hasEnded, let eventID = item.id.eventID {
             actions.append(.endPoll(pollStartID: eventID))

@@ -44,9 +44,9 @@ struct SecureBackupScreen: View {
                         .font(.compound.bodyLGSemibold)
                         .foregroundColor(.compound.textPrimary)
                     
-                    Text(keyBackupDescriptionWithLearnMoreLink)
-                        .font(.compound.bodySM)
-                        .foregroundColor(.compound.textSecondary)
+//                    Text(keyBackupDescriptionWithLearnMoreLink)
+//                        .font(.compound.bodySM)
+//                        .foregroundColor(.compound.textSecondary)
                 }
                 .padding(.horizontal, ListRowPadding.horizontal)
                 .padding(.vertical, ListRowPadding.vertical)
