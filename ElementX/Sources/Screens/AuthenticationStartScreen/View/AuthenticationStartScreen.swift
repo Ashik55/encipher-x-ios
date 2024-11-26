@@ -104,8 +104,8 @@ struct AuthenticationStartScreen: View {
                 Text(L10n.screenOnboardingSignInManually )
             }
             .buttonStyle(.compound(.primary))
-            .background(Color.green) // Set the button background color to green
             .accessibilityIdentifier(A11yIdentifiers.authenticationStartScreen.signIn)
+            
             
 //            if context.viewState.isWebRegistrationEnabled {
 //                Button { context.send(viewAction: .register) } label: {
