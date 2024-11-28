@@ -658,8 +658,8 @@
 "screen_recovery_key_save_title" = "Save your recovery key somewhere safe";
 "screen_recovery_key_setup_confirmation_description" = "You will not be able to access your new recovery key after this step.";
 "screen_recovery_key_setup_confirmation_title" = "Have you saved your recovery key?";
-"screen_recovery_key_setup_description" = "Your key storage is protected by a recovery key. If you need a new recovery key after setup, you can recreate it by selecting ‘Change recovery key’.";
-"screen_recovery_key_setup_generate_key" = "Generate your recovery key";
+"screen_recovery_key_setup_description" = "A recovery key protects your key storage. To generate a new one after setup, choose the Change Recovery Key option.";
+"screen_recovery_key_setup_generate_key" = "Create a recovery key";
 "screen_recovery_key_setup_generate_key_description" = "Do not share this with anyone!";
 "screen_recovery_key_setup_success" = "Recovery setup successful";
 "screen_recovery_key_setup_title" = "Set up recovery";
@@ -1038,7 +1038,7 @@
 "screen_login_subtitle" = "Matrix е отворена мрежа за сигурна, децентрализирана комуникация.";
 "screen_notification_settings_mentions_section_title" = "Споменавания";
 "screen_qr_code_login_invalid_scan_state_retry_button" = "Повторен опит";
-"screen_recovery_key_change_generate_key_description" = "Do not share this with anyone!";
+"screen_recovery_key_change_generate_key_description" = "Keep this to yourself!";
 "screen_recovery_key_confirm_title" = "Enter your recovery key";
 "screen_report_content_block_user" = "Блокиране на потребителя";
 "screen_reset_encryption_password_placeholder" = "Въведете…";
