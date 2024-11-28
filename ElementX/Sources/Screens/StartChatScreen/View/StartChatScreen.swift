@@ -39,7 +39,7 @@ struct StartChatScreen: View {
     @ViewBuilder
     private var mainContent: some View {
         createRoomSection
-        inviteFriendsSection
+//        inviteFriendsSection
         usersSection
     }
     

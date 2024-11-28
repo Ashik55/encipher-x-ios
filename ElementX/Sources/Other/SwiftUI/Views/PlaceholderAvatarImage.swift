@@ -23,8 +23,8 @@ struct PlaceholderAvatarImage: View {
                 if redactionReasons != .placeholder {
                     Image(asset:  ImageAsset(name: "user"))
                         .resizable()
-                        .padding(15)
-//                        .scaledToFill()
+                        .scaledToFit()  
+                           .frame(width: geometry.size.width * 0.5625, height: geometry.size.width * 0.5625, alignment: .center)  // Adjust the width and height
 //                        .ignoresSafeArea()
 //                    Text(textForImage)
 //                        .foregroundColor(avatarColor?.text ?? .white)
