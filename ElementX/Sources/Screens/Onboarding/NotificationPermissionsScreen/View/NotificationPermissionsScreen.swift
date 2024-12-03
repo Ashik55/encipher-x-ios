@@ -12,14 +12,14 @@ struct NotificationPermissionsScreen: View {
     @ObservedObject var context: NotificationPermissionsScreenViewModel.Context
     
     var body: some View {
-        FullscreenDialog(topPadding: UIConstants.startScreenBreakerScreenTopPadding, background: .gradient) {
+        FullscreenDialog {
             mainContent
         } bottomContent: {
             buttons
         }
-        .background {
-            AuthenticationStartScreenBackgroundImage()
-        }
+//        .background {
+//            AuthenticationStartScreenBackgroundImage()
+//        }
 
         .backgroundStyle(.compound.bgCanvasDefault)
         .navigationBarHidden(true)
@@ -30,11 +30,14 @@ struct NotificationPermissionsScreen: View {
     /// The main content of the screen that is shown inside the scroll view.
     private var mainContent: some View {
         VStack(spacing: 8) {
-            BigIcon(icon: \.notificationsSolid)
-                .padding(.bottom, 8)
+            Text("Allow Notifications")
+                .font(.compound.headingLGBold)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.compound.textPrimary)
+                .padding(.top, 24)
             
             Text(L10n.screenNotificationOptinTitle)
-                .font(.compound.headingMDBold)
+                .font(.compound.bodyLG)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.compound.textPrimary)
             
@@ -42,6 +45,7 @@ struct NotificationPermissionsScreen: View {
                 .font(.compound.bodyMD)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.compound.textSecondary)
+                .padding(.bottom, 24)
             
             Asset.Images.notificationsPromptGraphic.swiftUIImage.resizable().aspectRatio(contentMode: .fit)
         }
@@ -49,14 +53,14 @@ struct NotificationPermissionsScreen: View {
 
     private var buttons: some View {
         VStack(spacing: 16) {
-            Button(L10n.actionOk) { context.send(viewAction: .enable) }
+            Button("Allow Notification") { context.send(viewAction: .enable) }
                 .buttonStyle(.compound(.primary))
             
             Button { context.send(viewAction: .notNow) } label: {
                 Text(L10n.actionNotNow)
                     .font(.compound.bodyLGSemibold)
-                    .padding(14)
-            }
+           
+            }    .buttonStyle(.compound(.secondary))
         }
     }
 }
