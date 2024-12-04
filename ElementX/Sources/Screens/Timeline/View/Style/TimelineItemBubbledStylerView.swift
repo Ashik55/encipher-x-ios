@@ -39,11 +39,15 @@ struct TimelineItemBubbledStylerView<Content: View>: View {
     
     var body: some View {
         ZStack(alignment: .trailingFirstTextBaseline) {
+           
             VStack(alignment: alignment, spacing: -12) {
-                if !timelineItem.isOutgoing, !isEncryptedOneToOneRoom {
-                    header
-                        .zIndex(1)
-                }
+//                if !timelineItem.isOutgoing, !isEncryptedOneToOneRoom {
+//                    header
+//                        .zIndex(1)
+//                }
+                
+//                header
+//                    .zIndex(1)
 
                 VStack(alignment: alignment, spacing: 0) {
                     HStack(spacing: 0) {
@@ -53,7 +57,7 @@ struct TimelineItemBubbledStylerView<Content: View>: View {
 
                         messageBubbleWithReactions
                     }
-                    .padding(timelineItem.isOutgoing ? .leading : .trailing, 48) // Additional padding to differentiate alignment.
+                    .padding(timelineItem.isOutgoing ? .leading : .trailing, 48)
 
                     HStack(spacing: 0) {
                         if !timelineItem.isOutgoing {
@@ -67,6 +71,10 @@ struct TimelineItemBubbledStylerView<Content: View>: View {
                 }
                 .padding(.horizontal, bubbleHorizontalPadding)
                 .padding(.leading, bubbleAvatarPadding)
+//                .background(
+//                    Color.gray.opacity(0.1) // Light gray background
+////                        .cornerRadius(16) // Rounded corners for the section
+//                )
             }
         }
         .padding(EdgeInsets(top: 1, leading: 8, bottom: 1, trailing: 8))
@@ -169,6 +177,31 @@ struct TimelineItemBubbledStylerView<Content: View>: View {
     @ViewBuilder
     var contentWithReply: some View {
         TimelineBubbleLayout(spacing: 8) {
+            
+            HStack(alignment: .center, spacing: 4) {
+                TimelineSenderAvatarView(timelineItem: timelineItem)
+                HStack(alignment: .center, spacing: 4) {
+                    Text(timelineItem.sender.displayName ?? timelineItem.sender.id)
+                        .font(.compound.bodySMSemibold)
+                        .foregroundColor(.compound.decorativeColor(for: timelineItem.sender.id).text)
+                    
+                    if timelineItem.sender.displayName != nil, timelineItem.sender.isDisplayNameAmbiguous {
+                        Text(timelineItem.sender.id)
+                            .font(.compound.bodyXS)
+                            .foregroundColor(.compound.textSecondary)
+                    }
+                }
+                .lineLimit(1)
+                .scaledPadding(.vertical, 3)
+            }
+            // sender info are read inside the `TimelineAccessibilityModifier`
+            .accessibilityHidden(true)
+            .onTapGesture {
+                context.send(viewAction: .tappedOnSenderDetails(userID: timelineItem.sender.id))
+            }
+//            .padding(.top, 8)
+            
+            
             if let messageTimelineItem = timelineItem as? EventBasedMessageTimelineItemProtocol {
                 if messageTimelineItem.isThreaded {
                     ThreadDecorator()
@@ -251,7 +284,8 @@ private extension View {
 
 private extension EventBasedTimelineItemProtocol {
     var bubbleBackgroundColor: Color? {
-        let defaultColor: Color = isOutgoing ? .compound._bgBubbleOutgoing : .compound._bgBubbleIncoming
+//        let defaultColor: Color = isOutgoing ? .compound._bgBubbleOutgoing : .compound._bgBubbleIncoming
+        let defaultColor: Color = isOutgoing ? Color(hex: "#8AFFE7") : Color(hex: "#DAECE8")
 
         switch self {
         case let self as EventBasedMessageTimelineItemProtocol:

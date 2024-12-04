@@ -52,7 +52,7 @@ struct TimelineBubbleLayout: Layout {
         let totalHeight = subviewSizes.map(\.height).reduce(0, +)
         let totalSpacing = CGFloat(layoutSubviews.count - 1) * spacing
         
-        return CGSize(width: maxWidth, height: totalHeight + totalSpacing)
+        return CGSize(width: maxWidth, height: totalHeight + totalSpacing+20)
     }
     
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) {
