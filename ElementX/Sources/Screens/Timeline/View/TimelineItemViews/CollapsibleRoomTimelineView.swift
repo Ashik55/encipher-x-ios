@@ -40,6 +40,11 @@ struct CollapsibleRoomTimelineView: View {
             .buttonStyle(.plain)
             .frame(maxWidth: .infinity)
             .padding(.top, 8.0)
+            .background(
+                RoundedRectangle(cornerRadius: 12) // Apply corner radius
+                    .fill(Color.compound.iconAccentPrimary) // Set background color
+            )
+       
             
             if isExpanded {
                 ForEach(groupedViewStates) { viewState in

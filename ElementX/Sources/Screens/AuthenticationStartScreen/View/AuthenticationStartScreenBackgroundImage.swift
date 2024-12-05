@@ -37,7 +37,7 @@ struct AuthenticationStartScreenBackgroundImage: View {
 
 struct HomeScreenBackgroundImage: View {
     var body: some View {
-        Image(asset:  ImageAsset(name: "home-bg"))
+        Image(asset: ImageAsset(name: "home_gradient"))
             .resizable()
             .scaledToFill()
             .ignoresSafeArea()

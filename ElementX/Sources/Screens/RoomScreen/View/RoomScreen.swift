@@ -64,7 +64,18 @@ struct RoomScreen: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarHidden(isNavigationBarHidden)
             .toolbar { toolbar }
-            .toolbarBackground(.visible, for: .navigationBar) // Fix the toolbar's background.
+            .toolbarBackground(
+                     LinearGradient(
+                         gradient: Gradient(colors: [Color(hex: "#C8e3d3"), Color(hex: "#ffffff")]),
+                         startPoint: .topLeading,
+                         endPoint: .bottomTrailing
+                     ),
+                     for: .navigationBar
+                 )
+                 .toolbarBackground(.visible, for: .navigationBar)
+        
+
+
             .overlay { loadingIndicator }
             .alert(item: $timelineContext.alertInfo)
             .sheet(item: $timelineContext.debugInfo) { TimelineItemDebugView(info: $0) }
@@ -177,6 +188,9 @@ struct RoomScreen: View {
                 .onTapGesture {
                     roomContext.send(viewAction: .displayRoomDetails)
                 }
+//                .background {
+//                    HomeScreenBackgroundImage()
+//                }
         }
         
         if !ProcessInfo.processInfo.isiOSAppOnMac {
