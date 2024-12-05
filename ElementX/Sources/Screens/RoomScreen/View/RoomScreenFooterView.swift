@@ -64,7 +64,7 @@ struct RoomScreenFooterView: View {
         let userIDPlaceholder = "{mxid}"
         let linkPlaceholder = "{link}"
         let displayName = displayName ?? fallbackDisplayName(userID)
-        var description = AttributedString(L10n.cryptoIdentityChangePinViolationNew(displayName, userIDPlaceholder, linkPlaceholder))
+        var description = AttributedString(L10n.cryptoIdentityChangePinViolationNew(displayName, userIDPlaceholder))
         
         var userIDString = AttributedString(L10n.cryptoIdentityChangePinViolationNewUserId(userID))
         userIDString.bold()

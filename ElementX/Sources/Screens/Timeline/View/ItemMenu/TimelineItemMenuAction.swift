@@ -54,12 +54,12 @@ struct TimelineItemMenuReaction {
 enum TimelineItemMenuAction: Identifiable, Hashable {
     case copy
     case edit
-    case copyPermalink
+//    case copyPermalink
     case redact
     case reply(isThread: Bool)
     case forward(itemID: TimelineItemIdentifier)
     case viewSource
-    case retryDecryption(sessionID: String)
+//    case retryDecryption(sessionID: String)
     case report
     case react
     case toggleReaction(key: String)
@@ -127,8 +127,8 @@ enum TimelineItemMenuAction: Identifiable, Hashable {
             Label(L10n.actionCopy, icon: \.copy)
         case .edit:
             Label(L10n.actionEdit, icon: \.edit)
-        case .copyPermalink:
-            Label(L10n.actionCopyLinkToMessage, icon: \.link)
+//        case .copyPermalink:
+//            Label(L10n.actionCopyLinkToMessage, icon: \.link)
         case .reply(let isThread):
             Label(isThread ? L10n.actionReplyInThread : L10n.actionReply, icon: \.reply)
         case .forward:
@@ -137,8 +137,8 @@ enum TimelineItemMenuAction: Identifiable, Hashable {
             Label(L10n.actionRemove, icon: \.delete)
         case .viewSource:
             Label(L10n.actionViewSource, icon: \.code)
-        case .retryDecryption:
-            Label(L10n.actionRetryDecryption, systemImage: "arrow.down.message")
+//        case .retryDecryption:
+//            Label(L10n.actionRetryDecryption, systemImage: "arrow.down.message")
         case .report:
             Label(L10n.actionReportContent, icon: \.chatProblem)
         case .react:

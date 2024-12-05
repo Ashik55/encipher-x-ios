@@ -553,8 +553,8 @@ internal enum L10n {
     return L10n.tr("Localizable", "crypto_identity_change_pin_violation", String(describing: p1), String(describing: p2))
   }
   /// %1$@’s %2$@ identity appears to have changed. %3$@
-  internal static func cryptoIdentityChangePinViolationNew(_ p1: Any, _ p2: Any, _ p3: Any) -> String {
-    return L10n.tr("Localizable", "crypto_identity_change_pin_violation_new", String(describing: p1), String(describing: p2), String(describing: p3))
+  internal static func cryptoIdentityChangePinViolationNew(_ p1: Any, _ p2: Any) -> String {
+    return L10n.tr("Localizable", "crypto_identity_change_pin_violation_new", String(describing: p1), String(describing: p2))
   }
   /// (%1$@)
   internal static func cryptoIdentityChangePinViolationNewUserId(_ p1: Any) -> String {

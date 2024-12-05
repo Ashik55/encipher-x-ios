@@ -14,8 +14,16 @@ struct SeparatorRoomTimelineView: View {
         Text(timelineItem.text)
             .font(.compound.bodySMSemibold)
             .foregroundColor(.compound.textPrimary)
+            .padding(.horizontal, 36.0)
+            .padding(.vertical, 8.0)
+            .background(
+                RoundedRectangle(cornerRadius: 12) // Apply corner radius
+                    .fill(Color.compound._bgBubbleIncoming) // Set background color
+            )
+        
             .frame(maxWidth: .infinity)
             .multilineTextAlignment(.center)
+          
             .padding(.horizontal, 36.0)
             .padding(.vertical, 8.0)
     }

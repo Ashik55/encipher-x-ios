@@ -27,6 +27,7 @@ struct CollapsibleRoomTimelineView: View {
             } label: {
                 HStack(alignment: .center, spacing: 8) {
                     Text(L10n.screenRoomTimelineStateChanges(timelineItem.items.count))
+                  
                     Text(Image(systemName: "chevron.forward"))
                         .rotationEffect(.degrees(isExpanded ? 90 : 0))
                         .animation(.elementDefault, value: isExpanded)
@@ -38,12 +39,13 @@ struct CollapsibleRoomTimelineView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .frame(maxWidth: .infinity)
-            .padding(.top, 8.0)
             .background(
                 RoundedRectangle(cornerRadius: 12) // Apply corner radius
-                    .fill(Color.compound.iconAccentPrimary) // Set background color
+                    .fill(Color.compound._bgBubbleIncoming) // Set background color
             )
+            .frame(maxWidth: .infinity)
+            .padding(.top, 8.0)
+         
        
             
             if isExpanded {

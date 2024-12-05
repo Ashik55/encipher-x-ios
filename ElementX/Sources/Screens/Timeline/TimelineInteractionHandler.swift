@@ -118,20 +118,20 @@ class TimelineInteractionHandler {
             default:
                 MXLog.error("Cannot edit item with id: \(timelineItem.id)")
             }
-        case .copyPermalink:
-            guard let eventID = eventTimelineItem.id.eventID else {
-                actionsSubject.send(.displayErrorToast(L10n.errorFailedCreatingThePermalink))
-                return
-            }
-            
-            Task {
-                guard case let .success(permalinkURL) = await roomProxy.matrixToEventPermalink(eventID) else {
-                    actionsSubject.send(.displayErrorToast(L10n.errorFailedCreatingThePermalink))
-                    return
-                }
-                
-                UIPasteboard.general.url = permalinkURL
-            }
+//        case .copyPermalink:
+//            guard let eventID = eventTimelineItem.id.eventID else {
+//                actionsSubject.send(.displayErrorToast(L10n.errorFailedCreatingThePermalink))
+//                return
+//            }
+//            
+//            Task {
+//                guard case let .success(permalinkURL) = await roomProxy.matrixToEventPermalink(eventID) else {
+//                    actionsSubject.send(.displayErrorToast(L10n.errorFailedCreatingThePermalink))
+//                    return
+//                }
+//                
+//                UIPasteboard.general.url = permalinkURL
+//            }
         case .redact:
             guard case let .event(_, eventOrTransactionID) = itemID else {
                 fatalError()
@@ -155,10 +155,10 @@ class TimelineInteractionHandler {
             let debugInfo = timelineController.debugInfo(for: eventTimelineItem.id)
             MXLog.info("Showing debug info for \(eventTimelineItem.id)")
             actionsSubject.send(.showDebugInfo(debugInfo))
-        case .retryDecryption(let sessionID):
-            Task {
-                await timelineController.retryDecryption(for: sessionID)
-            }
+//        case .retryDecryption(let sessionID):
+//            Task {
+//                await timelineController.retryDecryption(for: sessionID)
+//            }
         case .report:
             actionsSubject.send(.displayReportContent(itemID: itemID, senderID: eventTimelineItem.sender.id))
         case .react:

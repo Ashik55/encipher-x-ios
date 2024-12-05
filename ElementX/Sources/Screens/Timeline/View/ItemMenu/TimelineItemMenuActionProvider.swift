@@ -36,19 +36,19 @@ struct TimelineItemMenuActionProvider {
             debugActions.append(.viewSource)
         }
 
-        if let encryptedItem = timelineItem as? EncryptedRoomTimelineItem {
-            switch encryptedItem.encryptionType {
-            case .megolmV1AesSha2(let sessionID, _):
-                debugActions.append(.retryDecryption(sessionID: sessionID))
-            default:
-                break
-            }
-            
-            return .init(isReactable: false,
-                         actions: [.copyPermalink],
-                         debugActions: debugActions,
-                         emojiProvider: emojiProvider)
-        }
+//        if let encryptedItem = timelineItem as? EncryptedRoomTimelineItem {
+//            switch encryptedItem.encryptionType {
+//            case .megolmV1AesSha2(let sessionID, _):
+//                debugActions.append(.retryDecryption(sessionID: sessionID))
+//            default:
+//                break
+//            }
+//            
+//            return .init(isReactable: false,
+//                         actions: [.copyPermalink],
+//                         debugActions: debugActions,
+//                         emojiProvider: emojiProvider)
+//        }
         
         var actions: [TimelineItemMenuAction] = []
 

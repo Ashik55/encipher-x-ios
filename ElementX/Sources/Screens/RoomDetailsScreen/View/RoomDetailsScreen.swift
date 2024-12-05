@@ -45,6 +45,7 @@ struct RoomDetailsScreen: View {
         .alert(item: $context.ignoreUserRoomAlertItem,
                actions: blockUserAlertActions,
                message: blockUserAlertMessage)
+     
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if context.viewState.canEdit {
@@ -54,6 +55,18 @@ struct RoomDetailsScreen: View {
                 }
             }
         }
+      
+        .toolbarBackground(
+                 LinearGradient(
+                     gradient: Gradient(colors: [Color(hex: "#C8e3d3"), Color(hex: "#ffffff")]),
+                     startPoint: .topLeading,
+                     endPoint: .bottomTrailing
+                 ),
+                 for: .navigationBar
+             )
+             .toolbarBackground(.visible, for: .navigationBar)
+    
+
         .navigationTitle(L10n.screenRoomDetailsTitle)
         .navigationBarTitleDisplayMode(.inline)
         .track(screen: .RoomDetails)
