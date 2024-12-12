@@ -41,40 +41,36 @@ struct RoomAvatarImage: View {
             if users.count == 0 {
                 let _ = assertionFailure("We should never pass empty heroes here.")
                 PlaceholderAvatarImage(name: nil, contentID: nil)
-            } else if users.count == 2 {
-                let clusterSize = avatarSize.value * 1.6
+            }
+            
+            else if users.count == 2 {
                 ZStack {
-                    LoadableAvatarImage(url: users[0].avatarURL,
-                                        name: users[0].displayName,
-                                        contentID: users[0].userID,
-                                        avatarSize: avatarSize,
-                                        mediaProvider: mediaProvider,
-                                        onTap: onAvatarTap)
-                        .scaledFrame(size: clusterSize, alignment: .topTrailing)
-                    
                     LoadableAvatarImage(url: users[1].avatarURL,
                                         name: users[1].displayName,
                                         contentID: users[1].userID,
                                         avatarSize: avatarSize,
                                         mediaProvider: mediaProvider,
                                         onTap: onAvatarTap)
-                        .mask {
-                            Rectangle()
-                                .fill(Color.white)
-                                .overlay {
-                                    Circle()
-                                        .inset(by: -4)
-                                        .fill(Color.black)
-                                        .scaledOffset(x: clusterSize - avatarSize.value,
-                                                      y: -clusterSize + avatarSize.value)
-                                }
-                                .compositingGroup()
-                                .luminanceToAlpha()
-                        }
-                        .scaledFrame(size: clusterSize, alignment: .bottomLeading)
+                    
+                    
+                    // Add a margin to the left of this avatar
+                     HStack {
+                         Spacer().frame(width: avatarSize.value) // Adjust the width as needed
+                         LoadableAvatarImage(
+                             url: users[0].avatarURL,
+                             name: users[0].displayName,
+                             contentID: users[0].userID,
+                             avatarSize: avatarSize,
+                             mediaProvider: mediaProvider,
+                             onTap: onAvatarTap
+                         )
+                     }
+                    
                 }
-                .scaledFrame(size: clusterSize)
-            } else {
+            }
+            
+            
+            else {
                 LoadableAvatarImage(url: users[0].avatarURL,
                                     name: users[0].displayName,
                                     contentID: users[0].userID,
