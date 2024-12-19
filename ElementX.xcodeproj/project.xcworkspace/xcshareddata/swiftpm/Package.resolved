@@ -1,5 +1,4 @@
 {
-  "originHash" : "f9011692b20e61e6f0df94b6e0946a4c8f4d58429a88998f249712bb1fee47f1",
   "pins" : [
     {
       "identity" : "compound-design-tokens",
@@ -8,14 +7,6 @@
       "state" : {
         "revision" : "6190515a2af1eb1cb02114270fd536f1b6daa518",
         "version" : "2.0.1"
-      }
-    },
-    {
-      "identity" : "compound-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/element-hq/compound-ios",
-      "state" : {
-        "revision" : "4af41551fb7a7b9da0fd95171f2dec554726fadd"
       }
     },
     {
@@ -50,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Cocoanetics/DTFoundation.git",
       "state" : {
-        "revision" : "76062513434421cb6c8a1ae1d4f8368a7ebc2da3",
-        "version" : "1.7.18"
+        "revision" : "a61be65dd7d5b2cde3acabd13bf320b71f2907a5",
+        "version" : "1.7.19"
       }
     },
     {
@@ -104,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lukaskubanek/LoremSwiftum",
       "state" : {
-        "revision" : "8942e732e50458cde5dccf9996afa16f29372853",
-        "version" : "2.2.2"
+        "revision" : "a293c2339552c8cfb715e7f76c511feec02782ad",
+        "version" : "2.2.3"
       }
     },
     {
@@ -113,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nicklockwood/LRUCache",
       "state" : {
-        "revision" : "6d2b5246c9c98dcd498552bb22f08d55b12a8371",
-        "version" : "1.0.4"
+        "revision" : "542f0449556327415409ededc9c43a4bd0a397dc",
+        "version" : "1.0.7"
       }
     },
     {
@@ -185,8 +176,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/BarredEwe/Prefire",
       "state" : {
-        "revision" : "0b7b6e6fe98af7e12b1440ca8fe81b3033ecf873",
-        "version" : "2.9.0"
+        "revision" : "172a7f0a95f99f6656f6b2d0531b648c08d26c56",
+        "version" : "2.10.0"
       }
     },
     {
@@ -194,8 +185,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa",
       "state" : {
-        "revision" : "8fd4e804f2e72e0b9c1b189ce4e8349c4d10b6a2",
-        "version" : "8.30.0"
+        "revision" : "5a601a24aa1b3fb29fcdb824633f050e08257e92",
+        "version" : "8.30.1"
       }
     },
     {
@@ -221,8 +212,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-collections",
       "state" : {
-        "revision" : "a902f1823a7ff3c9ab2fba0f992396b948eda307",
-        "version" : "1.0.5"
+        "revision" : "d029d9d39c87bed85b1c50adee7c41795261a192",
+        "version" : "1.0.6"
       }
     },
     {
@@ -248,8 +239,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
       "state" : {
-        "revision" : "7b0bbbae90c41f848f90ac7b4df6c4f50068256d",
-        "version" : "1.17.5"
+        "revision" : "42a086182681cf661f5c47c9b7dc3931de18c6d7",
+        "version" : "1.17.6"
       }
     },
     {
@@ -257,8 +248,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-syntax",
       "state" : {
-        "revision" : "74203046135342e4a4a627476dd6caf8b28fe11b",
-        "version" : "509.0.0"
+        "revision" : "0687f71944021d616d34d922343dcef086855920",
+        "version" : "600.0.1"
       }
     },
     {
@@ -289,5 +280,5 @@
       }
     }
   ],
-  "version" : 3
+  "version" : 2
 }
