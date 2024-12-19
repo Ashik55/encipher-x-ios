@@ -305,7 +305,7 @@ class ClientProxy: ClientProxyProtocol {
         stopSync(completion: nil)
     }
     
-    private func stopSync(completion: (() -> Void)?) {
+    func stopSync(completion: (() -> Void)?) {
         MXLog.info("Stopping sync")
         
         if restartTask != nil {
@@ -506,7 +506,7 @@ class ClientProxy: ClientProxyProtocol {
         }
         
         if !roomSummaryProvider.statePublisher.value.isLoaded {
-            _ = await roomSummaryProvider.statePublisher.values.first(where: { $0.isLoaded })
+            _ = await roomSummaryProvider.statePublisher.values.first { $0.isLoaded }
         }
         
         if shouldAwait {
@@ -644,7 +644,7 @@ class ClientProxy: ClientProxyProtocol {
     }
     
     func roomDirectorySearchProxy() -> RoomDirectorySearchProxyProtocol {
-        RoomDirectorySearchProxy(roomDirectorySearch: client.roomDirectorySearch())
+        RoomDirectorySearchProxy(roomDirectorySearch: client.roomDirectorySearch(), appSettings: appSettings)
     }
     
     func resolveRoomAlias(_ alias: String) async -> Result<ResolvedRoomAlias, ClientProxyError> {
@@ -930,16 +930,15 @@ class ClientProxy: ClientProxyProtocol {
             switch roomListItem.membership() {
             case .invited:
                 return try await .invited(InvitedRoomProxy(roomListItem: roomListItem,
-                                                           room: roomListItem.invitedRoom()))
+                                                           roomPreview: roomListItem.previewRoom(via: []),
+                                                           ownUserID: userID))
             case .knocked:
                 if appSettings.knockingEnabled {
                     return try await .knocked(KnockedRoomProxy(roomListItem: roomListItem,
                                                                roomPreview: roomListItem.previewRoom(via: []),
                                                                ownUserID: userID))
-                } else {
-                    return try await .invited(InvitedRoomProxy(roomListItem: roomListItem,
-                                                               room: roomListItem.invitedRoom()))
                 }
+                return nil
             case .joined:
                 if roomListItem.isTimelineInitialized() == false {
                     try await roomListItem.initTimeline(eventTypeFilter: eventFilters, internalIdPrefix: nil)
@@ -951,6 +950,9 @@ class ClientProxy: ClientProxyProtocol {
                 
                 return .joined(roomProxy)
             case .left:
+                return .left
+            case .banned:
+                // TODO: Implement a `bannedRoomProxy` and/or `.banned` case
                 return .left
             }
         } catch {
@@ -1147,10 +1149,31 @@ private extension RoomPreviewDetails {
                                   topic: roomPreviewInfo.topic,
                                   avatarURL: roomPreviewInfo.avatarUrl.flatMap(URL.init(string:)),
                                   memberCount: UInt(roomPreviewInfo.numJoinedMembers),
-                                  isHistoryWorldReadable: roomPreviewInfo.isHistoryWorldReadable,
+                                  isHistoryWorldReadable: roomPreviewInfo.isHistoryWorldReadable ?? false,
                                   isJoined: roomPreviewInfo.membership == .joined,
                                   isInvited: roomPreviewInfo.membership == .invited,
-                                  isPublic: roomPreviewInfo.joinRule == .public,
-                                  canKnock: roomPreviewInfo.joinRule == .knock)
+                                  isPublic: roomPreviewInfo.isPublic,
+                                  canKnock: roomPreviewInfo.canKnock)
+    }
+}
+
+private extension RoomPreviewInfo {
+    var canKnock: Bool {
+        switch joinRule {
+        case .knock, .knockRestricted:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    var isPublic: Bool {
+        switch joinRule {
+        // for restricted rooms we want to show optimistically that the we may be able to join the room
+        case .public, .restricted:
+            return true
+        default:
+            return false
+        }
     }
 }

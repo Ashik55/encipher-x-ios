@@ -44,7 +44,7 @@ settings:
   ENABLE_BITCODE: false
   APP_GROUP_IDENTIFIER: group.$(BASE_APP_GROUP_IDENTIFIER)
   KEYCHAIN_ACCESS_GROUP_IDENTIFIER: "$(AppIdentifierPrefix)$(BASE_BUNDLE_IDENTIFIER)"
-  MARKETING_VERSION: 1.9.6
+  MARKETING_VERSION: 1.9.10
   CURRENT_PROJECT_VERSION: 1
   SUPPORTS_MACCATALYST: false
 
@@ -64,7 +64,7 @@ packages:
   # Element/Matrix dependencies
   MatrixRustSDK:
     url: https://github.com/element-hq/matrix-rust-components-swift
-    exactVersion: 1.0.67
+    exactVersion: 1.0.82
     # path: ../matrix-rust-sdk
   Compound:
     url: https://github.com/element-hq/compound-ios

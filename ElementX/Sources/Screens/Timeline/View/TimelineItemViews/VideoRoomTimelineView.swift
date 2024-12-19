@@ -5,11 +5,11 @@
 // Please see LICENSE in the repository root for full details.
 //
 
-import Foundation
+import Compound
 import SwiftUI
 
 struct VideoRoomTimelineView: View {
-    @EnvironmentObject private var context: TimelineViewModel.Context
+    @Environment(\.timelineContext) private var context
     let timelineItem: VideoRoomTimelineItem
     
     private var hasMediaCaption: Bool { timelineItem.content.caption != nil }
@@ -24,6 +24,9 @@ struct VideoRoomTimelineView: View {
                     // This clip shape is distinct from the one in the styler as that one
                     // operates on the entire message so wouldn't round the bottom corners.
                     .clipShape(RoundedRectangle(cornerRadius: hasMediaCaption ? 6 : 0))
+                    .onTapGesture {
+                        context?.send(viewAction: .mediaTapped(itemID: timelineItem.id))
+                    }
                 
                 if let attributedCaption = timelineItem.content.formattedCaption {
                     FormattedBodyText(attributedString: attributedCaption,
@@ -42,10 +45,10 @@ struct VideoRoomTimelineView: View {
     var thumbnail: some View {
         if let thumbnailSource = timelineItem.content.thumbnailInfo?.source {
             LoadableImage(mediaSource: thumbnailSource,
-                          mediaType: .timelineItem,
+                          mediaType: .timelineItem(uniqueID: timelineItem.id.uniqueID.id),
                           blurhash: timelineItem.content.blurhash,
                           size: timelineItem.content.thumbnailInfo?.size,
-                          mediaProvider: context.mediaProvider) { imageView in
+                          mediaProvider: context?.mediaProvider) { imageView in
                 imageView
                     .overlay { playIcon }
             } placeholder: {
@@ -75,56 +78,37 @@ struct VideoRoomTimelineView_Previews: PreviewProvider, TestablePreview {
     static let viewModel = TimelineViewModel.mock
     
     static var previews: some View {
-        body.environmentObject(viewModel.context)
+        ScrollView {
+            VStack(spacing: 20.0) {
+                VideoRoomTimelineView(timelineItem: makeTimelineItem())
+                VideoRoomTimelineView(timelineItem: makeTimelineItem(isEdited: true))
+                
+                // Blurhash item?
+                
+                VideoRoomTimelineView(timelineItem: makeTimelineItem(caption: "This is a great image 😎"))
+                VideoRoomTimelineView(timelineItem: makeTimelineItem(caption: "This is a great image with a really long multiline caption",
+                                                                     isEdited: true))
+            }
+        }
+        .environmentObject(viewModel.context)
+        .environment(\.timelineContext, viewModel.context)
+        .previewLayout(.fixed(width: 390, height: 975))
+        .padding(.bottom, 20)
     }
     
-    static var body: some View {
-        VStack(spacing: 20.0) {
-            VideoRoomTimelineView(timelineItem: VideoRoomTimelineItem(id: .randomEvent,
-                                                                      timestamp: "Now",
-                                                                      isOutgoing: false,
-                                                                      isEditable: false,
-                                                                      canBeRepliedTo: true,
-                                                                      isThreaded: false,
-                                                                      sender: .init(id: "Bob"),
-                                                                      content: .init(filename: "video.mp4",
-                                                                                     videoInfo: .mockVideo,
-                                                                                     thumbnailInfo: nil)))
-
-            VideoRoomTimelineView(timelineItem: VideoRoomTimelineItem(id: .randomEvent,
-                                                                      timestamp: "Now",
-                                                                      isOutgoing: false,
-                                                                      isEditable: false,
-                                                                      canBeRepliedTo: true,
-                                                                      isThreaded: false,
-                                                                      sender: .init(id: "Bob"),
-                                                                      content: .init(filename: "other.mp4",
-                                                                                     videoInfo: .mockVideo,
-                                                                                     thumbnailInfo: nil)))
-            
-            VideoRoomTimelineView(timelineItem: VideoRoomTimelineItem(id: .randomEvent,
-                                                                      timestamp: "Now",
-                                                                      isOutgoing: false,
-                                                                      isEditable: false,
-                                                                      canBeRepliedTo: true,
-                                                                      isThreaded: false,
-                                                                      sender: .init(id: "Bob"),
-                                                                      content: .init(filename: "Blurhashed.mp4",
-                                                                                     videoInfo: .mockVideo,
-                                                                                     thumbnailInfo: nil,
-                                                                                     blurhash: "L%KUc%kqS$RP?Ks,WEf8OlrqaekW")))
-            
-            VideoRoomTimelineView(timelineItem: VideoRoomTimelineItem(id: .randomEvent,
-                                                                      timestamp: "Now",
-                                                                      isOutgoing: false,
-                                                                      isEditable: false,
-                                                                      canBeRepliedTo: true,
-                                                                      isThreaded: false,
-                                                                      sender: .init(id: "Bob"),
-                                                                      content: .init(filename: "video.mp4",
-                                                                                     caption: "This is a caption",
-                                                                                     videoInfo: .mockVideo,
-                                                                                     thumbnailInfo: nil)))
-        }
+    private static func makeTimelineItem(caption: String? = nil, isEdited: Bool = false) -> VideoRoomTimelineItem {
+        VideoRoomTimelineItem(id: .randomEvent,
+                              timestamp: .mock,
+                              isOutgoing: false,
+                              isEditable: false,
+                              canBeRepliedTo: true,
+                              isThreaded: false,
+                              sender: .init(id: "Bob"),
+                              content: .init(filename: "video.mp4",
+                                             caption: caption,
+                                             videoInfo: .mockVideo,
+                                             thumbnailInfo: .mockVideoThumbnail,
+                                             blurhash: "L%KUc%kqS$RP?Ks,WEf8OlrqaekW"),
+                              properties: .init(isEdited: isEdited))
     }
 }

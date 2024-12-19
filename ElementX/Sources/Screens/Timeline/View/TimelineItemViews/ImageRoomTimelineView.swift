@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ImageRoomTimelineView: View {
-    @EnvironmentObject private var context: TimelineViewModel.Context
+    @Environment(\.timelineContext) private var context
     let timelineItem: ImageRoomTimelineItem
     
     var hasMediaCaption: Bool { timelineItem.content.caption != nil }
@@ -23,6 +23,9 @@ struct ImageRoomTimelineView: View {
                     // This clip shape is distinct from the one in the styler as that one
                     // operates on the entire message so wouldn't round the bottom corners.
                     .clipShape(RoundedRectangle(cornerRadius: hasMediaCaption ? 6 : 0))
+                    .onTapGesture {
+                        context?.send(viewAction: .mediaTapped(itemID: timelineItem.id))
+                    }
                 
                 if let attributedCaption = timelineItem.content.formattedCaption {
                     FormattedBodyText(attributedString: attributedCaption,
@@ -41,19 +44,19 @@ struct ImageRoomTimelineView: View {
     private var loadableImage: some View {
         if timelineItem.content.contentType == .gif {
             LoadableImage(mediaSource: timelineItem.content.imageInfo.source,
-                          mediaType: .timelineItem,
+                          mediaType: .timelineItem(uniqueID: timelineItem.id.uniqueID.id),
                           blurhash: timelineItem.content.blurhash,
                           size: timelineItem.content.imageInfo.size,
-                          mediaProvider: context.mediaProvider) {
+                          mediaProvider: context?.mediaProvider) {
                 placeholder
             }
             .timelineMediaFrame(imageInfo: timelineItem.content.imageInfo)
         } else {
             LoadableImage(mediaSource: timelineItem.content.thumbnailInfo?.source ?? timelineItem.content.imageInfo.source,
-                          mediaType: .timelineItem,
+                          mediaType: .timelineItem(uniqueID: timelineItem.id.uniqueID.id),
                           blurhash: timelineItem.content.blurhash,
                           size: timelineItem.content.thumbnailInfo?.size ?? timelineItem.content.imageInfo.size,
-                          mediaProvider: context.mediaProvider) {
+                          mediaProvider: context?.mediaProvider) {
                 placeholder
             }
             .timelineMediaFrame(imageInfo: timelineItem.content.thumbnailInfo ?? timelineItem.content.imageInfo)
@@ -71,60 +74,38 @@ struct ImageRoomTimelineView_Previews: PreviewProvider, TestablePreview {
     static let viewModel = TimelineViewModel.mock
     
     static var previews: some View {
-        body
-            .environmentObject(viewModel.context)
+        ScrollView {
+            VStack(spacing: 20.0) {
+                ImageRoomTimelineView(timelineItem: makeTimelineItem())
+                ImageRoomTimelineView(timelineItem: makeTimelineItem(isEdited: true))
+                
+                // Blur hashed item?
+                
+                ImageRoomTimelineView(timelineItem: makeTimelineItem(caption: "This is a great image 😎"))
+                ImageRoomTimelineView(timelineItem: makeTimelineItem(caption: "This is a great image with a really long multiline caption.",
+                                                                     isEdited: true))
+            }
+        }
+        .environmentObject(viewModel.context)
+        .environment(\.timelineContext, viewModel.context)
+        .previewLayout(.fixed(width: 390, height: 1200))
+        .padding(.bottom, 20)
     }
     
-    static var body: some View {
-        VStack(spacing: 20.0) {
-            ImageRoomTimelineView(timelineItem: ImageRoomTimelineItem(id: .randomEvent,
-                                                                      timestamp: "Now",
-                                                                      isOutgoing: false,
-                                                                      isEditable: false,
-                                                                      canBeRepliedTo: true,
-                                                                      isThreaded: false,
-                                                                      sender: .init(id: "Bob"),
-                                                                      content: .init(filename: "image.jpg",
-                                                                                     imageInfo: .mockImage,
-                                                                                     thumbnailInfo: nil)))
-            
-            ImageRoomTimelineView(timelineItem: ImageRoomTimelineItem(id: .randomEvent,
-                                                                      timestamp: "Now",
-                                                                      isOutgoing: false,
-                                                                      isEditable: false,
-                                                                      canBeRepliedTo: true,
-                                                                      isThreaded: false,
-                                                                      sender: .init(id: "Bob"),
-                                                                      content: .init(filename: "other.png",
-                                                                                     imageInfo: .mockImage,
-                                                                                     thumbnailInfo: nil)))
-            
-            ImageRoomTimelineView(timelineItem: ImageRoomTimelineItem(id: .randomEvent,
-                                                                      timestamp: "Now",
-                                                                      isOutgoing: false,
-                                                                      isEditable: false,
-                                                                      canBeRepliedTo: true,
-                                                                      isThreaded: false,
-                                                                      sender: .init(id: "Bob"),
-                                                                      content: .init(filename: "Blurhashed.jpg",
-                                                                                     imageInfo: .mockImage,
-                                                                                     thumbnailInfo: nil,
-                                                                                     blurhash: "L%KUc%kqS$RP?Ks,WEf8OlrqaekW",
-                                                                                     contentType: .gif)))
-            
-            ImageRoomTimelineView(timelineItem: ImageRoomTimelineItem(id: .randomEvent,
-                                                                      timestamp: "Now",
-                                                                      isOutgoing: false,
-                                                                      isEditable: false,
-                                                                      canBeRepliedTo: true,
-                                                                      isThreaded: false,
-                                                                      sender: .init(id: "Bob"),
-                                                                      content: .init(filename: "Blurhashed.jpg",
-                                                                                     caption: "This is a great image 😎",
-                                                                                     imageInfo: .mockImage,
-                                                                                     thumbnailInfo: .mockThumbnail,
-                                                                                     blurhash: "L%KUc%kqS$RP?Ks,WEf8OlrqaekW",
-                                                                                     contentType: .gif)))
-        }
+    private static func makeTimelineItem(caption: String? = nil, isEdited: Bool = false) -> ImageRoomTimelineItem {
+        ImageRoomTimelineItem(id: .randomEvent,
+                              timestamp: .mock,
+                              isOutgoing: false,
+                              isEditable: false,
+                              canBeRepliedTo: true,
+                              isThreaded: false,
+                              sender: .init(id: "Bob"),
+                              content: .init(filename: "image.jpg",
+                                             caption: caption,
+                                             imageInfo: .mockImage,
+                                             thumbnailInfo: .mockThumbnail,
+                                             blurhash: "L%KUc%kqS$RP?Ks,WEf8OlrqaekW",
+                                             contentType: .jpeg),
+                              properties: .init(isEdited: isEdited))
     }
 }

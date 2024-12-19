@@ -119,7 +119,7 @@ struct HomeScreenKnockedCell_Previews: PreviewProvider, TestablePreview {
                 HomeScreenKnockedCell(room: .roomKnocked(),
                                       context: viewModel().context)
                 
-                HomeScreenKnockedCell(room: .roomKnocked(alias: "#footest:somewhere.org", avatarURL: .picturesDirectory),
+                HomeScreenKnockedCell(room: .roomKnocked(alias: "#footest:somewhere.org", avatarURL: .mockMXCAvatar),
                                       context: viewModel().context)
                 
                 HomeScreenKnockedCell(room: .roomKnocked(alias: "#footest:somewhere.org"),
@@ -152,7 +152,7 @@ private extension HomeScreenRoom {
         
         let summary = RoomSummary(roomListItem: RoomListItemSDKMock(),
                                   id: "@someone:somewhere.com",
-                                  joinRequestType: .invite(inviter: inviter),
+                                  knockRequestType: .invite(inviter: inviter),
                                   name: "Some Guy",
                                   isDirect: true,
                                   avatarURL: nil,
@@ -179,7 +179,7 @@ private extension HomeScreenRoom {
         
         let summary = RoomSummary(roomListItem: RoomListItemSDKMock(),
                                   id: "@someone:somewhere.com",
-                                  joinRequestType: .invite(inviter: inviter),
+                                  knockRequestType: .invite(inviter: inviter),
                                   name: "Awesome Room",
                                   isDirect: false,
                                   avatarURL: avatarURL,

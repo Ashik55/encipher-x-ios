@@ -8,12 +8,13 @@
 import Foundation
 import OrderedCollections
 
-enum RoomScreenViewModelAction {
+enum RoomScreenViewModelAction: Equatable {
     case focusEvent(eventID: String)
     case displayPinnedEventsTimeline
     case displayRoomDetails
     case displayCall
     case removeComposerFocus
+    case displayKnockRequests
 }
 
 enum RoomScreenViewAction {
@@ -22,6 +23,9 @@ enum RoomScreenViewAction {
     case displayRoomDetails
     case displayCall
     case footerViewAction(RoomScreenFooterViewAction)
+    case acceptKnock(eventID: String)
+    case dismissKnockRequests
+    case viewKnockRequests
 }
 
 struct RoomScreenViewState: BindableState {
@@ -38,6 +42,25 @@ struct RoomScreenViewState: BindableState {
     var canJoinCall = false
     var hasOngoingCall: Bool
     var shouldShowCallButton = true
+    
+    var isKnockingEnabled = false
+    var isKnockableRoom = false
+    var canAcceptKnocks = false
+    var canDeclineKnocks = false
+    var canBan = false
+    var unseenKnockRequests: [KnockRequestInfo] = []
+    var handledEventIDs: Set<String> = []
+    
+    var displayedKnockRequests: [KnockRequestInfo] {
+        unseenKnockRequests.filter { !handledEventIDs.contains($0.eventID) }
+    }
+    
+    var shouldSeeKnockRequests: Bool {
+        isKnockingEnabled &&
+            isKnockableRoom &&
+            !displayedKnockRequests.isEmpty &&
+            (canAcceptKnocks || canDeclineKnocks || canBan)
+    }
     
     var footerDetails: RoomScreenFooterViewDetails?
     

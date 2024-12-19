@@ -30,6 +30,12 @@ class RoomTimelineController: RoomTimelineControllerProtocol {
     }
     
     private(set) var timelineItems = [RoomTimelineItemProtocol]()
+    
+    private(set) var paginationState: PaginationState = .initial {
+        didSet {
+            callbacks.send(.paginationState(paginationState))
+        }
+    }
 
     var roomID: String {
         roomProxy.id
@@ -64,7 +70,8 @@ class RoomTimelineController: RoomTimelineControllerProtocol {
         }
         
         Task {
-            callbacks.send(.paginationState(PaginationState(backward: .paginating, forward: .paginating)))
+            paginationState = PaginationState(backward: .paginating, forward: .paginating)
+            
             switch await focusOnEvent(initialFocussedEventID, timelineSize: 100) {
             case .success:
                 break
@@ -195,9 +202,7 @@ class RoomTimelineController: RoomTimelineControllerProtocol {
             }
         }
         
-        if let avatarURL {
-            let mediaSource = MediaSourceProxy(url: avatarURL, mimeType: nil)
-            
+        if let avatarURL, let mediaSource = try? MediaSourceProxy(url: avatarURL, mimeType: nil) {
             if case let .success(avatarData) = await mediaProvider.loadThumbnailForSource(source: mediaSource, size: .init(width: 100, height: 100)) {
                 sendMessageIntent.setImage(INImage(imageData: avatarData), forParameterNamed: \.speakableGroupName)
             } else {
@@ -238,11 +243,39 @@ class RoomTimelineController: RoomTimelineControllerProtocol {
                                                                    html: html,
                                                                    intentionalMentions: intentionalMentions.toRustMentions())
         
-        switch await activeTimeline.edit(eventOrTransactionID, newContent: messageContent) {
+        switch await activeTimeline.edit(eventOrTransactionID, newContent: .roomMessage(content: messageContent)) {
         case .success:
             MXLog.info("Finished editing message by event")
         case let .failure(error):
             MXLog.error("Failed editing message by event with error: \(error)")
+        }
+    }
+    
+    func editCaption(_ eventOrTransactionID: EventOrTransactionId,
+                     message: String,
+                     html: String?,
+                     intentionalMentions: IntentionalMentions) async {
+        // We're waiting on an API for including mentions: https://github.com/matrix-org/matrix-rust-sdk/issues/4302
+        MXLog.info("Editing timeline item caption: \(eventOrTransactionID) in \(roomID)")
+        
+        // When formattedCaption is nil, caption will be parsed as markdown and generate the HTML for us.
+        let newContent = createCaptionEdit(caption: message, formattedCaption: html.map { .init(format: .html, body: $0) })
+        switch await activeTimeline.edit(eventOrTransactionID, newContent: newContent) {
+        case .success:
+            MXLog.info("Finished editing caption")
+        case let .failure(error):
+            MXLog.error("Failed editing caption with error: \(error)")
+        }
+    }
+    
+    func removeCaption(_ eventOrTransactionID: EventOrTransactionId) async {
+        // Set a `nil` caption to remove it from the event.
+        let newContent = createCaptionEdit(caption: nil, formattedCaption: nil)
+        switch await activeTimeline.edit(eventOrTransactionID, newContent: newContent) {
+        case .success:
+            MXLog.info("Finished removing caption.")
+        case let .failure(error):
+            MXLog.error("Failed removing caption with error: \(error)")
         }
     }
     
@@ -323,10 +356,6 @@ class RoomTimelineController: RoomTimelineControllerProtocol {
         return nil
     }
     
-    func retryDecryption(for sessionID: String) async {
-        await activeTimeline.retryDecryption(for: sessionID)
-    }
-    
     // MARK: - Private
     
     /// The cancellable used to update the timeline items.
@@ -342,7 +371,7 @@ class RoomTimelineController: RoomTimelineControllerProtocol {
         isSwitchingTimelines = true
         
         // Inform the world that the initial items are loading from the store
-        callbacks.send(.paginationState(.init(backward: .paginating, forward: .paginating)))
+        paginationState = PaginationState(backward: .paginating, forward: .paginating)
         callbacks.send(.isLive(activeTimelineProvider.kind == .live))
         
         updateTimelineItemsCancellable = activeTimelineProvider
@@ -398,7 +427,7 @@ class RoomTimelineController: RoomTimelineControllerProtocol {
         // Check if we need to add anything to the top of the timeline.
         switch paginationState.backward {
         case .timelineEndReached:
-            if timelineKind != .pinned, !roomProxy.isEncryptedOneToOneRoom {
+            if timelineKind != .pinned, !roomProxy.isDirectOneToOneRoom {
                 let timelineStart = TimelineStartRoomTimelineItem(name: roomProxy.infoPublisher.value.displayName)
                 newTimelineItems.insert(timelineStart, at: 0)
             }
@@ -420,13 +449,13 @@ class RoomTimelineController: RoomTimelineControllerProtocol {
         }
         
         callbacks.send(.updatedTimelineItems(timelineItems: newTimelineItems, isSwitchingTimelines: isNewTimeline))
-        callbacks.send(.paginationState(paginationState))
+        self.paginationState = paginationState
     }
     
     private func buildTimelineItem(for itemProxy: TimelineItemProxy) -> RoomTimelineItemProtocol? {
         switch itemProxy {
         case .event(let eventTimelineItem):
-            let timelineItem = timelineItemFactory.buildTimelineItem(for: eventTimelineItem, isDM: roomProxy.isEncryptedOneToOneRoom)
+            let timelineItem = timelineItemFactory.buildTimelineItem(for: eventTimelineItem, isDM: roomProxy.isDirectOneToOneRoom)
                         
             if let messageTimelineItem = timelineItem as? EventBasedMessageTimelineItemProtocol {
                 // Avoid fetching this over and over again as it changes states if it keeps failing to load
@@ -437,11 +466,9 @@ class RoomTimelineController: RoomTimelineControllerProtocol {
             return timelineItem
         case .virtual(let virtualItem, let uniqueID):
             switch virtualItem {
-            case .dayDivider(let timestamp):
+            case .dateDivider(let timestamp):
                 let date = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
-                let dateString = date.formatted(date: .complete, time: .omitted)
-                
-                return SeparatorRoomTimelineItem(id: .virtual(uniqueID: uniqueID), text: dateString)
+                return SeparatorRoomTimelineItem(id: .virtual(uniqueID: uniqueID), timestamp: date)
             case .readMarker:
                 return ReadMarkerRoomTimelineItem(id: .virtual(uniqueID: uniqueID))
             }

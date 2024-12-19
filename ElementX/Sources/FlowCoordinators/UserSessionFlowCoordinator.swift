@@ -5,6 +5,7 @@
 // Please see LICENSE in the repository root for full details.
 //
 
+import AnalyticsEvents
 import AVKit
 import Combine
 import MatrixRustSDK
@@ -201,22 +202,19 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
         case .userProfile(let userID):
             stateMachine.processEvent(.showUserProfileScreen(userID: userID), userInfo: .init(animated: animated))
         case .call(let roomID):
-            Task { await presentCallScreen(roomID: roomID) }
+            Task { await presentCallScreen(roomID: roomID, notifyOtherParticipants: false) }
         case .genericCallLink(let url):
             presentCallScreen(genericCallLink: url)
         case .settings, .chatBackupSettings:
             settingsFlowCoordinator.handleAppRoute(appRoute, animated: animated)
         case .share(let payload):
-            switch payload {
-            case .mediaFile(let roomID, _):
-                if let roomID {
-                    stateMachine.processEvent(.selectRoom(roomID: roomID,
-                                                          via: [],
-                                                          entryPoint: .share(payload)),
-                                              userInfo: .init(animated: animated))
-                } else {
-                    stateMachine.processEvent(.showShareExtensionRoomList(sharePayload: payload), userInfo: .init(animated: animated))
-                }
+            if let roomID = payload.roomID {
+                stateMachine.processEvent(.selectRoom(roomID: roomID,
+                                                      via: [],
+                                                      entryPoint: .share(payload)),
+                                          userInfo: .init(animated: animated))
+            } else {
+                stateMachine.processEvent(.showShareExtensionRoomList(sharePayload: payload), userInfo: .init(animated: animated))
             }
         }
     }
@@ -385,18 +383,25 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
                     timeToDecryptMs = -1
                 }
                 
-                switch info.cause {
-                case .unknown:
-                    analytics.trackError(context: nil, domain: .E2EE, name: .OlmKeysNotSentError, timeToDecryptMillis: timeToDecryptMs)
-                case .unknownDevice:
-                    analytics.trackError(context: nil, domain: .E2EE, name: .ExpectedSentByInsecureDevice, timeToDecryptMillis: timeToDecryptMs)
-                case .unsignedDevice:
-                    analytics.trackError(context: nil, domain: .E2EE, name: .ExpectedSentByInsecureDevice, timeToDecryptMillis: timeToDecryptMs)
-                case .verificationViolation:
-                    analytics.trackError(context: nil, domain: .E2EE, name: .ExpectedVerificationViolation, timeToDecryptMillis: timeToDecryptMs)
-                case .sentBeforeWeJoined:
-                    analytics.trackError(context: nil, domain: .E2EE, name: .ExpectedDueToMembership, timeToDecryptMillis: timeToDecryptMs)
+                let errorName: AnalyticsEvent.Error.Name = switch info.cause {
+                case .unknown: .OlmKeysNotSentError
+                case .unknownDevice, .unsignedDevice: .ExpectedSentByInsecureDevice
+                case .verificationViolation: .ExpectedVerificationViolation
+                case .sentBeforeWeJoined: .ExpectedDueToMembership
+                case .historicalMessageAndBackupIsDisabled, .historicalMessageAndDeviceIsUnverified: .HistoricalMessage
+                case .withheldForUnverifiedOrInsecureDevice: .RoomKeysWithheldForUnverifiedDevice
+                case .withheldBySender: .OlmKeysNotSentError
                 }
+                
+                analytics.trackError(context: nil,
+                                     domain: .E2EE,
+                                     name: errorName,
+                                     timeToDecryptMillis: timeToDecryptMs,
+                                     eventLocalAgeMillis: Int(truncatingIfNeeded: info.eventLocalAgeMillis),
+                                     isFederated: info.ownHomeserver != info.senderHomeserver,
+                                     isMatrixDotOrg: info.ownHomeserver == "matrix.org",
+                                     userTrustsOwnIdentity: info.userTrustsOwnIdentity,
+                                     wasVisibleToUser: nil)
             }
             .store(in: &cancellables)
                 
@@ -582,7 +587,8 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
             
             switch action {
             case .presentCallScreen(let roomProxy):
-                presentCallScreen(roomProxy: roomProxy)
+                // Here we assume that the app is running and the call state is already up to date
+                presentCallScreen(roomProxy: roomProxy, notifyOtherParticipants: !roomProxy.infoPublisher.value.hasRoomCall)
             case .finished:
                 stateMachine.processEvent(.deselectRoom)
             }
@@ -660,22 +666,23 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
         presentCallScreen(configuration: .init(genericCallLink: url))
     }
     
-    private func presentCallScreen(roomID: String) async {
+    private func presentCallScreen(roomID: String, notifyOtherParticipants: Bool) async {
         guard case let .joined(roomProxy) = await userSession.clientProxy.roomForIdentifier(roomID) else {
             return
         }
         
-        presentCallScreen(roomProxy: roomProxy)
+        presentCallScreen(roomProxy: roomProxy, notifyOtherParticipants: notifyOtherParticipants)
     }
     
-    private func presentCallScreen(roomProxy: JoinedRoomProxyProtocol) {
+    private func presentCallScreen(roomProxy: JoinedRoomProxyProtocol, notifyOtherParticipants: Bool) {
         let colorScheme: ColorScheme = appMediator.windowManager.mainWindow.traitCollection.userInterfaceStyle == .light ? .light : .dark
         presentCallScreen(configuration: .init(roomProxy: roomProxy,
                                                clientProxy: userSession.clientProxy,
                                                clientID: InfoPlistReader.main.bundleIdentifier,
                                                elementCallBaseURL: appSettings.elementCallBaseURL,
                                                elementCallBaseURLOverride: appSettings.elementCallBaseURLOverride,
-                                               colorScheme: colorScheme))
+                                               colorScheme: colorScheme,
+                                               notifyOtherParticipants: notifyOtherParticipants))
     }
     
     private var callScreenPictureInPictureController: AVPictureInPictureController?
@@ -902,7 +909,7 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
                 navigationSplitCoordinator.setSheetCoordinator(nil)
                 stateMachine.processEvent(.selectRoom(roomID: roomID, via: [], entryPoint: .room))
             case .startCall(let roomID):
-                Task { await self.presentCallScreen(roomID: roomID) }
+                Task { await self.presentCallScreen(roomID: roomID, notifyOtherParticipants: false) }
             case .dismiss:
                 navigationSplitCoordinator.setSheetCoordinator(nil)
             }
@@ -938,6 +945,8 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
                 let sharePayload = switch sharePayload {
                 case .mediaFile(_, let mediaFile):
                     ShareExtensionPayload.mediaFile(roomID: roomID, mediaFile: mediaFile)
+                case .text(_, let text):
+                    ShareExtensionPayload.text(roomID: roomID, text: text)
                 }
                 
                 navigationSplitCoordinator.setSheetCoordinator(nil)

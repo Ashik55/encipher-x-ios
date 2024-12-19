@@ -43,7 +43,7 @@ enum TimelineViewAction {
     case itemAppeared(itemID: TimelineItemIdentifier)
     case itemDisappeared(itemID: TimelineItemIdentifier)
     
-    case itemTapped(itemID: TimelineItemIdentifier)
+    case mediaTapped(itemID: TimelineItemIdentifier)
     case itemSendInfoTapped(itemID: TimelineItemIdentifier)
     case toggleReaction(key: String, itemID: TimelineItemIdentifier)
     case sendReadReceiptIfNeeded(TimelineItemIdentifier)
@@ -79,25 +79,27 @@ enum TimelineViewAction {
 enum TimelineComposerAction {
     case setMode(mode: ComposerMode)
     case setText(plainText: String, htmlText: String?)
+    case setFocus
     case removeFocus
     case clear
 }
 
 struct TimelineViewState: BindableState {
-    let isPinnedEventsTimeline: Bool
+    let timelineKind: TimelineKind
     var roomID: String
     var members: [String: RoomMemberState] = [:]
     var typingMembers: [String] = []
     var showLoading = false
     var showReadReceipts = false
     var isEncryptedOneToOneRoom = false
-    var timelineViewState: TimelineState // check the doc before changing this
+    var timelineState: TimelineState // check the doc before changing this
 
     var ownUserID: String
     var canCurrentUserRedactOthers = false
     var canCurrentUserRedactSelf = false
     var canCurrentUserPin = false
     var isViewSourceEnabled: Bool
+    var isCreateMediaCaptionsEnabled: Bool
     var hideTimelineMedia: Bool
         
     // The `pinnedEventIDs` are used only to determine if an item is already pinned or not.

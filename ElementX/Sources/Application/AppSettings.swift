@@ -13,6 +13,7 @@ protocol CommonSettingsProtocol {
     var logLevel: TracingConfiguration.LogLevel { get }
     var enableOnlySignedDeviceIsolationMode: Bool { get }
     var hideTimelineMedia: Bool { get }
+    var eventCacheEnabled: Bool { get }
 }
 
 /// Store Element specific app settings.
@@ -27,6 +28,8 @@ final class AppSettings {
         case hasRunNotificationPermissionsOnboarding
         case hasRunIdentityConfirmationOnboarding
         
+        case frequentlyUsedSystemEmojis
+        
         case enableNotifications
         case enableInAppNotifications
         case pusherProfileTag
@@ -39,7 +42,6 @@ final class AppSettings {
         case hideTimelineMedia
         
         case elementCallBaseURLOverride
-        case elementCallEncryptionEnabled
         
         // Feature flags
         case slidingSyncDiscovery
@@ -47,7 +49,9 @@ final class AppSettings {
         case fuzzyRoomListSearchEnabled
         case enableOnlySignedDeviceIsolationMode
         case knockingEnabled
-        case frequentEmojisEnabled
+        case createMediaCaptionsEnabled
+        case mediaBrowserEnabled
+        case eventCacheEnabled
     }
     
     private static var suiteName: String = InfoPlistReader.main.appGroupIdentifier
@@ -229,6 +233,9 @@ final class AppSettings {
     @UserPreference(key: UserDefaultsKeys.hasRunIdentityConfirmationOnboarding, defaultValue: false, storageType: .userDefaults(store))
     var hasRunIdentityConfirmationOnboarding
     
+    @UserPreference(key: UserDefaultsKeys.frequentlyUsedSystemEmojis, defaultValue: [FrequentlyUsedEmoji](), storageType: .userDefaults(store))
+    var frequentlyUsedSystemEmojis
+    
     // MARK: - Home Screen
     
     @UserPreference(key: UserDefaultsKeys.hideUnreadMessagesBadge, defaultValue: false, storageType: .userDefaults(store))
@@ -241,6 +248,10 @@ final class AppSettings {
     
     @UserPreference(key: UserDefaultsKeys.optimizeMediaUploads, defaultValue: true, storageType: .userDefaults(store))
     var optimizeMediaUploads
+    
+    /// Whether or not to show a warning on the media caption composer so the user knows
+    /// that captions might not be visible to users who are using other Matrix clients.
+    let shouldShowMediaCaptionWarning = true
 
     // MARK: - Element Call
     
@@ -269,7 +280,7 @@ final class AppSettings {
     
     // MARK: - Feature Flags
     
-    @UserPreference(key: UserDefaultsKeys.publicSearchEnabled, defaultValue: isDevelopmentBuild, storageType: .volatile)
+    @UserPreference(key: UserDefaultsKeys.publicSearchEnabled, defaultValue: false, storageType: .userDefaults(store))
     var publicSearchEnabled
     
     @UserPreference(key: UserDefaultsKeys.fuzzyRoomListSearchEnabled, defaultValue: false, storageType: .userDefaults(store))
@@ -282,9 +293,12 @@ final class AppSettings {
     @UserPreference(key: UserDefaultsKeys.knockingEnabled, defaultValue: false, storageType: .userDefaults(store))
     var knockingEnabled
     
-    @UserPreference(key: UserDefaultsKeys.frequentEmojisEnabled, defaultValue: isDevelopmentBuild, storageType: .userDefaults(store))
-    var frequentEmojisEnabled
-
+    @UserPreference(key: UserDefaultsKeys.createMediaCaptionsEnabled, defaultValue: false, storageType: .userDefaults(store))
+    var createMediaCaptionsEnabled
+    
+    @UserPreference(key: UserDefaultsKeys.mediaBrowserEnabled, defaultValue: false, storageType: .userDefaults(store))
+    var mediaBrowserEnabled
+    
     #endif
     
     // MARK: - Shared
@@ -298,6 +312,9 @@ final class AppSettings {
     
     @UserPreference(key: UserDefaultsKeys.hideTimelineMedia, defaultValue: false, storageType: .userDefaults(store))
     var hideTimelineMedia
+    
+    @UserPreference(key: UserDefaultsKeys.eventCacheEnabled, defaultValue: false, storageType: .userDefaults(store))
+    var eventCacheEnabled
 }
 
 extension AppSettings: CommonSettingsProtocol { }
