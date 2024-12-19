@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct RoomListFilterView: View {
     let filter: RoomListFilter
     @Binding var isActive: Bool
@@ -42,11 +43,11 @@ struct RoomListFilterView_Previews: PreviewProvider, TestablePreview {
 
 private struct FilterToggleStyle: ToggleStyle {
     private func strokeColor(isOn: Bool) -> Color {
-        isOn ? .compound.bgActionPrimaryRest : .compound.borderInteractiveSecondary
+        isOn ? .encipherPrimaryColor : .compound.borderInteractiveSecondary
     }
     
     private func backgroundColor(isOn: Bool) -> Color {
-        isOn ? .compound.bgActionPrimaryRest : .compound.bgCanvasDefault
+        isOn ? .encipherPrimaryColor : .compound.bgCanvasDefault
     }
     
     private func foregroundColor(isOn: Bool) -> Color {

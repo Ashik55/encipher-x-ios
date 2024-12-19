@@ -45,10 +45,11 @@ struct PlaceholderAvatarImage: View {
 
     private var backgroundColor: Color {
         if redactionReasons.contains(.placeholder) {
-            return Color(.systemGray4) // matches the default text redaction
+            return Color(.systemGray6) // A very light gray, close to off-white// matches the default text redaction
         }
 
-        return avatarColor?.background ?? .compound.iconPrimary
+        return Color(.systemGray6) // A very light gray, close to off-white // matches the default text redaction
+//        return avatarColor?.background ?? .compound.iconPrimary
     }
     
     private var avatarColor: DecorativeColor? {

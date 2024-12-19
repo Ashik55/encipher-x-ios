@@ -10,14 +10,6 @@
       }
     },
     {
-      "identity" : "compound-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/element-hq/compound-ios",
-      "state" : {
-        "revision" : "9325643cb4d22150881c5bf79e1e6e3c5a87ea89"
-      }
-    },
-    {
       "identity" : "devicekit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/devicekit/DeviceKit",
@@ -247,8 +239,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
       "state" : {
-        "revision" : "42a086182681cf661f5c47c9b7dc3931de18c6d7",
-        "version" : "1.17.6"
+        "revision" : "7b0bbbae90c41f848f90ac7b4df6c4f50068256d",
+        "version" : "1.17.5"
       }
     },
     {
