@@ -180,12 +180,10 @@ struct RoomDetailsScreen: View {
                     })
                     .accessibilityIdentifier(A11yIdentifiers.roomDetailsScreen.pollsHistory)
             
-            if context.viewState.mediaBrowserEnabled {
-                ListRow(label: .default(title: L10n.screenMediaBrowserTitle, icon: \.image),
-                        kind: .navigationLink {
-                            context.send(viewAction: .processTapMediaEvents)
-                        })
-            }
+            ListRow(label: .default(title: L10n.screenMediaBrowserTitle, icon: \.image),
+                    kind: .navigationLink {
+                        context.send(viewAction: .processTapMediaEvents)
+                    })
         }
     }
     
@@ -441,13 +439,21 @@ struct RoomDetailsScreen_Previews: PreviewProvider, TestablePreview {
     
     static var previews: some View {
         RoomDetailsScreen(context: simpleRoomViewModel.context)
+            .snapshotPreferences(expect: simpleRoomViewModel.context.$viewState.map { state in
+                state.shortcuts.contains(.invite)
+            })
             .previewDisplayName("Simple Room")
-            .snapshotPreferences(delay: 2)
+        
         RoomDetailsScreen(context: dmRoomViewModel.context)
+            .snapshotPreferences(expect: dmRoomViewModel.context.$viewState.map { state in
+                state.accountOwner != nil
+            })
             .previewDisplayName("DM Room")
-            .snapshotPreferences(delay: 0.25)
+
         RoomDetailsScreen(context: genericRoomViewModel.context)
+            .snapshotPreferences(expect: genericRoomViewModel.context.$viewState.map { state in
+                state.shortcuts.contains(.invite)
+            })
             .previewDisplayName("Generic Room")
-            .snapshotPreferences(delay: 0.25)
     }
 }
