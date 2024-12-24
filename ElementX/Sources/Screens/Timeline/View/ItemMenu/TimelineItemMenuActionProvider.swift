@@ -60,7 +60,7 @@ struct TimelineItemMenuActionProvider {
         }
         
         if item.isRemoteMessage {
-            actions.append(.copyPermalink)
+//            actions.append(.copyPermalink)
         }
         
         if item.isEditable {

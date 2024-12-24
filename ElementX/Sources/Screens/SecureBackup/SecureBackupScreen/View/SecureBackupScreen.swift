@@ -25,6 +25,7 @@ struct SecureBackupScreen: View {
                 if context.viewState.keyBackupState != .unknown {
                     recoveryKeySection
                 }
+//                recoveryKeySection
             }
         }
         .compoundList()

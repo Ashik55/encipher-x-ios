@@ -13,102 +13,35 @@ struct RoomDetailsScreen: View {
     
     @State private var isTopicExpanded = false
     
-//    var body: some View {
-//        ZStack {
-//            // Add a full-screen gradient background
-//            LinearGradient(
-//                gradient: Gradient(colors: [Color(hex: "#C8e3d3"), Color(hex: "#ffffff")]),
-//                startPoint: .topLeading,
-//                endPoint: .bottomTrailing
-//            )
-//            .ignoresSafeArea() // Ensures the gradient spans the entire screen, including behind the toolbar
-//            
-//            Form {
-//                if let recipient = context.viewState.dmRecipient,
-//                   let accountOwner = context.viewState.accountOwner {
-//                    dmHeaderSection(accountOwner: accountOwner,
-//                                    recipient: recipient)
-//                } else {
-//                    normalRoomHeaderSection
-//                }
-//                
-//                topicSection
-//                
-//                configurationSection
-////                aboutSection
-//                securitySection
-//                
-//                if let recipient = context.viewState.dmRecipient {
-//                    ignoreUserSection(user: recipient)
-//                }
-//                
-//                leaveRoomSection
-//            }
-////            .compoundList()
-//            .background(
-//                LinearGradient(
-//                    gradient: Gradient(colors: [Color.blue, Color.purple]),
-//                    startPoint: .top,
-//                    endPoint: .bottom
-//                )
-//                .ignoresSafeArea()
-//            )
-//            
-//            .alert(item: $context.alertInfo)
-//            .alert(item: $context.leaveRoomAlertItem,
-//                   actions: leaveRoomAlertActions,
-//                   message: leaveRoomAlertMessage)
-//            .alert(item: $context.ignoreUserRoomAlertItem,
-//                   actions: blockUserAlertActions,
-//                   message: blockUserAlertMessage)
-//            .toolbar {
-//                ToolbarItem(placement: .navigationBarTrailing) {
-//                    if context.viewState.canEdit {
-//                        Button(L10n.actionEdit) {
-//                            context.send(viewAction: .processTapEdit)
-//                        }
-//                    }
-//                }
-//            }
-//            .navigationTitle(L10n.screenRoomDetailsTitle)
-//            .navigationBarTitleDisplayMode(.inline)
-//            .track(screen: .RoomDetails)
-//            .interactiveQuickLook(item: $context.mediaPreviewItem, allowEditing: false)
-//          
-//                 
-//        }
-//        .toolbarBackground(.clear, for: .navigationBar) // Makes the toolbar background transparent so the gradient is visible
-//    }
+
     
     var body: some View {
-        Form {
-            if let recipient = context.viewState.dmRecipient,
-               let accountOwner = context.viewState.accountOwner {
-                dmHeaderSection(accountOwner: accountOwner,
-                                recipient: recipient)
-            } else {
-                normalRoomHeaderSection
+            // Form content
+            Form {
+                if let recipient = context.viewState.dmRecipient,
+                   let accountOwner = context.viewState.accountOwner {
+                    dmHeaderSection(accountOwner: accountOwner,
+                                    recipient: recipient)
+                } else {
+                    normalRoomHeaderSection
+                }
+
+                topicSection
+
+                configurationSection
+
+                if context.viewState.dmRecipient == nil {
+                    peopleSection
+                }
+
+                securitySection
+
+                if let recipient = context.viewState.dmRecipient {
+                    ignoreUserSection(user: recipient)
+                }
             }
-
-            topicSection
-            
-            configurationSection
-            
-            if context.viewState.dmRecipient == nil {
-                peopleSection
-            }
-
-//            aboutSection
-
-            securitySection
-
-            if let recipient = context.viewState.dmRecipient {
-                ignoreUserSection(user: recipient)
-            }
-            
-//            leaveRoomSection
-        }
-        .compoundList()
+            .compoundList(showGradient: true)  // or false to disable gradient
+        
         .alert(item: $context.alertInfo)
         .alert(item: $context.leaveRoomAlertItem,
                actions: leaveRoomAlertActions,
@@ -126,18 +59,15 @@ struct RoomDetailsScreen: View {
                 }
             }
         }
-      
-        .toolbarBackground(
-                 LinearGradient(
-                     gradient: Gradient(colors: [Color(hex: "#C8e3d3"), Color(hex: "#ffffff")]),
-                     startPoint: .topLeading,
-                     endPoint: .bottomTrailing
-                 ),
-                 for: .navigationBar
-             )
-             .toolbarBackground(.visible, for: .navigationBar)
-    
-
+//        .toolbarBackground(
+//              LinearGradient(
+//                  gradient: Gradient(colors: [Color(hex: "#C8e3d3"), Color(hex: "#ffffff")]),
+//                  startPoint: .topLeading,
+//                  endPoint: .bottomTrailing
+//              ),
+//              for: .navigationBar
+//          )
+//        .toolbarBackground(.visible, for: .navigationBar)
         .navigationTitle(L10n.screenRoomDetailsTitle)
         .navigationBarTitleDisplayMode(.inline)
         .track(screen: .RoomDetails)

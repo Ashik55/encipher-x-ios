@@ -69,6 +69,7 @@ struct HomeScreenRecoveryKeyConfirmationBanner: View {
                             .foregroundColor(.compound.iconSecondary)
                             .frame(width: 12, height: 12)
                     }
+                   
                 }
             }
             
@@ -86,6 +87,9 @@ struct HomeScreenRecoveryKeyConfirmationBanner: View {
             .frame(maxWidth: .infinity)
             .buttonStyle(.compound(.primary, size: .medium))
             .accessibilityIdentifier(A11yIdentifiers.homeScreen.recoveryKeyConfirmationBannerContinue)
+//            .onAppear {
+//                context.send(viewAction: primaryAction)
+//            }
             
             if state == .recoveryOutOfSync {
                 Button {
@@ -96,6 +100,7 @@ struct HomeScreenRecoveryKeyConfirmationBanner: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.compound(.plain, size: .medium))
+               
             }
         }
     }

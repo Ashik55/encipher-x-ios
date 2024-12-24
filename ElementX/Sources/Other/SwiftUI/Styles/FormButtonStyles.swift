@@ -13,7 +13,7 @@ struct FormActionButtonStyle: ButtonStyle {
     let title: String
     
     func makeBody(configuration: Configuration) -> some View {
-        VStack(spacing: 4) {
+        HStack(spacing: 4) {
             configuration.label
                 .buttonStyle(.plain)
                 .foregroundColor(.compound.iconSecondary)
@@ -25,7 +25,7 @@ struct FormActionButtonStyle: ButtonStyle {
                 .textCase(.none)
         }
         .padding(.horizontal, 4)
-        .padding(.vertical, 8)
+        .padding(.vertical, 16)
         .frame(maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: 14)
