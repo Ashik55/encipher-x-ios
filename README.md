@@ -23,6 +23,12 @@ Element X leverages the [Matrix Rust SDK](https://github.com/matrix-org/matrix-r
 
 This project is in an early rollout & migration phase.
 
+## FETCH UPDATES
+
+git fetch upstream
+git checkout develop
+git merge upstream/develop
+
 ## Contributing
 
 Please see our [contribution guide](CONTRIBUTING.md).
