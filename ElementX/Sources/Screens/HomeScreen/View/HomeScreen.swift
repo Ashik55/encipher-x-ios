@@ -30,9 +30,11 @@ struct HomeScreen: View {
                    message: leaveRoomAlertMessage)
             .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
             .toolbar { toolbar }
-            .background {
-                HomeScreenBackgroundImage()
-            }
+            .toolbarBackground(
+                Color(hex: "#C8e3d3"), // Replace with your desired color
+                for: .navigationBar
+            )
+                .toolbarBackground(.visible, for: .navigationBar)
             .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
             .track(screen: .Home)
             .introspect(.viewController, on: .supportedVersions) { controller in
