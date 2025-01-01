@@ -10,8 +10,18 @@ import Compound
 import SwiftUI
 import SwiftUIIntrospect
 
+struct SettingsView: View {
+    var body: some View {
+        List {
+            Text("Settings Content")
+        }
+        .navigationTitle("Settings")
+    }
+}
+
 struct HomeScreen: View {
     @ObservedObject var context: HomeScreenViewModel.Context
+    @ObservedObject var settingsContext: SettingsScreenViewModel.Context
     
     @State private var scrollViewAdapter = ScrollViewAdapter()
     
@@ -22,58 +32,169 @@ struct HomeScreen: View {
     @State private var navigationBarContainer: UIView?
     @State private var hairlineView: UIView?
     
-    var body: some View {
-        HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
-            .alert(item: $context.alertInfo)
-            .alert(item: $context.leaveRoomAlertItem,
-                   actions: leaveRoomAlertActions,
-                   message: leaveRoomAlertMessage)
-            .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
-            .toolbar { toolbar }
-            .toolbarBackground(
-                Color(hex: "#C8e3d3"), // Replace with your desired color
-                for: .navigationBar
-            )
-                .toolbarBackground(.visible, for: .navigationBar)
-            .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
-            .track(screen: .Home)
-            .introspect(.viewController, on: .supportedVersions) { controller in
-                Task {
-                    if bloomView == nil {
-                        makeBloomView(controller: controller)
+    @State private var selectedTab = 0
+    
+    @State private var navigationTitle = "Chat" // Default title for Home tab
+
+        var body: some View {
+            HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
+                .alert(item: $context.alertInfo)
+                .alert(item: $context.leaveRoomAlertItem,
+                       actions: leaveRoomAlertActions,
+                       message: leaveRoomAlertMessage)
+                .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
+                .toolbar { toolbar }
+                .toolbarBackground(
+                    Color(hex: "#C8e3d3"), // Replace with your desired color
+                    for: .navigationBar
+                )
+                    .toolbarBackground(.visible, for: .navigationBar)
+                .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+                .track(screen: .Home)
+                .introspect(.viewController, on: .supportedVersions) { controller in
+                    Task {
+                        if bloomView == nil {
+                            makeBloomView(controller: controller)
+                        }
+                    }
+                    let isTopController = controller.navigationController?.topViewController != controller
+    //                let isHidden = isTopController || context.isSearchFieldFocused
+                    let isHidden = true
+                    if let bloomView {
+                        bloomView.isHidden = isHidden
+                        UIView.transition(with: bloomView, duration: 1.75, options: .curveEaseInOut) {
+                            bloomView.alpha = isTopController ? 0 : 1
+                        }
+                    }
+                    gradientView?.isHidden = isHidden
+                    navigationBarContainer?.clipsToBounds = !isHidden
+                    hairlineView?.isHidden = isHidden || !scrollViewAdapter.isAtTopEdge.value
+                    if !isHidden {
+                        updateBloomCenter()
                     }
                 }
-                let isTopController = controller.navigationController?.topViewController != controller
-//                let isHidden = isTopController || context.isSearchFieldFocused
-                let isHidden = true
-                if let bloomView {
-                    bloomView.isHidden = isHidden
-                    UIView.transition(with: bloomView, duration: 1.75, options: .curveEaseInOut) {
-                        bloomView.alpha = isTopController ? 0 : 1
+                .onReceive(scrollViewAdapter.isAtTopEdge.removeDuplicates()) { value in
+                    hairlineView?.isHidden = !value
+                    guard let gradientView else {
+                        return
+                    }
+                    if value {
+                        UIView.transition(with: gradientView, duration: 0.3, options: .curveEaseIn) {
+                            gradientView.alpha = 0
+                        }
+                    } else {
+                        gradientView.alpha = 1
                     }
                 }
-                gradientView?.isHidden = isHidden
-                navigationBarContainer?.clipsToBounds = !isHidden
-                hairlineView?.isHidden = isHidden || !scrollViewAdapter.isAtTopEdge.value
-                if !isHidden {
-                    updateBloomCenter()
-                }
+                .sentryTrace("\(Self.self)")
+        }
+    
+    
+//    var body: some View {
+//        NavigationView {
+//            TabView(selection: $selectedTab) {
+//                // Home tab
+//                HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
+//                    .onAppear {
+//                        navigationTitle = "Chat" // Set title for Home tab
+//                    }
+//                    .alert(item: $context.alertInfo)
+//                    .alert(item: $context.leaveRoomAlertItem,
+//                           actions: leaveRoomAlertActions,
+//                           message: leaveRoomAlertMessage)
+//                    .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+//                    .track(screen: .Home)
+//                    .introspect(.viewController, on: .supportedVersions) { controller in
+//                        Task {
+//                            if bloomView == nil {
+//                                makeBloomView(controller: controller)
+//                            }
+//                        }
+//                        let isTopController = controller.navigationController?.topViewController != controller
+//                        let isHidden = true
+//                        if let bloomView {
+//                            bloomView.isHidden = isHidden
+//                            UIView.transition(with: bloomView, duration: 1.75, options: .curveEaseInOut) {
+//                                bloomView.alpha = isTopController ? 0 : 1
+//                            }
+//                        }
+//                        gradientView?.isHidden = isHidden
+//                        navigationBarContainer?.clipsToBounds = !isHidden
+//                        hairlineView?.isHidden = isHidden || !scrollViewAdapter.isAtTopEdge.value
+//                        if !isHidden {
+//                            updateBloomCenter()
+//                        }
+//                    }
+//                    .onReceive(scrollViewAdapter.isAtTopEdge.removeDuplicates()) { value in
+//                        hairlineView?.isHidden = !value
+//                        guard let gradientView else {
+//                            return
+//                        }
+//                        if value {
+//                            UIView.transition(with: gradientView, duration: 0.3, options: .curveEaseIn) {
+//                                gradientView.alpha = 0
+//                            }
+//                        } else {
+//                            gradientView.alpha = 1
+//                        }
+//                    }
+//                    .sentryTrace("\(Self.self)")
+//                    .tabItem {
+//                        Image(systemName: "house.fill")
+//                        Text("Home")
+//                    }
+//                    .tag(0)
+//                
+//                // Settings tab
+//                SettingsScreen(context: settingsContext)
+//                    .onAppear {
+//                        navigationTitle = "Settings" // Set title for Settings tab
+//                    }
+//                    .tabItem {
+//                        Image(systemName: "gear")
+//                        Text("Settings")
+//                    }
+//                    .tag(1)
+//            }
+//            .navigationTitle(navigationTitle) // Use the bound navigation title
+////            .toolbar {     // Conditionally show the toolbar only for the Home tab
+////                if selectedTab == 0 {
+////                    toolbar
+////                } }
+////            .toolbarBackground(
+////                Color(hex: "#C8e3d3"),
+////                for: .navigationBar
+////            )
+////            .toolbarBackground(.visible, for: .navigationBar)
+//        }
+//        .accentColor(.encipherPrimaryColor)
+//    }
+    
+    
+    @ToolbarContentBuilder
+    private var toolbar: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarLeading) {
+            Button {
+                context.send(viewAction: .showSettings)
+            } label: {
+                LoadableAvatarImage(url: context.viewState.userAvatarURL,
+                                    name: context.viewState.userDisplayName,
+                                    contentID: context.viewState.userID,
+                                 
+                                    avatarSize: .user(on: .home),
+                                    mediaProvider: context.mediaProvider)
+                    .accessibilityIdentifier(A11yIdentifiers.homeScreen.userAvatar)
+                    .overlayBadge(10, isBadged: context.viewState.requiresExtraAccountSetup)
+                    .compositingGroup()
             }
-            .onReceive(scrollViewAdapter.isAtTopEdge.removeDuplicates()) { value in
-                hairlineView?.isHidden = !value
-                guard let gradientView else {
-                    return
-                }
-                if value {
-                    UIView.transition(with: gradientView, duration: 0.3, options: .curveEaseIn) {
-                        gradientView.alpha = 0
-                    }
-                } else {
-                    gradientView.alpha = 1
-                }
-            }
-            .sentryTrace("\(Self.self)")
+            .accessibilityLabel(L10n.commonSettings)
+        }
+        
+        ToolbarItem(placement: .primaryAction) {
+            newRoomButton
+        }
     }
+    
     
     // MARK: - Private
     
@@ -135,29 +256,7 @@ struct HomeScreen: View {
         bloomView.center = center
     }
     
-    @ToolbarContentBuilder
-    private var toolbar: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarLeading) {
-            Button {
-                context.send(viewAction: .showSettings)
-            } label: {
-                LoadableAvatarImage(url: context.viewState.userAvatarURL,
-                                    name: context.viewState.userDisplayName,
-                                    contentID: context.viewState.userID,
-                                    avatarSize: .user(on: .home),
-                                    mediaProvider: context.mediaProvider)
-                    .accessibilityIdentifier(A11yIdentifiers.homeScreen.userAvatar)
-                    .overlayBadge(10, isBadged: context.viewState.requiresExtraAccountSetup)
-                    .compositingGroup()
-            }
-            .accessibilityLabel(L10n.commonSettings)
-        }
-        
-        ToolbarItem(placement: .primaryAction) {
-            newRoomButton
-        }
-    }
-    
+  
     private var bloom: some View {
         BloomView(context: context)
     }
@@ -194,60 +293,60 @@ struct HomeScreen: View {
     }
 }
 
-// MARK: - Previews
-
-struct HomeScreen_Previews: PreviewProvider, TestablePreview {
-    static let loadingViewModel = viewModel(.skeletons)
-    static let emptyViewModel = viewModel(.empty)
-    static let loadedViewModel = viewModel(.rooms)
-    
-    static var previews: some View {
-        NavigationStack {
-            HomeScreen(context: loadingViewModel.context)
-        }
-        .snapshotPreferences(expect: loadedViewModel.context.$viewState.map { state in
-            state.roomListMode == .skeletons
-        })
-        .previewDisplayName("Loading")
-        
-        NavigationStack {
-            HomeScreen(context: emptyViewModel.context)
-        }
-        .snapshotPreferences(expect: emptyViewModel.context.$viewState.map { state in
-            state.roomListMode == .empty
-        })
-        .previewDisplayName("Empty")
-        
-        NavigationStack {
-            HomeScreen(context: loadedViewModel.context)
-        }
-        .snapshotPreferences(expect: loadedViewModel.context.$viewState.map { state in
-            state.roomListMode == .rooms
-        })
-        .previewDisplayName("Loaded")
-    }
-    
-    static func viewModel(_ mode: HomeScreenRoomListMode) -> HomeScreenViewModel {
-        let userID = "@alice:example.com"
-        
-        let roomSummaryProviderState: RoomSummaryProviderMockConfigurationState = switch mode {
-        case .skeletons:
-            .loading
-        case .empty:
-            .loaded([])
-        case .rooms:
-            .loaded(.mockRooms)
-        }
-        
-        let clientProxy = ClientProxyMock(.init(userID: userID,
-                                                roomSummaryProvider: RoomSummaryProviderMock(.init(state: roomSummaryProviderState))))
-        
-        let userSession = UserSessionMock(.init(clientProxy: clientProxy))
-        
-        return HomeScreenViewModel(userSession: userSession,
-                                   analyticsService: ServiceLocator.shared.analytics,
-                                   appSettings: ServiceLocator.shared.settings,
-                                   selectedRoomPublisher: CurrentValueSubject<String?, Never>(nil).asCurrentValuePublisher(),
-                                   userIndicatorController: ServiceLocator.shared.userIndicatorController)
-    }
-}
+//// MARK: - Previews
+//
+//struct HomeScreen_Previews: PreviewProvider, TestablePreview {
+//    static let loadingViewModel = viewModel(.skeletons)
+//    static let emptyViewModel = viewModel(.empty)
+//    static let loadedViewModel = viewModel(.rooms)
+//    
+//    static var previews: some View {
+//        NavigationStack {
+//            HomeScreen(context: loadingViewModel.context, settingsContext: loadingViewModel.context)
+//        }
+//        .snapshotPreferences(expect: loadedViewModel.context.$viewState.map { state in
+//            state.roomListMode == .skeletons
+//        })
+//        .previewDisplayName("Loading")
+//        
+//        NavigationStack {
+//            HomeScreen(context: emptyViewModel.context)
+//        }
+//        .snapshotPreferences(expect: emptyViewModel.context.$viewState.map { state in
+//            state.roomListMode == .empty
+//        })
+//        .previewDisplayName("Empty")
+//        
+//        NavigationStack {
+//            HomeScreen(context: loadedViewModel.context)
+//        }
+//        .snapshotPreferences(expect: loadedViewModel.context.$viewState.map { state in
+//            state.roomListMode == .rooms
+//        })
+//        .previewDisplayName("Loaded")
+//    }
+//    
+//    static func viewModel(_ mode: HomeScreenRoomListMode) -> HomeScreenViewModel {
+//        let userID = "@alice:example.com"
+//        
+//        let roomSummaryProviderState: RoomSummaryProviderMockConfigurationState = switch mode {
+//        case .skeletons:
+//            .loading
+//        case .empty:
+//            .loaded([])
+//        case .rooms:
+//            .loaded(.mockRooms)
+//        }
+//        
+//        let clientProxy = ClientProxyMock(.init(userID: userID,
+//                                                roomSummaryProvider: RoomSummaryProviderMock(.init(state: roomSummaryProviderState))))
+//        
+//        let userSession = UserSessionMock(.init(clientProxy: clientProxy))
+//        
+//        return HomeScreenViewModel(userSession: userSession,
+//                                   analyticsService: ServiceLocator.shared.analytics,
+//                                   appSettings: ServiceLocator.shared.settings,
+//                                   selectedRoomPublisher: CurrentValueSubject<String?, Never>(nil).asCurrentValuePublisher(),
+//                                   userIndicatorController: ServiceLocator.shared.userIndicatorController)
+//    }
+//}

@@ -9,6 +9,7 @@ import AVKit
 import CallKit
 import Combine
 import SwiftUI
+import Foundation
 
 typealias CallScreenViewModelType = StateStoreViewModel<CallScreenViewState, CallScreenViewAction>
 
@@ -30,10 +31,12 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
     ///   - roomProxy: The room in which the call should be created
     ///   - callBaseURL: Which Element Call instance should be used
     ///   - clientID: Something to identify the current client on the Element Call side
+    
     init(elementCallService: ElementCallServiceProtocol,
          configuration: ElementCallConfiguration,
          allowPictureInPicture: Bool,
          appHooks: AppHooks) {
+        
         self.elementCallService = elementCallService
         self.configuration = configuration
         isPictureInPictureAllowed = allowPictureInPicture
@@ -41,7 +44,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
         switch configuration.kind {
         case .genericCallLink(let url):
             widgetDriver = GenericCallLinkWidgetDriver(url: url)
-        case .roomCall(let roomProxy, let clientProxy, _, _, _, _, _):
+        case .roomCall(let roomProxy, let clientProxy, _, _, _, _, _,_):
             guard let deviceID = clientProxy.deviceID else { fatalError("Missing device ID for the call.") }
             widgetDriver = roomProxy.elementCallWidgetDriver(deviceID: deviceID)
         }
@@ -67,6 +70,8 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                         return
                     }
                     
+                    
+                    print(" elementCallService.actions audio==>\(enabled)")
                     Task {
                         await self.setAudioEnabled(enabled)
                     }
@@ -80,6 +85,9 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
             .receive(on: DispatchQueue.main)
             .sink { [weak self] receivedMessage in
                 guard let self else { return }
+                
+                
+//                print("widgetDriver.messagePublisher==>\(receivedMessage)")
                 
                 Task {
                     await self.postJSONToWidget(receivedMessage)
@@ -95,7 +103,8 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                 switch action {
                 case .callEnded:
                     actionsSubject.send(.dismiss)
-                case .mediaStateChanged(let audioEnabled, _):
+                case .mediaStateChanged(let audioEnabled, let videoEnabled):
+                    print("mediaStateChanged Triggered==>\(audioEnabled) \(videoEnabled)")
                     elementCallService.setAudioEnabled(audioEnabled, roomID: configuration.callRoomID)
                 }
             }
@@ -108,8 +117,9 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
         switch viewAction {
         case .urlChanged(let url):
             guard let url else { return }
-            MXLog.info("URL changed to: \(url)")
+            print("URL changed to==>>>> \(url)")
         case .pictureInPictureIsAvailable(let controller):
+            MXLog.info("pictureInPictureIsAvailable==>")
             actionsSubject.send(.pictureInPictureIsAvailable(controller))
         case .navigateBack:
             Task { await handleBackwardsNavigation() }
@@ -131,12 +141,16 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
     // MARK: - Private
     
     private func setupCall() {
+        
+        print("setupCall Running==>")
+
+        
         switch configuration.kind {
         case .genericCallLink(let url):
             state.url = url
             // We need widget messaging to work before enabling CallKit, otherwise mute, hangup etc do nothing.
             
-        case .roomCall(let roomProxy, let clientProxy, let clientID, let elementCallBaseURL, let elementCallBaseURLOverride, let colorScheme, let notifyOtherParticipants):
+        case .roomCall(let roomProxy, let clientProxy, let clientID, let elementCallBaseURL, let elementCallBaseURLOverride, let colorScheme, let notifyOtherParticipants, let audioCall):
             Task { [weak self] in
                 guard let self else { return }
                 
@@ -163,13 +177,37 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                 
                 await elementCallService.setupCallSession(roomID: roomProxy.id,
                                                           roomDisplayName: roomProxy.infoPublisher.value.displayName ?? roomProxy.id)
-                
+            
                 if notifyOtherParticipants {
                     _ = await roomProxy.sendCallNotificationIfNeeded()
                 }
+                
+                
+                try? await Task.sleep(nanoseconds: 4 * 1_000_000_000) // 5 seconds
+                
+                print("Is AudioCall==>\(audioCall)")
+                if(audioCall){
+                    await setAudioEnabled(true)
+                    try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
+                    await setAudioEnabled(true)
+                }
+                else{
+                    await setAudioVideoEnabled(enabled: true)
+                    try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
+                    await setAudioVideoEnabled(enabled: true)
+                    
+                }
+              
+         
+    
+           
             }
         }
     }
+    
+    
+    
+    
     
     private func handleBackwardsNavigation() async {
         guard state.url != nil,
@@ -181,13 +219,24 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
         
         switch await requestPictureInPictureHandler() {
         case .success:
+            print("pictureInPictureStarted==>> requestPictureInPictureHandler")
             actionsSubject.send(.pictureInPictureStarted)
         case .failure:
             actionsSubject.send(.dismiss)
         }
     }
     
+    private func setAudioVideoEnabled(enabled: Bool) async {
+        print("setAudioVideoEnabled==> \(enabled)")
+        let message = ElementCallWidgetMessage(direction: .toWidget,
+                                               action: .mediaState,
+                                               data: .init(audioEnabled: enabled, videoEnabled: enabled),
+                                               widgetId: widgetDriver.widgetID)
+        await postMessageToWidget(message)
+    }
+    
     private func setAudioEnabled(_ enabled: Bool) async {
+        print("setAudioEnabled VM postMessageToWidget==> \(enabled)")
         let message = ElementCallWidgetMessage(direction: .toWidget,
                                                action: .mediaState,
                                                data: .init(audioEnabled: enabled),
@@ -221,6 +270,8 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
     }
     
     private func postJSONToWidget(_ json: String) async {
+        
+//        print("postJSONToWidget==>: \(json)")
         do {
             let message = "postMessage(\(json), '*')"
             let result = try await state.bindings.javaScriptEvaluator?(message)

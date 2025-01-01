@@ -98,6 +98,7 @@ class RoomScreenViewModel: RoomScreenViewModelType, RoomScreenViewModelProtocol 
             actionsSubject.send(.displayCall)
             actionsSubject.send(.removeComposerFocus)
             analyticsService.trackInteraction(name: .MobileRoomCallButton)
+            
         case .footerViewAction(let action):
             switch action {
             case .resolvePinViolation(let userID):
@@ -109,6 +110,14 @@ class RoomScreenViewModel: RoomScreenViewModelType, RoomScreenViewModelProtocol 
             Task { await markAllKnocksAsSeen() }
         case .viewKnockRequests:
             actionsSubject.send(.displayKnockRequests)
+        case .displayAudioCall:
+            actionsSubject.send(.displayAudioCall)
+            actionsSubject.send(.removeComposerFocus)
+            analyticsService.trackInteraction(name: .MobileRoomCallButton)
+        case .displayVideoCall:
+            actionsSubject.send(.displayVideoCall)
+            actionsSubject.send(.removeComposerFocus)
+            analyticsService.trackInteraction(name: .MobileRoomCallButton)
         }
     }
     

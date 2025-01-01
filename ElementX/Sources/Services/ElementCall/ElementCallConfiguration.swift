@@ -22,7 +22,10 @@ struct ElementCallConfiguration {
                       elementCallBaseURL: URL,
                       elementCallBaseURLOverride: URL?,
                       colorScheme: ColorScheme,
-                      notifyOtherParticipants: Bool)
+                      notifyOtherParticipants: Bool,
+                      isAudioCall: Bool
+        
+        )
     }
     
     /// The type of call being configured i.e. whether it's an external URL or an internal room call.
@@ -60,23 +63,37 @@ struct ElementCallConfiguration {
          elementCallBaseURL: URL,
          elementCallBaseURLOverride: URL?,
          colorScheme: ColorScheme,
-         notifyOtherParticipants: Bool) {
+         notifyOtherParticipants: Bool,
+         isAudioCall: Bool
+    
+    ) {
         kind = .roomCall(roomProxy: roomProxy,
                          clientProxy: clientProxy,
                          clientID: clientID,
                          elementCallBaseURL: elementCallBaseURL,
                          elementCallBaseURLOverride: elementCallBaseURLOverride,
                          colorScheme: colorScheme,
-                         notifyOtherParticipants: notifyOtherParticipants)
+                         notifyOtherParticipants: notifyOtherParticipants,
+                         isAudioCall:isAudioCall)
     }
+    
+//    /// A string representing the call being configured.
+//    var callRoomID: String {
+//        switch kind {
+//        case .genericCallLink(let url):
+//            url.absoluteString
+//        case .roomCall(let roomProxy, _, _, _, _, _, _):
+//            roomProxy.id
+//        }
+//    }
     
     /// A string representing the call being configured.
     var callRoomID: String {
         switch kind {
         case .genericCallLink(let url):
-            url.absoluteString
-        case .roomCall(let roomProxy, _, _, _, _, _, _):
-            roomProxy.id
+            return url.absoluteString // explicitly return the URL's string representation
+        case .roomCall(let roomProxy, _, _, _, _, _, _,_):
+            return roomProxy.id // explicitly return the roomProxy's id
         }
     }
 }

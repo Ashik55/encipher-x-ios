@@ -10,20 +10,24 @@ import SwiftState
 import SwiftUI
 import UserNotifications
 
+struct CallRoomProxy {
+    let roomProxy: JoinedRoomProxyProtocol
+    let audioCall: Bool?
+}
+
 enum RoomFlowCoordinatorAction: Equatable {
-    case presentCallScreen(roomProxy: JoinedRoomProxyProtocol)
+    case presentCallScreen(callRoomProxy: CallRoomProxy)
     case finished
-    
-    static func == (lhs: RoomFlowCoordinatorAction, rhs: RoomFlowCoordinatorAction) -> Bool {
-        switch (lhs, rhs) {
-        case (.presentCallScreen(let lhsRoomProxy), .presentCallScreen(let rhsRoomProxy)):
-            lhsRoomProxy.id == rhsRoomProxy.id
-        case (.finished, .finished):
-            true
-        default:
-            false
-        }
-    }
+       static func == (lhs: RoomFlowCoordinatorAction, rhs: RoomFlowCoordinatorAction) -> Bool {
+           switch (lhs, rhs) {
+           case (.presentCallScreen(let lhsCallRoomProxy), .presentCallScreen(let rhsCallRoomProxy)):
+               return lhsCallRoomProxy.roomProxy.id == rhsCallRoomProxy.roomProxy.id
+           case (.finished, .finished):
+               return true
+           default:
+               return false
+           }
+       }
 }
 
 /// A value that represents where the room flow will be started.
@@ -219,11 +223,16 @@ class RoomFlowCoordinator: FlowCoordinatorProtocol {
     }
     
     private func presentCallScreen(roomID: String) async {
+        
+        print("presentCallScreen func invoked, Room ID==>> \(roomID)")
+        
         guard case let .joined(roomProxy) = await userSession.clientProxy.roomForIdentifier(roomID) else {
             return
         }
         
-        actionsSubject.send(.presentCallScreen(roomProxy: roomProxy))
+        let callRoomProxy = CallRoomProxy(roomProxy: roomProxy, audioCall: nil)
+         actionsSubject.send(.presentCallScreen(callRoomProxy: callRoomProxy))
+//        actionsSubject.send(.presentCallScreen(roomProxy: roomProxy))
     }
     
     private func handleRoomRoute(roomID: String, via: [String], presentationAction: PresentationAction? = nil, animated: Bool) async {
@@ -736,13 +745,23 @@ class RoomFlowCoordinator: FlowCoordinatorProtocol {
                 case .presentMessageForwarding(let forwardingItem):
                     stateMachine.tryEvent(.presentMessageForwarding(forwardingItem: forwardingItem))
                 case .presentCallScreen:
-                    actionsSubject.send(.presentCallScreen(roomProxy: roomProxy))
+                    let callRoomProxy = CallRoomProxy(roomProxy: roomProxy, audioCall: false) // Or use `nil` if no audio call is needed
+                    actionsSubject.send(.presentCallScreen(callRoomProxy: callRoomProxy))
                 case .presentPinnedEventsTimeline:
                     stateMachine.tryEvent(.presentPinnedEventsTimeline)
                 case .presentResolveSendFailure(failure: let failure, sendHandle: let sendHandle):
                     stateMachine.tryEvent(.presentResolveSendFailure(failure: failure, sendHandle: sendHandle))
                 case .presentKnockRequestsList:
                     stateMachine.tryEvent(.presentKnockRequestsListScreen)
+                    
+                case .presentAudioCallScreen:
+                    let callRoomProxy = CallRoomProxy(roomProxy: roomProxy, audioCall: true) // Or use `nil` if no audio call is needed
+                    actionsSubject.send(.presentCallScreen(callRoomProxy: callRoomProxy))
+
+                case .presentVideoCallScreen:
+                    let callRoomProxy = CallRoomProxy(roomProxy: roomProxy, audioCall: false) // Or use `nil` if no audio call is needed
+                    actionsSubject.send(.presentCallScreen(callRoomProxy: callRoomProxy))
+                    
                 }
             }
             .store(in: &cancellables)
@@ -852,7 +871,9 @@ class RoomFlowCoordinator: FlowCoordinatorProtocol {
             case .presentRolesAndPermissionsScreen:
                 stateMachine.tryEvent(.presentRolesAndPermissionsScreen)
             case .presentCall:
-                actionsSubject.send(.presentCallScreen(roomProxy: roomProxy))
+                let callRoomProxy = CallRoomProxy(roomProxy: roomProxy, audioCall: false) // Or use `nil` if no audio call is needed
+                actionsSubject.send(.presentCallScreen(callRoomProxy: callRoomProxy))
+//                actionsSubject.send(.presentCallScreen(roomProxy: roomProxy))
             case .presentPinnedEventsTimeline:
                 stateMachine.tryEvent(.presentPinnedEventsTimeline)
             case .presentKnockingRequestsListScreen:
@@ -1504,7 +1525,10 @@ class RoomFlowCoordinator: FlowCoordinatorProtocol {
             
             switch action {
             case .presentCallScreen(let roomProxy):
-                actionsSubject.send(.presentCallScreen(roomProxy: roomProxy))
+           
+                let callRoomProxy = CallRoomProxy(roomProxy: roomProxy as! JoinedRoomProxyProtocol, audioCall: false)
+                actionsSubject.send(.presentCallScreen(callRoomProxy: callRoomProxy))
+//                actionsSubject.send(.presentCallScreen(roomProxy: roomProxy))
             case .finished:
                 stateMachine.tryEvent(.dismissChildFlow)
             }

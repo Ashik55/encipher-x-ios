@@ -257,7 +257,7 @@ struct RoomScreen: View {
             
             HStack(spacing: 22) { // Adjust spacing as needed
                    Button {
-                       roomContext.send(viewAction: .displayCall)
+                       roomContext.send(viewAction: .displayAudioCall)
                    } label: {
                        
                        Image(asset: ImageAsset(name: "call"))

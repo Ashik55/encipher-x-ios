@@ -31,7 +31,7 @@ enum SettingsScreenCoordinatorAction {
 }
 
 final class SettingsScreenCoordinator: CoordinatorProtocol {
-    private var viewModel: SettingsScreenViewModelProtocol
+    public var viewModel: SettingsScreenViewModelProtocol
     
     private let actionsSubject: PassthroughSubject<SettingsScreenCoordinatorAction, Never> = .init()
     var actions: AnyPublisher<SettingsScreenCoordinatorAction, Never> {
@@ -39,6 +39,8 @@ final class SettingsScreenCoordinator: CoordinatorProtocol {
     }
     
     private var cancellables = Set<AnyCancellable>()
+    
+    
     
     // MARK: - Setup
     

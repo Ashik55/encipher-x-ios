@@ -13,6 +13,8 @@ enum RoomScreenViewModelAction: Equatable {
     case displayPinnedEventsTimeline
     case displayRoomDetails
     case displayCall
+    case displayAudioCall
+    case displayVideoCall
     case removeComposerFocus
     case displayKnockRequests
 }
@@ -22,6 +24,8 @@ enum RoomScreenViewAction {
     case viewAllPins
     case displayRoomDetails
     case displayCall
+    case displayAudioCall
+    case displayVideoCall
     case footerViewAction(RoomScreenFooterViewAction)
     case acceptKnock(eventID: String)
     case dismissKnockRequests

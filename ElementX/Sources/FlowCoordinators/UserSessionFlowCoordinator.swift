@@ -467,10 +467,22 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
     }
     
     private func presentHomeScreen() {
-        let parameters = HomeScreenCoordinatorParameters(userSession: userSession,
-                                                         bugReportService: bugReportService,
-                                                         selectedRoomPublisher: selectedRoomSubject.asCurrentValuePublisher())
-        let coordinator = HomeScreenCoordinator(parameters: parameters)
+        // Initialize an instance of SettingsScreenCoordinator
+            let settingsParameters = SettingsScreenCoordinatorParameters(
+                userSession: userSession,
+                appSettings: ServiceLocator.shared.settings
+            )
+            let settingsScreenCoordinator = SettingsScreenCoordinator(parameters: settingsParameters)
+
+            // Create HomeScreenCoordinatorParameters with the instance
+            let parameters = HomeScreenCoordinatorParameters(
+                userSession: userSession,
+                bugReportService: bugReportService,
+                selectedRoomPublisher: selectedRoomSubject.asCurrentValuePublisher(),
+                settingsScreenCoordinator: settingsScreenCoordinator // Pass the instance
+            )
+            let coordinator = HomeScreenCoordinator(parameters: parameters)
+        
         
         coordinator.actions
             .sink { [weak self] action in
@@ -586,9 +598,12 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
             guard let self else { return }
             
             switch action {
-            case .presentCallScreen(let roomProxy):
+            case .presentCallScreen(let callRoomProxy):
                 // Here we assume that the app is running and the call state is already up to date
-                presentCallScreen(roomProxy: roomProxy, notifyOtherParticipants: !roomProxy.infoPublisher.value.hasRoomCall)
+                presentCallScreen(roomProxy: callRoomProxy.roomProxy, notifyOtherParticipants: !callRoomProxy.roomProxy.infoPublisher.value.hasRoomCall, isAudioCall: callRoomProxy.audioCall ?? false)
+                
+                
+                
             case .finished:
                 stateMachine.processEvent(.deselectRoom)
             }
@@ -674,7 +689,7 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
         presentCallScreen(roomProxy: roomProxy, notifyOtherParticipants: notifyOtherParticipants)
     }
     
-    private func presentCallScreen(roomProxy: JoinedRoomProxyProtocol, notifyOtherParticipants: Bool) {
+    private func presentCallScreen(roomProxy: JoinedRoomProxyProtocol, notifyOtherParticipants: Bool, isAudioCall: Bool = false) {
         let colorScheme: ColorScheme = appMediator.windowManager.mainWindow.traitCollection.userInterfaceStyle == .light ? .light : .dark
         presentCallScreen(configuration: .init(roomProxy: roomProxy,
                                                clientProxy: userSession.clientProxy,
@@ -682,20 +697,41 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
                                                elementCallBaseURL: appSettings.elementCallBaseURL,
                                                elementCallBaseURLOverride: appSettings.elementCallBaseURLOverride,
                                                colorScheme: colorScheme,
-                                               notifyOtherParticipants: notifyOtherParticipants))
+                                               notifyOtherParticipants: notifyOtherParticipants,
+                                               isAudioCall: isAudioCall))
     }
     
     private var callScreenPictureInPictureController: AVPictureInPictureController?
+    
+    
     private func presentCallScreen(configuration: ElementCallConfiguration) {
+        
+    print("presentCallScreen called callScreenCoordinator init running ==>")
+        print(configuration)
+        
+        
         guard elementCallService.ongoingCallRoomIDPublisher.value != configuration.callRoomID else {
             MXLog.info("Returning to existing call.")
             callScreenPictureInPictureController?.stopPictureInPicture()
             return
         }
         
+        
+        // Extract isAudioCall and other necessary properties from the configuration
+        var isAudioCall: Bool = false
+        switch configuration.kind {
+        case .genericCallLink:
+            isAudioCall = false // Default for generic calls
+        case .roomCall(_, _, _, _, _, _, _, let audioCall):
+            isAudioCall = audioCall
+        }
+
+        print("isAudioCall==> \(isAudioCall)")
+        
         let callScreenCoordinator = CallScreenCoordinator(parameters: .init(elementCallService: elementCallService,
                                                                             configuration: configuration,
                                                                             allowPictureInPicture: true,
+//                                                                            allowPictureInPicture: !isAudioCall,
                                                                             appHooks: appHooks))
         
         callScreenCoordinator.actions
@@ -705,6 +741,7 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
                 case .pictureInPictureIsAvailable(let controller):
                     callScreenPictureInPictureController = controller
                 case .pictureInPictureStarted:
+                    print("pictureInPictureStarted==>>")
                     MXLog.info("Hiding call for PiP presentation.")
                     navigationSplitCoordinator.setOverlayPresentationMode(.minimized)
                 case .pictureInPictureStopped:

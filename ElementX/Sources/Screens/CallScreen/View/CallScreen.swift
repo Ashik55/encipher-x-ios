@@ -303,7 +303,7 @@ struct CallScreen_Previews: PreviewProvider {
                                                         elementCallBaseURL: "https://call.element.io",
                                                         elementCallBaseURLOverride: nil,
                                                         colorScheme: .light,
-                                                        notifyOtherParticipants: false),
+                                                        notifyOtherParticipants: false, isAudioCall: false),
                                    allowPictureInPicture: false,
                                    appHooks: AppHooks())
     }()

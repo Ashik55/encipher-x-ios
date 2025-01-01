@@ -12,6 +12,7 @@ struct HomeScreenCoordinatorParameters {
     let userSession: UserSessionProtocol
     let bugReportService: BugReportServiceProtocol
     let selectedRoomPublisher: CurrentValuePublisher<String?, Never>
+    let settingsScreenCoordinator: SettingsScreenCoordinator
 }
 
 enum HomeScreenCoordinatorAction {
@@ -32,6 +33,7 @@ enum HomeScreenCoordinatorAction {
 
 final class HomeScreenCoordinator: CoordinatorProtocol {
     private var viewModel: HomeScreenViewModelProtocol
+
     // periphery:ignore - only used in release builds
     private let bugReportService: BugReportServiceProtocol
     
@@ -42,6 +44,10 @@ final class HomeScreenCoordinator: CoordinatorProtocol {
         actionsSubject.eraseToAnyPublisher()
     }
     
+    
+    private let settingsScreenCoordinator: SettingsScreenCoordinator
+
+    
     init(parameters: HomeScreenCoordinatorParameters) {
         viewModel = HomeScreenViewModel(userSession: parameters.userSession,
                                         analyticsService: ServiceLocator.shared.analytics,
@@ -49,6 +55,11 @@ final class HomeScreenCoordinator: CoordinatorProtocol {
                                         selectedRoomPublisher: parameters.selectedRoomPublisher,
                                         userIndicatorController: ServiceLocator.shared.userIndicatorController)
         bugReportService = parameters.bugReportService
+        
+        
+        self.settingsScreenCoordinator = parameters.settingsScreenCoordinator
+     
+        
         
         viewModel.actions
             .sink { [weak self] action in
@@ -97,6 +108,6 @@ final class HomeScreenCoordinator: CoordinatorProtocol {
     }
     
     func toPresentable() -> AnyView {
-        AnyView(HomeScreen(context: viewModel.context))
+        AnyView(HomeScreen(context: viewModel.context, settingsContext: settingsScreenCoordinator.viewModel.context))
     }
 }
