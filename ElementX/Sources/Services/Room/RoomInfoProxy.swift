@@ -38,7 +38,7 @@ struct RoomInfoProxy: BaseRoomInfoProxyProtocol {
             }
         }
         
-        return .room(id: id, name: displayName, avatarURL: avatarURL)
+        return .room(id: id, name: displayName, avatarURL: avatarURL, isDirect: isDirect)
     }
 
     var isDirect: Bool { roomInfo.isDirect }
@@ -89,6 +89,6 @@ struct RoomPreviewInfoProxy: BaseRoomInfoProxyProtocol {
             }
         }
         
-        return .room(id: id, name: displayName, avatarURL: avatarURL)
+        return .room(id: id, name: displayName, avatarURL: avatarURL, isDirect: isDirect)
     }
 }

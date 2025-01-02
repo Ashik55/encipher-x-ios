@@ -208,7 +208,7 @@ struct HomeScreenRoom: Identifiable, Equatable {
                        isFavourite: false,
                        timestamp: "Now",
                        lastMessage: placeholderLastMessage,
-                       avatar: .room(id: "", name: "", avatarURL: nil),
+                       avatar: .room(id: "", name: "", avatarURL: nil, isDirect: nil),
                        canonicalAlias: nil)
     }
 }

@@ -121,7 +121,7 @@ class JoinRoomScreenViewModel: JoinRoomScreenViewModelType, JoinRoomScreenViewMo
         state.roomDetails = JoinRoomScreenRoomDetails(name: name,
                                                       topic: roomPreviewInfo?.topic ?? roomPreviewDetails?.topic,
                                                       canonicalAlias: roomPreviewInfo?.canonicalAlias ?? roomPreviewDetails?.canonicalAlias,
-                                                      avatar: roomPreviewInfo?.avatar ?? .room(id: roomID, name: name ?? "", avatarURL: roomPreviewDetails?.avatarURL),
+                                                      avatar: roomPreviewInfo?.avatar ?? .room(id: roomID, name: name ?? "", avatarURL: roomPreviewDetails?.avatarURL, isDirect: roomPreviewInfo?.isDirect ),
                                                       memberCount: UInt(roomPreviewInfo?.activeMembersCount ?? Int(roomPreviewDetails?.memberCount ?? 0)),
                                                       inviter: inviter)
         

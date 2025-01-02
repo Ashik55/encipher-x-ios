@@ -61,6 +61,57 @@ struct PlaceholderAvatarImage: View {
     }
 }
 
+
+struct RoomPlaceholderAvatarImage: View {
+    @Environment(\.redactionReasons) private var redactionReasons
+
+    private let textForImage: String
+    private let contentID: String?
+    private let isDirect: Bool?
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .center) {
+                backgroundColor
+                
+                // This text's frame doesn't look right when redacted
+                if redactionReasons != .placeholder {
+                    Image(asset:  ImageAsset(name: (isDirect ?? true) ? "user":"group"))
+                        .resizable()
+                        .scaledToFit()
+                           .frame(width: geometry.size.width * 0.5625, height: geometry.size.width * 0.5625, alignment: .center)  // Adjust
+                }
+            }
+        }
+        .aspectRatio(1, contentMode: .fill)
+    }
+
+    init(name: String?, contentID: String?,isDirect:Bool? = true) {
+        let baseName = name ?? contentID?.trimmingCharacters(in: .punctuationCharacters)
+        textForImage = baseName?.first?.uppercased() ?? ""
+        self.contentID = contentID
+        self.isDirect = isDirect
+        
+        print("isDirect==>\(String(describing: isDirect))")
+    }
+
+    private var backgroundColor: Color {
+        if redactionReasons.contains(.placeholder) {
+            return Color(.systemGray6) // A very light gray, close to off-white// matches the default text redaction
+        }
+
+        return Color(.systemGray6) // A very light gray, close to off-white // matches the
+    }
+    
+    private var avatarColor: DecorativeColor? {
+        guard let contentID else {
+            return nil
+        }
+        
+        return Color.compound.decorativeColor(for: contentID)
+    }
+}
+
 struct PlaceholderAvatarImage_Previews: PreviewProvider, TestablePreview {
     static var previews: some View {
         VStack(spacing: 75) {

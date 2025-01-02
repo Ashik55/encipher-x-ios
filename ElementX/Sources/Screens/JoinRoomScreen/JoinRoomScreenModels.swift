@@ -54,7 +54,7 @@ struct JoinRoomScreenViewState: BindableState {
     }
     
     var avatar: RoomAvatar {
-        roomDetails?.avatar ?? .room(id: roomID, name: title, avatarURL: nil)
+        roomDetails?.avatar ?? .room(id: roomID, name: title, avatarURL: nil,isDirect: nil)
     }
 }
 

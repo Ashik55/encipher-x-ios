@@ -70,3 +70,74 @@ struct LoadableAvatarImage: View {
         }
     }
 }
+
+
+struct RoomLoadableAvatarImage: View {
+    private let url: URL?
+    private let name: String?
+    private let contentID: String?
+    private let isDirect: Bool?
+    
+    private let avatarSize: Avatars.Size
+    private let mediaProvider: MediaProviderProtocol?
+    private let onTap: ((URL) -> Void)?
+    
+    @ScaledMetric private var frameSize: CGFloat
+    
+    init(url: URL?, name: String?,
+         contentID: String?,
+         isDirect: Bool? = true,
+         avatarSize: Avatars.Size,
+         mediaProvider: MediaProviderProtocol?,
+         onTap: ((URL) -> Void)? = nil) {
+        self.url = url
+        self.name = name
+        self.contentID = contentID
+        self.isDirect = isDirect
+        self.avatarSize = avatarSize
+        self.mediaProvider = mediaProvider
+        self.onTap = onTap
+        
+        _frameSize = ScaledMetric(wrappedValue: avatarSize.value)
+    }
+    
+    var body: some View {
+        if let onTap, let url {
+            Button {
+                onTap(url)
+            } label: {
+                clippedAvatar
+            }
+            .buttonStyle(.borderless) // Add a button style to stop the whole row being tappable.
+        } else {
+            clippedAvatar
+        }
+    }
+    
+    private var clippedAvatar: some View {
+        avatar
+            .frame(width: frameSize, height: frameSize)
+            .background(Color.compound.bgCanvasDefault)
+            .clipShape(Circle())
+            .environment(\.shouldAutomaticallyLoadImages, true) // We always load avatars.
+    }
+    
+    @ViewBuilder
+    private var avatar: some View {
+        if let url {
+            LoadableImage(url: url,
+                          mediaType: .avatar,
+                          size: avatarSize.scaledSize,
+                          mediaProvider: mediaProvider) { image in
+                image
+                    .scaledToFill()
+            } placeholder: {
+//                PlaceholderAvatarImage(name: name, contentID: contentID)
+                RoomPlaceholderAvatarImage(name: name, contentID: contentID, isDirect: isDirect)
+            }
+        } else {
+//            PlaceholderAvatarImage(name: name, contentID: contentID)
+            RoomPlaceholderAvatarImage(name: name, contentID: contentID, isDirect: isDirect)
+        }
+    }
+}

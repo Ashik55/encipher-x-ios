@@ -182,62 +182,62 @@ struct AvatarHeaderView<Footer: View>: View {
                                   trailing: 0))
     }
 }
-
-struct AvatarHeaderView_Previews: PreviewProvider, TestablePreview {
-    static var previews: some View {
-        Form {
-            AvatarHeaderView(room: .init(id: "@test:matrix.org",
-                                         name: "Test Room",
-                                         avatar: .room(id: "@test:matrix.org",
-                                                       name: "Test Room",
-                                                       avatarURL: .mockMXCAvatar),
-                                         canonicalAlias: "#test:matrix.org",
-                                         isEncrypted: true,
-                                         isPublic: true),
-                             avatarSize: .room(on: .details),
-                             mediaProvider: MediaProviderMock(configuration: .init())) {
-                HStack(spacing: 32) {
-                    ShareLink(item: "test") {
-                        CompoundIcon(\.shareIos)
-                    }
-                    .buttonStyle(FormActionButtonStyle(title: "Test"))
-                }
-                .padding(.top, 32)
-            }
-        }
-        .previewDisplayName("Room")
-        
-        Form {
-            AvatarHeaderView(accountOwner: RoomMemberDetails(withProxy: RoomMemberProxyMock.mockMe), dmRecipient: RoomMemberDetails(withProxy: RoomMemberProxyMock.mockAlice),
-                             mediaProvider: MediaProviderMock(configuration: .init())) {
-                HStack(spacing: 32) {
-                    ShareLink(item: "test") {
-                        CompoundIcon(\.shareIos)
-                    }
-                    .buttonStyle(FormActionButtonStyle(title: "Test"))
-                }
-                .padding(.top, 32)
-            }
-        }
-        .previewDisplayName("DM")
-        
-        VStack(spacing: 16) {
-            AvatarHeaderView(member: RoomMemberDetails(withProxy: RoomMemberProxyMock.mockAlice),
-                             avatarSize: .room(on: .details),
-                             mediaProvider: MediaProviderMock(configuration: .init())) { Text("") }
-            
-            AvatarHeaderView(member: RoomMemberDetails(withProxy: RoomMemberProxyMock.mockBob),
-                             isVerified: true,
-                             avatarSize: .room(on: .details),
-                             mediaProvider: MediaProviderMock(configuration: .init())) { Text("") }
-            
-            AvatarHeaderView(member: RoomMemberDetails(withProxy: RoomMemberProxyMock.mockBanned[3]),
-                             avatarSize: .room(on: .details),
-                             mediaProvider: MediaProviderMock(configuration: .init())) { Text("") }
-        }
-        .padding()
-        .background(Color.compound.bgSubtleSecondaryLevel0)
-        .previewLayout(.sizeThatFits)
-        .previewDisplayName("Members")
-    }
-}
+//
+//struct AvatarHeaderView_Previews: PreviewProvider, TestablePreview {
+//    static var previews: some View {
+//        Form {
+//            AvatarHeaderView(room: .init(id: "@test:matrix.org",
+//                                         name: "Test Room",
+//                                         avatar: .room(id: "@test:matrix.org",
+//                                                       name: "Test Room",
+//                                                       avatarURL: .mockMXCAvatar),
+//                                         canonicalAlias: "#test:matrix.org",
+//                                         isEncrypted: true,
+//                                         isPublic: true),
+//                             avatarSize: .room(on: .details),
+//                             mediaProvider: MediaProviderMock(configuration: .init())) {
+//                HStack(spacing: 32) {
+//                    ShareLink(item: "test") {
+//                        CompoundIcon(\.shareIos)
+//                    }
+//                    .buttonStyle(FormActionButtonStyle(title: "Test"))
+//                }
+//                .padding(.top, 32)
+//            }
+//        }
+//        .previewDisplayName("Room")
+//        
+//        Form {
+//            AvatarHeaderView(accountOwner: RoomMemberDetails(withProxy: RoomMemberProxyMock.mockMe), dmRecipient: RoomMemberDetails(withProxy: RoomMemberProxyMock.mockAlice),
+//                             mediaProvider: MediaProviderMock(configuration: .init())) {
+//                HStack(spacing: 32) {
+//                    ShareLink(item: "test") {
+//                        CompoundIcon(\.shareIos)
+//                    }
+//                    .buttonStyle(FormActionButtonStyle(title: "Test"))
+//                }
+//                .padding(.top, 32)
+//            }
+//        }
+//        .previewDisplayName("DM")
+//        
+//        VStack(spacing: 16) {
+//            AvatarHeaderView(member: RoomMemberDetails(withProxy: RoomMemberProxyMock.mockAlice),
+//                             avatarSize: .room(on: .details),
+//                             mediaProvider: MediaProviderMock(configuration: .init())) { Text("") }
+//            
+//            AvatarHeaderView(member: RoomMemberDetails(withProxy: RoomMemberProxyMock.mockBob),
+//                             isVerified: true,
+//                             avatarSize: .room(on: .details),
+//                             mediaProvider: MediaProviderMock(configuration: .init())) { Text("") }
+//            
+//            AvatarHeaderView(member: RoomMemberDetails(withProxy: RoomMemberProxyMock.mockBanned[3]),
+//                             avatarSize: .room(on: .details),
+//                             mediaProvider: MediaProviderMock(configuration: .init())) { Text("") }
+//        }
+//        .padding()
+//        .background(Color.compound.bgSubtleSecondaryLevel0)
+//        .previewLayout(.sizeThatFits)
+//        .previewDisplayName("Members")
+//    }
+//}

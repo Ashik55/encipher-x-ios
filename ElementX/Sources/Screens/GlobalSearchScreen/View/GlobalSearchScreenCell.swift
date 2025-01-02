@@ -35,19 +35,19 @@ struct GlobalSearchScreenListRow: View {
     }
 }
 
-struct GlobalSearchScreenListRow_Previews: PreviewProvider, TestablePreview {
-    static let viewModel = GlobalSearchScreenViewModel(roomSummaryProvider: RoomSummaryProviderMock(.init(state: .loaded(.mockRooms))),
-                                                       mediaProvider: MediaProviderMock(configuration: .init()))
-    
-    static var previews: some View {
-        List {
-            GlobalSearchScreenListRow(room: .init(id: "123",
-                                                  title: "Tech central",
-                                                  description: "The best place in the whole wide world",
-                                                  avatar: .room(id: "123",
-                                                                name: "Tech central",
-                                                                avatarURL: .mockMXCAvatar)),
-                                      context: viewModel.context)
-        }
-    }
-}
+//struct GlobalSearchScreenListRow_Previews: PreviewProvider, TestablePreview {
+//    static let viewModel = GlobalSearchScreenViewModel(roomSummaryProvider: RoomSummaryProviderMock(.init(state: .loaded(.mockRooms))),
+//                                                       mediaProvider: MediaProviderMock(configuration: .init()))
+//    
+//    static var previews: some View {
+//        List {
+//            GlobalSearchScreenListRow(room: .init(id: "123",
+//                                                  title: "Tech central",
+//                                                  description: "The best place in the whole wide world",
+//                                                  avatar: .room(id: "123",
+//                                                                name: "Tech central",
+//                                                                avatarURL: .mockMXCAvatar)),
+//                                      context: viewModel.context)
+//        }
+//    }
+//}

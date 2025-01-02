@@ -32,6 +32,8 @@ struct RoomHeaderView: View {
         RoomAvatarImage(avatar: roomAvatar,
                         avatarSize: .room(on: .timeline),
                         mediaProvider: mediaProvider)
+        
+        
             .accessibilityIdentifier(A11yIdentifiers.roomScreen.avatar)
     }
 }
@@ -41,7 +43,7 @@ struct RoomHeaderView_Previews: PreviewProvider, TestablePreview {
         RoomHeaderView(roomName: "Some Room name",
                        roomAvatar: .room(id: "1",
                                          name: "Some Room Name",
-                                         avatarURL: .mockMXCAvatar),
+                                         avatarURL: .mockMXCAvatar, isDirect: nil),
                        mediaProvider: MediaProviderMock(configuration: .init()))
             .previewLayout(.sizeThatFits)
             .padding()
@@ -49,7 +51,7 @@ struct RoomHeaderView_Previews: PreviewProvider, TestablePreview {
         RoomHeaderView(roomName: "Some Room name",
                        roomAvatar: .room(id: "1",
                                          name: "Some Room Name",
-                                         avatarURL: nil),
+                                         avatarURL: nil,isDirect:nil),
                        mediaProvider: MediaProviderMock(configuration: .init()))
             .previewLayout(.sizeThatFits)
             .padding()

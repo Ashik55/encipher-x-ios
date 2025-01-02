@@ -190,7 +190,7 @@ class RoomTimelineController: RoomTimelineControllerProtocol {
                                                     attachments: nil)
         
         let avatarURL = switch roomProxy.details.avatar {
-        case .room(_, _, let avatarURL):
+        case .room(_, _, let avatarURL, let isDirect):
             avatarURL
         case .heroes(let userProfiles):
             userProfiles.first?.avatarURL
