@@ -123,19 +123,26 @@ struct HomeScreen: View {
                     .tag(1)
             }
             .onAppear {
-                      UITabBar.appearance().isTranslucent = false
+                configureTabBarAppearance()
                   }
             .navigationTitle(navigationTitle) // Use the bound navigation title
             .toolbar {
-//                if selectedTab == 0 {
-//                    toolbar
-//                }
                 toolbar
             }
-           
+            .toolbarBackground(Color.compound.bgCanvasDefault, for: .navigationBar) // Match tab bar background
             .toolbarBackground(.visible, for: .navigationBar)
+          
         }
-//        .accentColor(.encipherPrimaryColor)
+
+    }
+    
+    
+    // Configure Tab Bar Appearance
+    private func configureTabBarAppearance() {
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.backgroundColor = UIColor(Color.compound.bgCanvasDefault)
+        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+        UITabBar.appearance().standardAppearance = tabBarAppearance
     }
     
     
@@ -143,8 +150,8 @@ struct HomeScreen: View {
     private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             Button {
-//                context.send(viewAction: .showSettings)
-                selectedTab = 1
+                context.send(viewAction: .showSettings)
+//                selectedTab = 1
             } label: {
                 LoadableAvatarImage(url: context.viewState.userAvatarURL,
                                     name: context.viewState.userDisplayName,

@@ -204,7 +204,6 @@ struct RoomScreen: View {
         ToolbarItem(placement: .principal) {
             RoomHeaderView(roomName: roomContext.viewState.roomTitle,
                            roomAvatar: roomContext.viewState.roomAvatar,
-                           
                            mediaProvider: roomContext.mediaProvider)
             
             
@@ -214,9 +213,6 @@ struct RoomScreen: View {
                 .onTapGesture {
                     roomContext.send(viewAction: .displayRoomDetails)
                 }
-//                .background {
-//                    HomeScreenBackgroundImage()
-//                }
         }
         
         if !ProcessInfo.processInfo.isiOSAppOnMac {
@@ -252,7 +248,7 @@ struct RoomScreen: View {
                    Button {
                        roomContext.send(viewAction: .displayAudioCall)
                    } label: {
-                       Image(systemName: "phone.fill") // Using Apple's call icon
+                       Image(systemName: "phone") // Using Apple's call icon
                               .resizable() // Ensures the image is resizable
                               .frame(width: 17, height: 17) // Adjust size as needed
                    }
@@ -261,7 +257,7 @@ struct RoomScreen: View {
                    Button {
                        roomContext.send(viewAction: .displayCall)
                    } label: {
-                       Image(systemName: "video.fill") // Using Apple's video call icon
+                       Image(systemName: "video") // Using Apple's video call icon
                            .resizable() // Ensures the image is resizable
                            .frame(width: 25, height: 17) // Adjust size as needed
                    }

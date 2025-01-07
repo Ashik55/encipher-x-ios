@@ -93,7 +93,7 @@ struct MessageComposer: View {
         Capsule()
             .foregroundColor(Asset.Colors.grabber.swiftUIColor)
             .frame(width: 36, height: 5)
-            .padding(.vertical, 8)
+            .padding(.vertical, 2)
             .frame(maxWidth: .infinity)
     }
 
