@@ -63,18 +63,7 @@ struct RoomScreen: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarHidden(isNavigationBarHidden)
             .toolbar { toolbar }
-            .toolbarBackground(
-                     LinearGradient(
-                         gradient: Gradient(colors: [Color(hex: "#C8e3d3"), Color(hex: "#ffffff")]),
-                         startPoint: .topLeading,
-                         endPoint: .bottomTrailing
-                     ),
-                     for: .navigationBar
-                 )
-                 .toolbarBackground(.visible, for: .navigationBar)
-        
-
-
+            .toolbarBackground(.visible, for: .navigationBar)
             .overlay { loadingIndicator }
             .alert(item: $timelineContext.alertInfo)
             .sheet(item: $timelineContext.debugInfo) { TimelineItemDebugView(info: $0) }
@@ -263,17 +252,18 @@ struct RoomScreen: View {
                    Button {
                        roomContext.send(viewAction: .displayAudioCall)
                    } label: {
-                       
-                       Image(asset: ImageAsset(name: "call"))
-                                   .resizable() // Ensures the image is resizable
-                                   .frame(width: 17, height: 17) // Add size here
+                       Image(systemName: "phone.fill") // Using Apple's call icon
+                              .resizable() // Ensures the image is resizable
+                              .frame(width: 17, height: 17) // Adjust size as needed
                    }
                    .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
 
                    Button {
                        roomContext.send(viewAction: .displayCall)
                    } label: {
-                       CompoundIcon(\.videoCallSolid)
+                       Image(systemName: "video.fill") // Using Apple's video call icon
+                           .resizable() // Ensures the image is resizable
+                           .frame(width: 25, height: 17) // Adjust size as needed
                    }
                    .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
                }

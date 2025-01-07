@@ -11,6 +11,8 @@ import SwiftUI
 
 struct SettingsScreen: View {
     @ObservedObject var context: SettingsScreenViewModel.Context
+    var fromTab: Bool = false  // Default value is false
+
     
     private var shouldHideManageAccountSection: Bool {
         context.viewState.accountProfileURL == nil &&
@@ -21,6 +23,7 @@ struct SettingsScreen: View {
     var body: some View {
         Form {
             userSection
+   
             
             manageMyAppSection
             
@@ -32,12 +35,29 @@ struct SettingsScreen: View {
             
             signOutSection
         }
+        .padding(.top, fromTab ? 5 : 0)
         .compoundList()
-        .navigationTitle(L10n.commonSettings)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar { toolbar }
+        .modifier(NavigationTitleModifier(fromTab: fromTab))  // Apply navigation title conditionally
     }
     
+    
+    
+    struct NavigationTitleModifier: ViewModifier {
+        var fromTab: Bool
+
+        func body(content: Content) -> some View {
+            if fromTab {
+                return AnyView(content)  // No navigation title or bar mode if fromTab is true
+            } else {
+                return AnyView(
+                    content
+                        .navigationTitle(L10n.commonSettings)
+                        .navigationBarTitleDisplayMode(.inline)
+     
+                )
+            }
+        }
+    }
     private var userSection: some View {
         Section {
             ListRow(kind: .custom {

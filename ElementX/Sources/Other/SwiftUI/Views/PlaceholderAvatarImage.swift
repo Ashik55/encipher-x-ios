@@ -45,10 +45,10 @@ struct PlaceholderAvatarImage: View {
 
     private var backgroundColor: Color {
         if redactionReasons.contains(.placeholder) {
-            return Color(.systemGray6) // A very light gray, close to off-white// matches the default text redaction
+            return Color(.systemGray4) // A very light gray, close to off-white// matches the default text redaction
         }
 
-        return Color(.systemGray6) // A very light gray, close to off-white // matches the default text redaction
+        return Color(.systemGray4) // A very light gray, close to off-white // matches the default text redaction
 //        return avatarColor?.background ?? .compound.iconPrimary
     }
     
@@ -97,17 +97,16 @@ struct RoomPlaceholderAvatarImage: View {
 
     private var backgroundColor: Color {
         if redactionReasons.contains(.placeholder) {
-            return Color(.systemGray6) // A very light gray, close to off-white// matches the default text redaction
+            return Color(.systemGray4) // A very light gray, close to off-white// matches the default text redaction
         }
 
-        return Color(.systemGray6) // A very light gray, close to off-white // matches the
+        return Color(.systemGray4) // A very light gray, close to off-white // matches the
     }
     
     private var avatarColor: DecorativeColor? {
         guard let contentID else {
             return nil
         }
-        
         return Color.compound.decorativeColor(for: contentID)
     }
 }

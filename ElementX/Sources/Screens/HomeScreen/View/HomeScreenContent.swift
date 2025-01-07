@@ -50,8 +50,8 @@ struct HomeScreenContent: View {
                             topSection
                         }
                     }
-                    .isSearching($context.isSearchFieldFocused)
-                    .searchable(text: $context.searchQuery, placement: .navigationBarDrawer(displayMode: .always))
+//                    .isSearching($context.isSearchFieldFocused)
+//                    .searchable(text: $context.searchQuery, placement: .navigationBarDrawer(displayMode: .automatic))
                     .compoundSearchField()
                     .disableAutocorrection(true)
                 }
