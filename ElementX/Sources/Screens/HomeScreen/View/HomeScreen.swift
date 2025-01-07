@@ -35,106 +35,67 @@ struct HomeScreen: View {
     @State private var selectedTab = 0
     
     @State private var navigationTitle = "Chat" // Default title for Home tab
-//
-//        var body: some View {
-//            HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
-//                .alert(item: $context.alertInfo)
-//                .alert(item: $context.leaveRoomAlertItem,
-//                       actions: leaveRoomAlertActions,
-//                       message: leaveRoomAlertMessage)
-//                .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
-//                .toolbar { toolbar }
-//                .toolbarBackground(
-//                    Color(hex: "#C8e3d3"), // Replace with your desired color
-//                    for: .navigationBar
-//                )
-//                    .toolbarBackground(.visible, for: .navigationBar)
-//                .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
-//                .track(screen: .Home)
-//                .introspect(.viewController, on: .supportedVersions) { controller in
-//                    Task {
-//                        if bloomView == nil {
-//                            makeBloomView(controller: controller)
-//                        }
-//                    }
-//                    let isTopController = controller.navigationController?.topViewController != controller
-//    //                let isHidden = isTopController || context.isSearchFieldFocused
-//                    let isHidden = true
-//                    if let bloomView {
-//                        bloomView.isHidden = isHidden
-//                        UIView.transition(with: bloomView, duration: 1.75, options: .curveEaseInOut) {
-//                            bloomView.alpha = isTopController ? 0 : 1
-//                        }
-//                    }
-//                    gradientView?.isHidden = isHidden
-//                    navigationBarContainer?.clipsToBounds = !isHidden
-//                    hairlineView?.isHidden = isHidden || !scrollViewAdapter.isAtTopEdge.value
-//                    if !isHidden {
-//                        updateBloomCenter()
-//                    }
-//                }
-//                .onReceive(scrollViewAdapter.isAtTopEdge.removeDuplicates()) { value in
-//                    hairlineView?.isHidden = !value
-//                    guard let gradientView else {
-//                        return
-//                    }
-//                    if value {
-//                        UIView.transition(with: gradientView, duration: 0.3, options: .curveEaseIn) {
-//                            gradientView.alpha = 0
-//                        }
-//                    } else {
-//                        gradientView.alpha = 1
-//                    }
-//                }
-//                .sentryTrace("\(Self.self)")
-//        }
-//    
-    
-    var body: some View {
-        NavigationView {
-            TabView(selection: $selectedTab) {
-                HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
-                    .onAppear {
-                        navigationTitle = "Chat" // Set title for Home tab
-                    }
-                    .alert(item: $context.alertInfo)
-                    .alert(item: $context.leaveRoomAlertItem,
-                           actions: leaveRoomAlertActions,
-                           message: leaveRoomAlertMessage)
-                    .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
-                    .track(screen: .Home)
-                 
-                    .sentryTrace("\(Self.self)")
-                    .tabItem {
-                        Image(systemName: "message.fill")
-                        Text("Chat")
-                    }
-                    .tag(0)
-                
-                // Settings tab
-                SettingsScreen(context: settingsContext, fromTab: true)
-                    .onAppear {
-                        navigationTitle = "Settings" // Set title for Settings tab
-                    }
-                    .tabItem {
-                        Image(systemName: "gear")
-                        Text("Settings")
-                    }
-                    .tag(1)
-            }
-            .onAppear {
-                configureTabBarAppearance()
-                  }
-            .navigationTitle(navigationTitle) // Use the bound navigation title
-            .toolbar {
-                toolbar
-            }
-            .toolbarBackground(Color.compound.bgCanvasDefault, for: .navigationBar) // Match tab bar background
-            .toolbarBackground(.visible, for: .navigationBar)
-          
-        }
 
+    var body: some View {
+        HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
+                  .alert(item: $context.alertInfo)
+                  .alert(item: $context.leaveRoomAlertItem,
+                         actions: leaveRoomAlertActions,
+                         message: leaveRoomAlertMessage)
+                  .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
+                  .toolbar { toolbar }
+                  .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+                  .track(screen: .Home)
+                  .sentryTrace("\(Self.self)")
     }
+    
+//    var body: some View {
+//    
+//            TabView(selection: $selectedTab) {
+//                HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
+//                    .onAppear {
+//                        navigationTitle = "Chat" // Set title for Home tab
+//                    }
+//                    .alert(item: $context.alertInfo)
+//                    .alert(item: $context.leaveRoomAlertItem,
+//                           actions: leaveRoomAlertActions,
+//                           message: leaveRoomAlertMessage)
+//                    .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+//                    .track(screen: .Home)
+//                 
+//                    .sentryTrace("\(Self.self)")
+//                    .tabItem {
+//                        Image(systemName: "message.fill")
+//                        Text("Chat")
+//                    }
+//                    .tag(0)
+//                
+//           
+//                
+//                // Settings tab
+//                SettingsScreen(context: settingsContext, fromTab: true)
+//                    .onAppear {
+//                        navigationTitle = "Settings" // Set title for Settings tab
+//                    }
+//                    .tabItem {
+//                        Image(systemName: "gear")
+//                        Text("Settings")
+//                    }
+//                    .tag(1)
+//            }
+//            .onAppear {
+//                configureTabBarAppearance()
+//                  }
+//            .navigationTitle(navigationTitle) // Use the bound navigation title
+//            .toolbar {
+//                toolbar
+//            }
+//            .toolbarBackground(Color.compound.bgCanvasDefault, for: .navigationBar) // Match tab bar background
+//            .toolbarBackground(.visible, for: .navigationBar)
+//          
+//     
+//
+//    }
     
     
     // Configure Tab Bar Appearance

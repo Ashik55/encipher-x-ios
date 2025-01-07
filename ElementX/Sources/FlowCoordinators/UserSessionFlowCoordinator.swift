@@ -465,67 +465,68 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
         
         navigationSplitCoordinator.setSheetCoordinator(coordinator)
     }
-    
-    private func presentHomeScreen() {
-        // Initialize an instance of SettingsScreenCoordinator
-            let settingsParameters = SettingsScreenCoordinatorParameters(
-                userSession: userSession,
-                appSettings: ServiceLocator.shared.settings
-            )
-            let settingsScreenCoordinator = SettingsScreenCoordinator(parameters: settingsParameters)
 
-            // Create HomeScreenCoordinatorParameters with the instance
-            let parameters = HomeScreenCoordinatorParameters(
-                userSession: userSession,
-                bugReportService: bugReportService,
-                selectedRoomPublisher: selectedRoomSubject.asCurrentValuePublisher(),
-                settingsScreenCoordinator: settingsScreenCoordinator // Pass the instance
-            )
-            let coordinator = HomeScreenCoordinator(parameters: parameters)
+    
+     private func presentHomeScreen() {
+         // Initialize an instance of SettingsScreenCoordinator
+             let settingsParameters = SettingsScreenCoordinatorParameters(
+                 userSession: userSession,
+                 appSettings: ServiceLocator.shared.settings
+             )
+             let settingsScreenCoordinator = SettingsScreenCoordinator(parameters: settingsParameters)
+
+             // Create HomeScreenCoordinatorParameters with the instance
+             let parameters = HomeScreenCoordinatorParameters(
+                 userSession: userSession,
+                 bugReportService: bugReportService,
+                 selectedRoomPublisher: selectedRoomSubject.asCurrentValuePublisher(),
+                 settingsScreenCoordinator: settingsScreenCoordinator // Pass the instance
+             )
+             let coordinator = HomeScreenCoordinator(parameters: parameters)
         
         
-        coordinator.actions
-            .sink { [weak self] action in
-                guard let self else { return }
+         coordinator.actions
+             .sink { [weak self] action in
+                 guard let self else { return }
                 
-                switch action {
-                case .presentRoom(let roomID):
-                    handleAppRoute(.room(roomID: roomID, via: []), animated: true)
-                case .presentRoomDetails(let roomID):
-                    handleAppRoute(.roomDetails(roomID: roomID), animated: true)
-                case .roomLeft(let roomID):
-                    if case .roomList(selectedRoomID: let selectedRoomID) = stateMachine.state,
-                       selectedRoomID == roomID {
-                        clearRoute(animated: true)
-                    }
-                case .presentSettingsScreen:
-                    settingsFlowCoordinator.handleAppRoute(.settings, animated: true)
-                case .presentFeedbackScreen:
-                    stateMachine.processEvent(.feedbackScreen)
-                case .presentSecureBackupSettings:
-                    settingsFlowCoordinator.handleAppRoute(.chatBackupSettings, animated: true)
-                case .presentRecoveryKeyScreen:
-                    stateMachine.processEvent(.showRecoveryKeyScreen)
-                case .presentEncryptionResetScreen:
-                    stateMachine.processEvent(.startEncryptionResetFlow)
-                case .presentStartChatScreen:
-                    stateMachine.processEvent(.showStartChatScreen)
-                case .presentGlobalSearch:
-                    presentGlobalSearch()
-                case .presentRoomDirectorySearch:
-                    stateMachine.processEvent(.showRoomDirectorySearchScreen)
-                case .logoutWithoutConfirmation:
-                    self.actionsSubject.send(.logout)
-                case .logout:
-                    Task { await self.runLogoutFlow() }
-                }
-            }
-            .store(in: &cancellables)
+                 switch action {
+                 case .presentRoom(let roomID):
+                     handleAppRoute(.room(roomID: roomID, via: []), animated: true)
+                 case .presentRoomDetails(let roomID):
+                     handleAppRoute(.roomDetails(roomID: roomID), animated: true)
+                 case .roomLeft(let roomID):
+                     if case .roomList(selectedRoomID: let selectedRoomID) = stateMachine.state,
+                        selectedRoomID == roomID {
+                         clearRoute(animated: true)
+                     }
+                 case .presentSettingsScreen:
+                     settingsFlowCoordinator.handleAppRoute(.settings, animated: true)
+                 case .presentFeedbackScreen:
+                     stateMachine.processEvent(.feedbackScreen)
+                 case .presentSecureBackupSettings:
+                     settingsFlowCoordinator.handleAppRoute(.chatBackupSettings, animated: true)
+                 case .presentRecoveryKeyScreen:
+                     stateMachine.processEvent(.showRecoveryKeyScreen)
+                 case .presentEncryptionResetScreen:
+                     stateMachine.processEvent(.startEncryptionResetFlow)
+                 case .presentStartChatScreen:
+                     stateMachine.processEvent(.showStartChatScreen)
+                 case .presentGlobalSearch:
+                     presentGlobalSearch()
+                 case .presentRoomDirectorySearch:
+                     stateMachine.processEvent(.showRoomDirectorySearchScreen)
+                 case .logoutWithoutConfirmation:
+                     self.actionsSubject.send(.logout)
+                 case .logout:
+                     Task { await self.runLogoutFlow() }
+                 }
+             }
+             .store(in: &cancellables)
         
-        sidebarNavigationStackCoordinator.setRootCoordinator(coordinator)
+         sidebarNavigationStackCoordinator.setRootCoordinator(coordinator)
         
-        navigationRootCoordinator.setRootCoordinator(navigationSplitCoordinator)
-    }
+         navigationRootCoordinator.setRootCoordinator(navigationSplitCoordinator)
+     }
     
     private func runLogoutFlow() async {
         let secureBackupController = userSession.clientProxy.secureBackupController
