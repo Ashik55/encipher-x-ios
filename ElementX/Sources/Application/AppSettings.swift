@@ -109,8 +109,9 @@ final class AppSettings {
     /// so that it can be passed to Rust as a ServerName for well-known discovery.
     
     
-    //base url
-    private(set) var defaultHomeserverAddress = "new.enciph-er.com"
+    // base url
+    // private(set) var defaultHomeserverAddress = "new.enciph-er.com"
+    private(set) var defaultHomeserverAddress = "dev.enciph-er.com"
     
     /// The task identifier used for background app refresh. Also used in main target's the Info.plist
     let backgroundAppRefreshTaskIdentifier = "io.element.elementx.background.refresh"
@@ -184,9 +185,11 @@ final class AppSettings {
         #endif
     }
     
+
     // push notification url
-//    let pushGatewayBaseURL: URL = "https://matrix.org/_matrix/push/v1/notify"
-    let pushGatewayBaseURL: URL = "http://52.28.217.3:5000/_matrix/push/v1/notify" // http://52.28.217.3:5000/_matrix/push/v1/notify
+    //let pushGatewayBaseURL: URL = "https://matrix.org/_matrix/push/v1/notify"
+    let pushGatewayBaseURL: URL = "http://52.28.217.3:5000/_matrix/push/v1/notify"
+    
     
     @UserPreference(key: UserDefaultsKeys.enableNotifications, defaultValue: true, storageType: .userDefaults(store))
     var enableNotifications
@@ -258,7 +261,8 @@ final class AppSettings {
     // MARK: - Element Call
     
     //Call base url
-    let elementCallBaseURL: URL = "https://call.enciph-er.com"
+    // let elementCallBaseURL: URL = "https://call.enciph-er.com"
+    let elementCallBaseURL: URL = "https://call.dev.enciph-er.com"
     
     @UserPreference(key: UserDefaultsKeys.elementCallBaseURLOverride, defaultValue: nil, storageType: .userDefaults(store))
     var elementCallBaseURLOverride: URL?
