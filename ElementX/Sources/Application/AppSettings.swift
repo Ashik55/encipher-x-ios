@@ -107,6 +107,9 @@ final class AppSettings {
         
     /// The default homeserver address used. This is intentionally a string without a scheme
     /// so that it can be passed to Rust as a ServerName for well-known discovery.
+    
+    
+    //base url
     private(set) var defaultHomeserverAddress = "new.enciph-er.com"
     
     /// The task identifier used for background app refresh. Also used in main target's the Info.plist
@@ -181,6 +184,7 @@ final class AppSettings {
         #endif
     }
     
+    // push notification url
 //    let pushGatewayBaseURL: URL = "https://matrix.org/_matrix/push/v1/notify"
     let pushGatewayBaseURL: URL = "http://52.28.217.3:5000/_matrix/push/v1/notify" // http://52.28.217.3:5000/_matrix/push/v1/notify
     
@@ -253,6 +257,7 @@ final class AppSettings {
 
     // MARK: - Element Call
     
+    //Call base url
     let elementCallBaseURL: URL = "https://call.enciph-er.com"
     
     @UserPreference(key: UserDefaultsKeys.elementCallBaseURLOverride, defaultValue: nil, storageType: .userDefaults(store))
