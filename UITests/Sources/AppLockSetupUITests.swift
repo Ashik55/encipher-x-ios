@@ -1,8 +1,8 @@
 //
 // Copyright 2022-2024 New Vector Ltd.
 //
-// SPDX-License-Identifier: AGPL-3.0-only
-// Please see LICENSE in the repository root for full details.
+// SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+// Please see LICENSE files in the repository root for full details.
 //
 
 import XCTest
@@ -35,7 +35,7 @@ class AppLockSetupUITests: XCTestCase {
         try await Task.sleep(for: .seconds(0.5))
         
         // Create PIN screen.
-        try await app.assertScreenshot(.appLockSetupFlow, step: Step.createPIN)
+        try await app.assertScreenshot(.appLockSetupFlow, step: Step.createPIN, delay: .seconds(0.5))
         
         enterPIN()
         
@@ -107,7 +107,7 @@ class AppLockSetupUITests: XCTestCase {
         enterPIN()
         
         // Settings screen.
-        try await app.assertScreenshot(.appLockSetupFlow, step: Step.settings)
+        try await app.assertScreenshot(.appLockSetupFlow, step: Step.settings, delay: .seconds(0.5))
         
         app.buttons[A11yIdentifiers.appLockSetupSettingsScreen.removePIN].tap()
         app.alerts.element.buttons[A11yIdentifiers.alertInfo.primaryButton].tap()

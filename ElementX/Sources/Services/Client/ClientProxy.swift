@@ -1,8 +1,8 @@
 //
 // Copyright 2022-2024 New Vector Ltd.
 //
-// SPDX-License-Identifier: AGPL-3.0-only
-// Please see LICENSE in the repository root for full details.
+// SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+// Please see LICENSE files in the repository root for full details.
 //
 
 import Combine
@@ -952,8 +952,7 @@ class ClientProxy: ClientProxyProtocol {
             case .left:
                 return .left
             case .banned:
-                // TODO: Implement a `bannedRoomProxy` and/or `.banned` case
-                return .left
+                return .banned
             }
         } catch {
             MXLog.error("Failed retrieving room: \(roomID), with error: \(error)")

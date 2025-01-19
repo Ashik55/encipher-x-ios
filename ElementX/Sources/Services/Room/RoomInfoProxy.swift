@@ -1,8 +1,8 @@
 //
 // Copyright 2024 New Vector Ltd.
 //
-// SPDX-License-Identifier: AGPL-3.0-only
-// Please see LICENSE in the repository root for full details.
+// SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+// Please see LICENSE files in the repository root for full details.
 //
 
 import Foundation
@@ -66,6 +66,7 @@ struct RoomInfoProxy: BaseRoomInfoProxyProtocol {
     var unreadMentionsCount: UInt { UInt(roomInfo.numUnreadMentions) }
     var pinnedEventIDs: Set<String> { Set(roomInfo.pinnedEventIds) }
     var joinRule: JoinRule? { roomInfo.joinRule }
+    var historyVisibility: RoomHistoryVisibility { roomInfo.historyVisibility }
 }
 
 struct RoomPreviewInfoProxy: BaseRoomInfoProxyProtocol {

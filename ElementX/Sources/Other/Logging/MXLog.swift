@@ -2,8 +2,8 @@
 // Copyright 2024 New Vector Ltd.
 // Copyright 2021-2024 The Matrix.org Foundation C.I.C
 //
-// SPDX-License-Identifier: AGPL-3.0-only
-// Please see LICENSE in the repository root for full details.
+// SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+// Please see LICENSE files in the repository root for full details.
 //
 
 import Foundation
@@ -26,10 +26,10 @@ enum MXLog {
     
     static func configure(currentTarget: String,
                           filePrefix: String?,
-                          logLevel: TracingConfiguration.LogLevel) {
+                          logLevel: LogLevel) {
         guard !didConfigureOnce else { return }
         
-        RustTracing.setup(configuration: .init(logLevel: logLevel, currentTarget: currentTarget, filePrefix: filePrefix))
+        Tracing.setup(logLevel: logLevel, currentTarget: currentTarget, filePrefix: filePrefix)
         
         self.currentTarget = currentTarget
         
@@ -135,7 +135,7 @@ enum MXLog {
             rootSpan.enter()
         }
         
-        return Span(file: file, line: UInt32(line), level: level, target: currentTarget, name: name)
+        return Span(file: file, line: UInt32(line), level: level.rustLogLevel, target: currentTarget, name: name)
     }
     
     // periphery:ignore:parameters function,column,context
@@ -154,6 +154,6 @@ enum MXLog {
             rootSpan.enter()
         }
         
-        logEvent(file: (file as NSString).lastPathComponent, line: UInt32(line), level: level, target: currentTarget, message: "\(message)")
+        logEvent(file: (file as NSString).lastPathComponent, line: UInt32(line), level: level.rustLogLevel, target: currentTarget, message: "\(message)")
     }
 }
