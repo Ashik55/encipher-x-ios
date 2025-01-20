@@ -183,20 +183,20 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                 }
                 
                 
-                try? await Task.sleep(nanoseconds: 4 * 1_000_000_000) // 5 seconds
-                
-                print("Is AudioCall==>\(audioCall)")
-                if(audioCall){
-                    await setAudioEnabled(true)
-                    try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
-                    await setAudioEnabled(true)
-                }
-                else{
-                    await setAudioVideoEnabled(enabled: true)
-                    try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
-                    await setAudioVideoEnabled(enabled: true)
-                    
-                }
+//                try? await Task.sleep(nanoseconds: 4 * 1_000_000_000) // 5 seconds
+//                
+//                print("Is AudioCall==>\(audioCall)")
+//                if(audioCall){
+//                    await setAudioEnabled(true)
+//                    try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
+//                    await setAudioEnabled(true)
+//                }
+//                else{
+//                    await setAudioVideoEnabled(enabled: true)
+//                    try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
+//                    await setAudioVideoEnabled(enabled: true)
+//                    
+//                }
               
          
     

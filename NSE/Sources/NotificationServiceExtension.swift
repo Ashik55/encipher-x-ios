@@ -60,6 +60,9 @@ class NotificationServiceExtension: UNNotificationServiceExtension {
     
     override func didReceive(_ request: UNNotificationRequest,
                              withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
+        let content = request.content.mutableCopy() as! UNMutableNotificationContent
+        print("Notification content==>: \(content)")
+        
         guard !DataProtectionManager.isDeviceLockedAfterReboot(containerURL: URL.appGroupContainerDirectory),
               let roomID = request.roomID,
               let eventID = request.eventID,

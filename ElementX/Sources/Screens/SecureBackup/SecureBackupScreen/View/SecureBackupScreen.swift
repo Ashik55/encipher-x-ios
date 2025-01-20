@@ -20,12 +20,11 @@ struct SecureBackupScreen: View {
                 recoveryKeySection
             } else {
                 keyBackupSection
-                
                 // Don't show recovery options until key backup is enabled
                 if context.viewState.keyBackupState != .unknown {
                     recoveryKeySection
                 }
-//                recoveryKeySection
+
             }
         }
         .compoundList()
@@ -44,10 +43,6 @@ struct SecureBackupScreen: View {
                     Text(L10n.screenChatBackupKeyBackupTitle)
                         .font(.compound.bodyLGSemibold)
                         .foregroundColor(.compound.textPrimary)
-                    
-//                    Text(keyBackupDescriptionWithLearnMoreLink)
-//                        .font(.compound.bodySM)
-//                        .foregroundColor(.compound.textSecondary)
                 }
                 .padding(.horizontal, ListRowPadding.horizontal)
                 .padding(.vertical, ListRowPadding.vertical)

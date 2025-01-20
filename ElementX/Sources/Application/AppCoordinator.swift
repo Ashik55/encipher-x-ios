@@ -292,6 +292,8 @@ class AppCoordinator: AppCoordinatorProtocol, AuthenticationFlowCoordinatorDeleg
     }
         
     func shouldDisplayInAppNotification(content: UNNotificationContent) -> Bool {
+        
+        print("Notification ==> \(content)")
         guard let roomID = content.roomID else {
             return true
         }

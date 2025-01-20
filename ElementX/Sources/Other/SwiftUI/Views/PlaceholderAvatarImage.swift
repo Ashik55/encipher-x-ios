@@ -92,7 +92,7 @@ struct RoomPlaceholderAvatarImage: View {
         self.contentID = contentID
         self.isDirect = isDirect
         
-        print("isDirect==>\(String(describing: isDirect))")
+//        print("isDirect==>\(String(describing: isDirect))")
     }
 
     private var backgroundColor: Color {

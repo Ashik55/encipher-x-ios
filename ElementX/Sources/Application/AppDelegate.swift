@@ -32,11 +32,29 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         // Convert the device token to a string representation
         let tokenString = deviceToken.map { String(format: "%02x", $0) }.joined()
-        print("Device_Token: \(tokenString)")
+        print("Device_Token==>: \(tokenString)")
+        
+        ///check bundle-id
+        ///
+        /// var environmentMessage: String {
+        #if DEBUG
+        print("Environment==>: Development (Debug)")
+        #else
+        print( "Environment==>: Production (Release)")
+        #endif
+
+    
+        if let bundleID = Bundle.main.bundleIdentifier {
+                            print("Bundle ID==>: \(bundleID)")
+                        } else {
+                            print("Bundle ID not found")
+                        }
+        
         callbacks.send(.registeredNotifications(deviceToken: deviceToken))
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Failed to register for remote notifications==>: \(error)")
         callbacks.send(.failedToRegisteredNotifications(error: error))
     }
 
