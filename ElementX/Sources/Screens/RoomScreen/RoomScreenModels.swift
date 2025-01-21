@@ -75,10 +75,12 @@ struct RoomScreenViewStateBindings { }
 
 enum RoomScreenFooterViewAction {
     case resolvePinViolation(userID: String)
+    case resolveVerificationViolation(userID: String)
 }
 
 enum RoomScreenFooterViewDetails {
     case pinViolation(member: RoomMemberProxyProtocol, learnMoreURL: URL)
+    case verificationViolation(member: RoomMemberProxyProtocol, learnMoreURL: URL)
 }
 
 enum PinnedEventsBannerState: Equatable {
