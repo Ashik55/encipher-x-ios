@@ -240,7 +240,9 @@ class NotificationServiceExtension: UNNotificationServiceExtension {
         guard case let .timeline(event) = itemProxy.event,
               case let .messageLike(content) = try? event.eventType(),
               case let .callNotify(notificationType) = content,
-              notificationType == .ring else {
+              //              notificationType == .ring else {
+              notificationType == .ring || notificationType == .notify else {
+
             return true
         }
         
