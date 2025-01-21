@@ -87,9 +87,9 @@ struct HomeScreenRecoveryKeyConfirmationBanner: View {
             .frame(maxWidth: .infinity)
             .buttonStyle(.compound(.primary, size: .medium))
             .accessibilityIdentifier(A11yIdentifiers.homeScreen.recoveryKeyConfirmationBannerContinue)
-            .onAppear {
-                context.send(viewAction: primaryAction)
-            }
+//            .onAppear {
+//                context.send(viewAction: primaryAction)
+//            }
             
             if state == .recoveryOutOfSync {
                 Button {

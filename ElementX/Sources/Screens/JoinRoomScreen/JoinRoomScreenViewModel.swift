@@ -120,7 +120,7 @@ class JoinRoomScreenViewModel: JoinRoomScreenViewModelType, JoinRoomScreenViewMo
         state.roomDetails = JoinRoomScreenRoomDetails(name: info?.displayName,
                                                       topic: info?.topic,
                                                       canonicalAlias: info?.canonicalAlias,
-                                                      avatar: info?.avatar ?? .room(id: roomID, name: info?.displayName ?? "", avatarURL: nil),
+                                                      avatar: info?.avatar ?? .room(id: roomID, name: info?.displayName ?? "", avatarURL: nil, isDirect: info?.isDirect),
                                                       memberCount: UInt(info?.activeMembersCount ?? 0),
                                                       inviter: inviter)
         

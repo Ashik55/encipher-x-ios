@@ -33,6 +33,7 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
         case appLockSetup
         case analyticsPrompt
         case notificationPermissions
+        case generateEncryptionKey
         case finished
     }
     
@@ -151,7 +152,11 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                 return nil
             }
             
+            print("Route Mapping==>>: Event: \(event), FromState: \(fromState), Conditions: (requiresVerification: \(requiresVerification), requiresAppLockSetup: \(requiresAppLockSetup), requiresAnalyticsSetup: \(requiresAnalyticsSetup), requiresNotificationsSetup: \(requiresNotificationsSetup))")
+              
+            
             switch (fromState, requiresVerification, requiresAppLockSetup, requiresAnalyticsSetup, requiresNotificationsSetup) {
+                
             case (.initial, true, _, _, _):
                 return .identityConfirmation
             case (.initial, false, true, _, _):
@@ -162,6 +167,7 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                 return .notificationPermissions
             case (.initial, false, false, false, false):
                 return .finished
+              
                 
             case (.identityConfirmation, _, _, _, _):
                 if event == .nextSkippingIdentityConfimed {
@@ -176,10 +182,13 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                         return .notificationPermissions
                     case (false, false, false):
                         return .finished
+
                     }
                 } else {
                     return .identityConfirmed
                 }
+                
+           
             case (.identityConfirmed, _, true, _, _):
                 return .appLockSetup
             case (.identityConfirmed, _, false, true, _):
@@ -212,7 +221,11 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
         stateMachine.addAnyHandler(.any => .any) { [weak self] context in
             guard let self else { return }
             
+            // Log the event, fromState, and toState
+               print("Onboarding stateMachine addAnyHandler==>> Event: \(context.event), FromState: \(context.fromState), ToState: \(context.toState)")
+               
             switch (context.fromState, context.event, context.toState) {
+                
             case (_, _, .identityConfirmation):
                 presentIdentityConfirmationScreen()
             case (_, _, .identityConfirmed):
@@ -223,6 +236,8 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                 presentAnalyticsPromptScreen()
             case (_, _, .notificationPermissions):
                 presentNotificationPermissionsScreen()
+            case (_, _, .generateEncryptionKey):
+                presentRecoveryKeyScreen()
             case (_, _, .finished):
                 rootNavigationStackCoordinator.setFullScreenCoverCoordinator(nil)
             default:
@@ -293,10 +308,11 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
         let coordinator = SecureBackupRecoveryKeyScreenCoordinator(parameters: parameters)
         
         coordinator.actions
-            .sink { action in
+            .sink { [self] action in
                 switch action {
                 case .complete:
-                    break // Moving to next state is Handled by the global session verification listener
+//                    break  //Moving to next state is Handled by the global session verification listener
+                    stateMachine.tryEvent(.next)
                 }
             }
             .store(in: &cancellables)
@@ -316,6 +332,7 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
             switch action {
             case .resetComplete:
                 // Moving to next state is handled by the global session verification listener
+                presentRecoveryKeyScreen()
                 navigationStackCoordinator.setSheetCoordinator(nil)
             case .cancel:
                 navigationStackCoordinator.setSheetCoordinator(nil)
@@ -392,7 +409,8 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                 switch action {
                 case .done:
                     appSettings.hasRunNotificationPermissionsOnboarding = true
-                    stateMachine.tryEvent(.next)
+//                    stateMachine.tryEvent(.next)
+                    presentRecoveryKeyScreen()
                 }
             }
             .store(in: &cancellables)
