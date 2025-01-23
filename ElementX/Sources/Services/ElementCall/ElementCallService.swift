@@ -157,9 +157,8 @@ class ElementCallService: NSObject, ElementCallServiceProtocol, PKPushRegistryDe
         let roomDisplayName = payload.dictionaryPayload[ElementCallServiceNotificationKey.roomDisplayName.rawValue] as? String
         
         let update = CXCallUpdate()
-        update.hasVideo = true
+        update.hasVideo = false
         update.localizedCallerName = roomDisplayName
-        // https://stackoverflow.com/a/41230020/730924
         update.remoteHandle = .init(type: .generic, value: roomID)
         
         callProvider.reportNewIncomingCall(with: callID.callKitID, update: update) { [weak self] error in

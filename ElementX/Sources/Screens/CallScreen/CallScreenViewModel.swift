@@ -162,19 +162,19 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                 
                 switch await widgetDriver.start(baseURL: baseURL, clientID: clientID, colorScheme: colorScheme) {
                 case .success(let url):
-//                    print("Call URL ==>> \(url)")
-//                    state.url = url
-
-                    
-                    let callType = audioCall ? "audio" : "video"
                     print("Call URL ==>> \(url)")
-                    
-                    if let validURL = URL(string: "\(url)&call_type=\(callType)") {
-                        state.url = validURL
-                    } else {
-                        print("Error: Invalid URL string")
-                    }
-                    
+                    state.url = url
+
+//                    
+//                    let callType = audioCall ? "audio" : "video"
+//                    print("Call URL ==>> \(url)")
+//                    
+//                    if let validURL = URL(string: "\(url)&call_type=\(callType)") {
+//                        state.url = validURL
+//                    } else {
+//                        print("Error: Invalid URL string")
+//                    }
+//                    
  
                     
                 case .failure(let error):
