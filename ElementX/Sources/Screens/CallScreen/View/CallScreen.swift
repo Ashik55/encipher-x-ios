@@ -28,6 +28,8 @@ struct CallScreen: View {
                         }
                     }
                 }
+//                .toolbarBackground(Color.black, for: .navigationBar)
+//                .toolbarBackground(.visible, for: .navigationBar)
         }
         .alert(item: $context.alertInfo)
     }

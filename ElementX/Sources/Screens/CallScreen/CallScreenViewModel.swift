@@ -69,8 +69,6 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                         MXLog.error("Received mute request for a different room: \(roomID) != \(configuration.callRoomID)")
                         return
                     }
-                    
-                    
                     print(" elementCallService.actions audio==>\(enabled)")
                     Task {
                         await self.setAudioEnabled(enabled)
@@ -164,7 +162,21 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                 
                 switch await widgetDriver.start(baseURL: baseURL, clientID: clientID, colorScheme: colorScheme) {
                 case .success(let url):
-                    state.url = url
+//                    print("Call URL ==>> \(url)")
+//                    state.url = url
+
+                    
+                    let callType = audioCall ? "audio" : "video"
+                    print("Call URL ==>> \(url)")
+                    
+                    if let validURL = URL(string: "\(url)&call_type=\(callType)") {
+                        state.url = validURL
+                    } else {
+                        print("Error: Invalid URL string")
+                    }
+                    
+ 
+                    
                 case .failure(let error):
                     MXLog.error("Failed starting ElementCall Widget Driver with error: \(error)")
                     state.bindings.alertInfo = .init(id: UUID(),
