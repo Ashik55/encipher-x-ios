@@ -36,18 +36,79 @@ struct HomeScreen: View {
     
     @State private var navigationTitle = "Chat" // Default title for Home tab
 
+    
+    
     var body: some View {
-        HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
-                  .alert(item: $context.alertInfo)
-                  .alert(item: $context.leaveRoomAlertItem,
-                         actions: leaveRoomAlertActions,
-                         message: leaveRoomAlertMessage)
-                  .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
-                  .toolbar { toolbar }
-                  .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
-                  .track(screen: .Home)
-                  .sentryTrace("\(Self.self)")
+        VStack {
+            HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
+                .alert(item: $context.alertInfo)
+                .alert(item: $context.leaveRoomAlertItem,
+                       actions: leaveRoomAlertActions,
+                       message: leaveRoomAlertMessage)
+                .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
+                .toolbar { toolbar }
+                .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+                .track(screen: .Home)
+                .sentryTrace("\(Self.self)")
+
+            // Bottom Bar
+            HStack {
+                Spacer()
+                
+                Button(action: {
+                    print("Chat button tapped") // Replace with your Chat action
+                }) {
+                    VStack {
+                        Image(systemName: "message.fill")
+                            .font(.title2)
+                        Text("Chat")
+                            .font(.caption)
+                    }
+                }
+//                .padding()
+                Spacer()
+                Spacer()
+
+                Button(action: {
+                    context.send(viewAction: .showSettings)
+                }) {
+                    VStack {
+                        Image(systemName: "gearshape")
+                            .font(.title2)
+                        Text("Settings")
+                            .font(.caption)
+                    }
+                }
+//                .padding()
+
+                Spacer()
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1)) // Background for the bottom bar
+        }
     }
+
+    private func handleSettingsTapped() {
+        // Your function logic here
+        print("Settings button tapped")
+    }
+    
+    
+//    var body: some View {
+//        HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
+//                  .alert(item: $context.alertInfo)
+//                  .alert(item: $context.leaveRoomAlertItem,
+//                         actions: leaveRoomAlertActions,
+//                         message: leaveRoomAlertMessage)
+//                  .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
+//                  .toolbar { toolbar }
+//                  .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+//                  .track(screen: .Home)
+//                  .sentryTrace("\(Self.self)")
+//    }
+    
+    
+    
     
 //    var body: some View {
 //    
