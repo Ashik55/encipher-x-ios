@@ -237,26 +237,40 @@ struct RoomScreen: View {
             .buttonStyle(ElementCallButtonStyle())
             .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
         } else {
-            HStack(spacing: 22) { // Adjust spacing as needed
+            
+            
+            Button {
+                roomContext.send(viewAction: .displayCall)
+            } label: {
+                Image(systemName: "phone") // Using Apple's video call icon name = video
+                    .resizable() // Ensures the image is resizable
+                    .frame(width: 23, height: 18) // Adjust size as needed
+            }
+            .padding()
+            .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
+            
+            
+            
+//            HStack(spacing: 22) { // Adjust spacing as needed
+////                   Button {
+////                       roomContext.send(viewAction: .displayAudioCall)
+////                   } label: {
+////                       Image(systemName: "phone") // Using Apple's call icon
+////                              .resizable() // Ensures the image is resizable
+////                              .frame(width: 17, height: 17) // Adjust size as needed
+////                   }
+////                   .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
+//
 //                   Button {
-//                       roomContext.send(viewAction: .displayAudioCall)
+//                       roomContext.send(viewAction: .displayCall)
 //                   } label: {
-//                       Image(systemName: "phone") // Using Apple's call icon
-//                              .resizable() // Ensures the image is resizable
-//                              .frame(width: 17, height: 17) // Adjust size as needed
+//                       Image(systemName: "phone") // Using Apple's video call icon name = video
+//                           .resizable() // Ensures the image is resizable
+//                           .frame(width: 22, height: 17) // Adjust size as needed
 //                   }
 //                   .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
-
-                   Button {
-                       roomContext.send(viewAction: .displayCall)
-                   } label: {
-                       Image(systemName: "phone") // Using Apple's video call icon name = video
-                           .resizable() // Ensures the image is resizable
-                           .frame(width: 25, height: 17) // Adjust size as needed
-                   }
-                   .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
-               }
-               .padding() // Optional padding for spacing around the buttons
+//               }
+//               .padding() // Optional padding for spacing around the buttons
         }
     }
     

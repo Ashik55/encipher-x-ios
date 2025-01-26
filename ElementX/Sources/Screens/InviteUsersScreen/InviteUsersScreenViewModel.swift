@@ -128,12 +128,15 @@ class InviteUsersScreenViewModel: InviteUsersScreenViewModelType, InviteUsersScr
     }
     
     private func fetchUsers() {
-        guard searchQuery.count >= 3 else {
+        guard searchQuery.count >= 1 else {
             state.usersSection = .init(type: .suggestions, users: suggestedUsers)
             return
         }
         
         state.isSearching = true
+        
+ 
+        print("searchQuery==>\(searchQuery)")
         
         fetchUsersTask = Task {
             let result = await userDiscoveryService.searchProfiles(with: searchQuery)
@@ -152,7 +155,20 @@ class InviteUsersScreenViewModel: InviteUsersScreenViewModelType, InviteUsersScr
     }
         
     private var searchQuery: String {
-        context.searchQuery
+//        context.searchQuery
+        
+        let query = context.searchQuery
+           
+           switch true {
+           case query.starts(with: "@") && query.contains(":"):
+               return query // Full MXID
+           case query.starts(with: "@"):
+               return "\(query):dev.enciph-er.com" // Only @username
+           case !query.isEmpty:
+               return "@\(query):dev.enciph-er.com" // Just username
+           default:
+               return query
+           }
     }
     
     private let userIndicatorID = UUID().uuidString
