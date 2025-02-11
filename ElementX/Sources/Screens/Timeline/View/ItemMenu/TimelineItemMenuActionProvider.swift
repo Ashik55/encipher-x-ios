@@ -81,7 +81,7 @@ struct TimelineItemMenuActionProvider {
         }
         
         if item.isRemoteMessage {
-            actions.append(.copyPermalink)
+//            actions.append(.copyPermalink)
         }
         
         if canCurrentUserPin, let eventID = item.id.eventID {
@@ -103,7 +103,7 @@ struct TimelineItemMenuActionProvider {
         }
         
         if isViewSourceEnabled {
-            actions.append(.viewSource)
+//            actions.append(.viewSource)
         }
         
         if !item.isOutgoing {

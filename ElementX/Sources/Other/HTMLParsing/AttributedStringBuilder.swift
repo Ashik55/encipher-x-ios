@@ -19,7 +19,7 @@ struct AttributedStringBuilder: AttributedStringBuilderProtocol {
     
     private static let defaultKey = "default"
     
-    private static let cacheDispatchQueue = DispatchQueue(label: "io.element.elementx.attributed_string_builder_cache")
+    private static let cacheDispatchQueue = DispatchQueue(label: "com.plx.encipherX.attributed_string_builder_cache")
     private static var caches: [String: LRUCache<String, AttributedString>] = [:]
 
     static func invalidateCaches() {

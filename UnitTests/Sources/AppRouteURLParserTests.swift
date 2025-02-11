@@ -27,7 +27,7 @@ class AppRouteURLParserTests: XCTestCase {
         
         XCTAssertEqual(appRouteURLParser.route(from: url), AppRoute.genericCallLink(url: url))
         
-        guard let customSchemeURL = URL(string: "io.element.call:/?url=https%3A%2F%2Fcall.element.io%2Ftest") else {
+        guard let customSchemeURL = URL(string: "com.plx.call:/?url=https%3A%2F%2Fcall.element.io%2Ftest") else {
             XCTFail("URL invalid")
             return
         }
@@ -56,7 +56,7 @@ class AppRouteURLParserTests: XCTestCase {
             return
         }
         
-        guard let customSchemeURL = URL(string: "io.element.call:/?url=\(encodedURLString)") else {
+        guard let customSchemeURL = URL(string: "com.plx.call:/?url=\(encodedURLString)") else {
             XCTFail("URL invalid")
             return
         }
@@ -65,7 +65,7 @@ class AppRouteURLParserTests: XCTestCase {
     }
     
     func testHttpCustomSchemeLinkCallRoutes() {
-        guard let customSchemeURL = URL(string: "io.element.call:/?url=http%3A%2F%2Fcall.element.io%2Ftest") else {
+        guard let customSchemeURL = URL(string: "com.plx.call:/?url=http%3A%2F%2Fcall.element.io%2Ftest") else {
             XCTFail("URL invalid")
             return
         }

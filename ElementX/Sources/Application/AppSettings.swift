@@ -94,7 +94,7 @@ final class AppSettings {
         #if DEBUG
         true
         #else
-        let apps = ["io.element.elementx.nightly", "io.element.elementx.pr"]
+        let apps = ["com.plx.encipherX.nightly", "com.plx.encipherX.pr"]
         return apps.contains(InfoPlistReader.main.baseBundleIdentifier)
         #endif
     }()
@@ -114,7 +114,7 @@ final class AppSettings {
     private(set) var defaultHomeserverAddress = "dev.enciph-er.com"
     
     /// The task identifier used for background app refresh. Also used in main target's the Info.plist
-    let backgroundAppRefreshTaskIdentifier = "io.element.elementx.background.refresh"
+    let backgroundAppRefreshTaskIdentifier = "com.plx.encipherX.background.refresh"
 
     /// A URL where users can go read more about the app.
     let websiteURL: URL = "https://element.io"
@@ -215,14 +215,14 @@ final class AppSettings {
     #if DEBUG
     /// The configuration to use for analytics during development. Set `isEnabled` to false to disable analytics in debug builds.
     /// **Note:** Analytics are disabled by default for forks. If you are maintaining a fork, set custom configurations.
-    let analyticsConfiguration = AnalyticsConfiguration(isEnabled: InfoPlistReader.main.bundleIdentifier.starts(with: "io.element."),
+    let analyticsConfiguration = AnalyticsConfiguration(isEnabled: InfoPlistReader.main.bundleIdentifier.starts(with: "com.plx."),
                                                         host: "https://posthog.element.dev",
                                                         apiKey: "phc_VtA1L35nw3aeAtHIx1ayrGdzGkss7k1xINeXcoIQzXN",
                                                         termsURL: "https://element.io/cookie-policy")
     #else
     /// The configuration to use for analytics. Set `isEnabled` to false to disable analytics.
     /// **Note:** Analytics are disabled by default for forks. If you are maintaining a fork, set custom configurations.
-    let analyticsConfiguration = AnalyticsConfiguration(isEnabled: InfoPlistReader.main.bundleIdentifier.starts(with: "io.element."),
+    let analyticsConfiguration = AnalyticsConfiguration(isEnabled: InfoPlistReader.main.bundleIdentifier.starts(with: "com.plx."),
                                                         host: "https://posthog.element.io",
                                                         apiKey: "phc_Jzsm6DTm6V2705zeU5dcNvQDlonOR68XvX2sh1sEOHO",
                                                         termsURL: URL("https://element.io/cookie-policy"))

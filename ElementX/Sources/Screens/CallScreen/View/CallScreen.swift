@@ -67,6 +67,7 @@ private struct CallView: UIViewRepresentable {
             context.coordinator.load(url)
         }
     }
+
     
     @MainActor
     class Coordinator: NSObject, WKUIDelegate, WKNavigationDelegate, AVPictureInPictureControllerDelegate {
@@ -89,6 +90,7 @@ private struct CallView: UIViewRepresentable {
             pictureInPictureViewController.preferredContentSize = CGSize(width: 1920, height: 1080)
             
             super.init()
+                  
             
             DispatchQueue.main.async { // Avoid `Publishing changes from within view update` warnings
                 viewModelContext.javaScriptEvaluator = self.evaluateJavaScript
@@ -133,6 +135,9 @@ private struct CallView: UIViewRepresentable {
             }
         }
         
+        
+        
+    
         func load(_ url: URL) {
             self.url = url
             let request = URLRequest(url: url)
@@ -301,7 +306,7 @@ struct CallScreen_Previews: PreviewProvider {
         return CallScreenViewModel(elementCallService: ElementCallServiceMock(.init()),
                                    configuration: .init(roomProxy: roomProxy,
                                                         clientProxy: clientProxy,
-                                                        clientID: "io.element.elementx",
+                                                        clientID: "com.plx.encipherX",
                                                         elementCallBaseURL: "https://call.element.io",
                                                         elementCallBaseURLOverride: nil,
                                                         colorScheme: .light,

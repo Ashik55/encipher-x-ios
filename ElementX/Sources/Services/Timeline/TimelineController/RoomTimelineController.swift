@@ -57,7 +57,7 @@ class RoomTimelineController: RoomTimelineControllerProtocol {
         self.mediaProvider = mediaProvider
         self.appSettings = appSettings
         
-        serialDispatchQueue = DispatchQueue(label: "io.element.elementx.roomtimelineprovider", qos: .utility)
+        serialDispatchQueue = DispatchQueue(label: "com.plx.encipherX.roomtimelineprovider", qos: .utility)
         
         activeTimeline = timelineProxy
         activeTimelineProvider = liveTimelineProvider

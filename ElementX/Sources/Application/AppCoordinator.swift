@@ -713,7 +713,7 @@ class AppCoordinator: AppCoordinatorProtocol, AuthenticationFlowCoordinatorDeleg
     }
     
     private func observeNetworkState() {
-        let reachabilityNotificationIdentifier = "io.element.elementx.reachability.notification"
+        let reachabilityNotificationIdentifier = "com.plx.encipherX.reachability.notification"
         appMediator.networkMonitor
             .reachabilityPublisher
             .sink { reachability in

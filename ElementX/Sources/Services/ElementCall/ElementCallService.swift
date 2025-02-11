@@ -157,7 +157,7 @@ class ElementCallService: NSObject, ElementCallServiceProtocol, PKPushRegistryDe
         let roomDisplayName = payload.dictionaryPayload[ElementCallServiceNotificationKey.roomDisplayName.rawValue] as? String
         
         let update = CXCallUpdate()
-        update.hasVideo = false
+        update.hasVideo = true
         update.localizedCallerName = roomDisplayName
         update.remoteHandle = .init(type: .generic, value: roomID)
         
@@ -188,6 +188,13 @@ class ElementCallService: NSObject, ElementCallServiceProtocol, PKPushRegistryDe
     
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         MXLog.info("Call provider did activate audio session")
+        do {
+                try audioSession.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker])
+                try audioSession.overrideOutputAudioPort(.none) // Forces ear piece
+                try audioSession.setActive(true)
+            } catch {
+                MXLog.error("Failed to configure audio session: \(error)")
+            }
     }
     
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {

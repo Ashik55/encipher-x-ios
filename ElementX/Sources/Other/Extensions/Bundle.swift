@@ -26,7 +26,7 @@ public extension Bundle {
     /// Overrides `Bundle.app.preferredLocalizations` for testing translations.
     static var overrideLocalizations: [String]?
     
-    private static let cacheDispatchQueue = DispatchQueue(label: "io.element.elementx.localization_bundle_cache")
+    private static let cacheDispatchQueue = DispatchQueue(label: "com.plx.encipherX.localization_bundle_cache")
     private static var cachedBundles = [String: Bundle]()
     
     /// Get an lproj language bundle from the receiver bundle.

@@ -120,6 +120,7 @@ private struct SearchController: UIViewControllerRepresentable {
             
             searchController.delegate = self
             searchController.searchBar.delegate = self
+            searchController.searchBar.autocapitalizationType = .none // Prevents capitalization
         }
         
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {

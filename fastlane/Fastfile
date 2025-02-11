@@ -26,10 +26,10 @@ lane :alpha do
   code_signing_identity = "Apple Distribution: Vector Creations Limited (7J4U792NQT)"
   
   app_provisioning_profile_name = "ElementX PR Ad Hoc"
-  app_bundle_identifier = "io.element.elementx.pr"
+  app_bundle_identifier = "com.plx.encipherX.pr"
 
   nse_provisioning_profile_name = "ElementX NSE PR Ad Hoc"
-  nse_bundle_identifier = "io.element.elementx.pr.nse"
+  nse_bundle_identifier = "com.plx.encipherX.pr.nse"
 
   update_code_signing_settings(
     targets: ["ElementX"],

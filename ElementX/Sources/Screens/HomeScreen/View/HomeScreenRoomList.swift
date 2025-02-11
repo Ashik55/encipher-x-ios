@@ -33,6 +33,7 @@ struct HomeScreenRoomList: View {
             case .invite:
                 HomeScreenInviteCell(room: room, context: context)
                     .background(Color.compound.bgCanvasDefault)
+                   
             case .knock:
                 HomeScreenKnockedCell(room: room, context: context)
             case .room:

@@ -54,63 +54,51 @@ targets:
         CFBundleDisplayName: $(APP_DISPLAY_NAME)
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
-        CFBundleURLTypes: [
-          {
-            CFBundleTypeRole: Editor,
-            CFBundleURLName: "Element Call",
-            CFBundleURLSchemes: [
-              io.element.call
-            ]
-          },
-          {
-            CFBundleTypeRole: Editor,
-            CFBundleURLName: "Application",
-            CFBundleURLSchemes: [
-              $(BASE_BUNDLE_IDENTIFIER)
-            ]
-          }
-        ]
-        UISupportedInterfaceOrientations: [
-          UIInterfaceOrientationPortrait,
-          UIInterfaceOrientationPortraitUpsideDown,
-          UIInterfaceOrientationLandscapeLeft,
-          UIInterfaceOrientationLandscapeRight
-        ]
+        CFBundleURLTypes:
+          [
+            {
+              CFBundleTypeRole: Editor,
+              CFBundleURLName: "Element Call",
+              CFBundleURLSchemes: [com.plx.call],
+            },
+            {
+              CFBundleTypeRole: Editor,
+              CFBundleURLName: "Application",
+              CFBundleURLSchemes: [$(BASE_BUNDLE_IDENTIFIER)],
+            },
+          ]
+        UISupportedInterfaceOrientations:
+          [
+            UIInterfaceOrientationPortrait,
+            UIInterfaceOrientationPortraitUpsideDown,
+            UIInterfaceOrientationLandscapeLeft,
+            UIInterfaceOrientationLandscapeRight,
+          ]
         appGroupIdentifier: $(APP_GROUP_IDENTIFIER)
         baseBundleIdentifier: $(BASE_BUNDLE_IDENTIFIER)
         keychainAccessGroupIdentifier: $(KEYCHAIN_ACCESS_GROUP_IDENTIFIER)
         productionAppName: $(PRODUCTION_APP_NAME)
         ITSAppUsesNonExemptEncryption: false
-        NSUserActivityTypes: [
-          INSendMessageIntent,
-          INStartCallIntent,
-        ]
+        NSUserActivityTypes: [INSendMessageIntent, INStartCallIntent]
         NSCameraUsageDescription: To take pictures or videos and send them as a message $(APP_DISPLAY_NAME) needs access to the camera.
         NSMicrophoneUsageDescription: To record and send messages with audio, $(APP_DISPLAY_NAME) needs to access the microphone.
         NSPhotoLibraryAddUsageDescription: This lets you save images and videos to your photo library.
         NSLocationWhenInUseUsageDescription: Grant location access so that $(APP_DISPLAY_NAME) can share your location.
         NSFaceIDUsageDescription: Face ID is used to access your app.
-        UIBackgroundModes: [
-          audio,
-          fetch,
-          processing,
-          voip
-        ]
-        BGTaskSchedulerPermittedIdentifiers: [
-          io.element.elementx.background.refresh
-        ]
+        UIBackgroundModes: [audio, fetch, processing, voip]
+        BGTaskSchedulerPermittedIdentifiers:
+          [com.plx.encipherX.background.refresh]
         UTExportedTypeDeclarations:
-        - UTTypeConformsTo: [public.text]
-          UTTypeDescription: Mention Pills
-          UTTypeIdentifier: $(PILLS_UT_TYPE_IDENTIFIER)
+          - UTTypeConformsTo: [public.text]
+            UTTypeDescription: Mention Pills
+            UTTypeIdentifier: $(PILLS_UT_TYPE_IDENTIFIER)
         CFBundleDocumentTypes:
-        - CFBundleTypeName: Mention Pills
-          CFBundleTypeRole: Viewer
-          LSHandlerRank: Owner
-          LSItemContentTypes: $(PILLS_UT_TYPE_IDENTIFIER)
+          - CFBundleTypeName: Mention Pills
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Owner
+            LSItemContentTypes: $(PILLS_UT_TYPE_IDENTIFIER)
         LSSupportsOpeningDocumentsInPlace: false
         mapLibreAPIKey: $(MAPLIBRE_API_KEY)
-
 
     settings:
       base:
@@ -126,107 +114,107 @@ targets:
         PILLS_UT_TYPE_IDENTIFIER: $(BASE_BUNDLE_IDENTIFIER).pills
         DEVELOPMENT_ASSET_PATHS: DevelopmentAssets/Media
         OTHER_SWIFT_FLAGS:
-        - "-DIS_MAIN_APP"
+          - "-DIS_MAIN_APP"
 
     preBuildScripts:
-    - name: 🛠 SwiftGen
-      runOnlyWhenInstalling: false
-      basedOnDependencyAnalysis: false
-      shell: /bin/sh
-      script: |
-        export PATH="$PATH:/opt/homebrew/bin"
-        if which swiftgen >/dev/null; then
-            swiftgen config run --config Tools/SwiftGen/swiftgen-config.yml
-        else
-            echo "warning: SwiftGen not installed, download from https://github.com/SwiftGen/SwiftGen"
-        fi
-    - name: 🧙 Sourcery - Generate mocks
-      runOnlyWhenInstalling: false
-      basedOnDependencyAnalysis: false
-      shell: /bin/sh
-      script: |
-        export PATH="$PATH:/opt/homebrew/bin"
-        if which sourcery >/dev/null; then
-            sourcery --config Tools/Sourcery/AutoMockableConfig.yml
-        else
-            echo "warning: Sourcery not installed, run swift run tools setup-project"
-        fi
+      - name: 🛠 SwiftGen
+        runOnlyWhenInstalling: false
+        basedOnDependencyAnalysis: false
+        shell: /bin/sh
+        script: |
+          export PATH="$PATH:/opt/homebrew/bin"
+          if which swiftgen >/dev/null; then
+              swiftgen config run --config Tools/SwiftGen/swiftgen-config.yml
+          else
+              echo "warning: SwiftGen not installed, download from https://github.com/SwiftGen/SwiftGen"
+          fi
+      - name: 🧙 Sourcery - Generate mocks
+        runOnlyWhenInstalling: false
+        basedOnDependencyAnalysis: false
+        shell: /bin/sh
+        script: |
+          export PATH="$PATH:/opt/homebrew/bin"
+          if which sourcery >/dev/null; then
+              sourcery --config Tools/Sourcery/AutoMockableConfig.yml
+          else
+              echo "warning: Sourcery not installed, run swift run tools setup-project"
+          fi
 
-    - name: 🧙 Sourcery - Generate preview tests
-      runOnlyWhenInstalling: false
-      basedOnDependencyAnalysis: false
-      shell: /bin/sh
-      script: |
-        export PATH="$PATH:/opt/homebrew/bin"
-        if which sourcery >/dev/null; then
-            sourcery --config Tools/Sourcery/PreviewTestsConfig.yml
-        else
-            echo "warning: Sourcery not installed, run swift run tools setup-project"
-        fi
+      - name: 🧙 Sourcery - Generate preview tests
+        runOnlyWhenInstalling: false
+        basedOnDependencyAnalysis: false
+        shell: /bin/sh
+        script: |
+          export PATH="$PATH:/opt/homebrew/bin"
+          if which sourcery >/dev/null; then
+              sourcery --config Tools/Sourcery/PreviewTestsConfig.yml
+          else
+              echo "warning: Sourcery not installed, run swift run tools setup-project"
+          fi
 
     postBuildScripts:
-    - name: ⚠️ SwiftLint
-      runOnlyWhenInstalling: false
-      basedOnDependencyAnalysis: false
-      shell: /bin/sh
-      script: |
-        export PATH="$PATH:/opt/homebrew/bin"
-        if which swiftlint >/dev/null; then
-            swiftlint
-        else
-            echo "warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint"
-        fi
-    - name: 🧹 SwiftFormat
-      runOnlyWhenInstalling: false
-      basedOnDependencyAnalysis: false
-      shell: /bin/sh
-      script: |
-        export PATH="$PATH:/opt/homebrew/bin"
-        if which swiftformat >/dev/null; then
-            swiftformat --lint --lenient "$PROJECT_DIR"
-        else
-            echo "warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat"
-        fi
+      - name: ⚠️ SwiftLint
+        runOnlyWhenInstalling: false
+        basedOnDependencyAnalysis: false
+        shell: /bin/sh
+        script: |
+          export PATH="$PATH:/opt/homebrew/bin"
+          if which swiftlint >/dev/null; then
+              swiftlint
+          else
+              echo "warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint"
+          fi
+      - name: 🧹 SwiftFormat
+        runOnlyWhenInstalling: false
+        basedOnDependencyAnalysis: false
+        shell: /bin/sh
+        script: |
+          export PATH="$PATH:/opt/homebrew/bin"
+          if which swiftformat >/dev/null; then
+              swiftformat --lint --lenient "$PROJECT_DIR"
+          else
+              echo "warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat"
+          fi
 
     dependencies:
-    - target: NSE
-    - target: ShareExtension
-    # not used yet
-    # - target: NCE
-    - package: MatrixRustSDK
-      embed: true
-    - package: Compound
-    - package: Algorithms
-    - package: AnalyticsEvents
-    - package: Collections
-    - package: DeviceKit
-    - package: DTCoreText
-    - package: KeychainAccess
-    - package: Kingfisher
-    - package: KZFileWatchers
-    - package: LoremSwiftum
-    - package: LRUCache
-    - package: Mapbox
-    - package: PostHog
-    - package: SwiftState
-    - package: GZIP
-    - package: Sentry
-      products: 
-        - Sentry
-        - SentrySwiftUI
-    - package: Version
-    - package: Emojibase
-    - package: WysiwygComposer
-    - package: SwiftOGG
-    - package: DSWaveformImage
-      product: DSWaveformImageViews
+      - target: NSE
+      - target: ShareExtension
+      # not used yet
+      # - target: NCE
+      - package: MatrixRustSDK
+        embed: true
+      - package: Compound
+      - package: Algorithms
+      - package: AnalyticsEvents
+      - package: Collections
+      - package: DeviceKit
+      - package: DTCoreText
+      - package: KeychainAccess
+      - package: Kingfisher
+      - package: KZFileWatchers
+      - package: LoremSwiftum
+      - package: LRUCache
+      - package: Mapbox
+      - package: PostHog
+      - package: SwiftState
+      - package: GZIP
+      - package: Sentry
+        products:
+          - Sentry
+          - SentrySwiftUI
+      - package: Version
+      - package: Emojibase
+      - package: WysiwygComposer
+      - package: SwiftOGG
+      - package: DSWaveformImage
+        product: DSWaveformImageViews
 
     sources:
-    - path: ../Sources
-      excludes:
-        - Other/Extensions/XCTestCase.swift
-        - Other/Extensions/XCUIElement.swift
-    - path: ../Resources
-    - path: ../SupportingFiles
-    - path: ../../Tools/Scripts/Templates/SimpleScreenExample/ElementX
-    - path: ../../DevelopmentAssets/Media
+      - path: ../Sources
+        excludes:
+          - Other/Extensions/XCTestCase.swift
+          - Other/Extensions/XCUIElement.swift
+      - path: ../Resources
+      - path: ../SupportingFiles
+      - path: ../../Tools/Scripts/Templates/SimpleScreenExample/ElementX
+      - path: ../../DevelopmentAssets/Media

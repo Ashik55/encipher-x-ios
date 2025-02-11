@@ -35,6 +35,7 @@ struct HomeScreen: View {
     @State private var selectedTab = 0
     
     @State private var navigationTitle = "Chat" // Default title for Home tab
+    @State private var isKeyboardVisible = false
 
     
     
@@ -50,43 +51,49 @@ struct HomeScreen: View {
                 .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
                 .track(screen: .Home)
                 .sentryTrace("\(Self.self)")
+                .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+                              isKeyboardVisible = true
+                          }
+                          .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+                              isKeyboardVisible = false
+                          }
 
-            // Bottom Bar
-            HStack {
-                Spacer()
-                
-                Button(action: {
-                    print("Chat button tapped") // Replace with your Chat action
-                }) {
-                    VStack {
-                        Image(systemName: "message.fill")
-                            .font(.title2)
-                        Text("Chat")
-                            .font(.caption)
+                if !isKeyboardVisible { // Hide when keyboard is visible
+                            HStack {
+                                Spacer()
+                                
+                                Button(action: {
+                                    print("Chat button tapped")
+                                }) {
+                                    VStack {
+                                        Image(systemName: "message.fill")
+                                            .font(.title2)
+                                        Text("Chat")
+                                            .font(.caption)
+                                    }
+                                }
+                                Spacer()
+                                Spacer()
+
+                                Button(action: {
+                                    context.send(viewAction: .showSettings)
+                                }) {
+                                    VStack {
+                                        Image(systemName: "gearshape")
+                                            .font(.title2)
+                                        Text("Settings")
+                                            .font(.caption)
+                                    }
+                                }
+
+                                Spacer()
+                            }
+                            .padding()
+                            .background(Color.gray.opacity(0.1)) // Background for the bottom bar
+                            .transition(.move(edge: .bottom)) // Optional animation
                     }
                 }
-//                .padding()
-                Spacer()
-                Spacer()
-
-                Button(action: {
-                    context.send(viewAction: .showSettings)
-                }) {
-                    VStack {
-                        Image(systemName: "gearshape")
-                            .font(.title2)
-                        Text("Settings")
-                            .font(.caption)
-                    }
-                }
-//                .padding()
-
-                Spacer()
             }
-            .padding()
-            .background(Color.gray.opacity(0.1)) // Background for the bottom bar
-        }
-    }
 
     private func handleSettingsTapped() {
         // Your function logic here

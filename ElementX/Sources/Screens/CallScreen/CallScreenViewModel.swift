@@ -165,17 +165,6 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                     print("Call URL ==>> \(url)")
                     state.url = url
 
-//                    
-//                    let callType = audioCall ? "audio" : "video"
-//                    print("Call URL ==>> \(url)")
-//                    
-//                    if let validURL = URL(string: "\(url)&call_type=\(callType)") {
-//                        state.url = validURL
-//                    } else {
-//                        print("Error: Invalid URL string")
-//                    }
-//                    
- 
                     
                 case .failure(let error):
                     MXLog.error("Failed starting ElementCall Widget Driver with error: \(error)")
@@ -194,31 +183,11 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                     _ = await roomProxy.sendCallNotificationIfNeeded()
                 }
                 
-                
-//                try? await Task.sleep(nanoseconds: 4 * 1_000_000_000) // 5 seconds
-//                
-//                print("Is AudioCall==>\(audioCall)")
-//                if(audioCall){
-//                    await setAudioEnabled(true)
-//                    try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
-//                    await setAudioEnabled(true)
-//                }
-//                else{
-//                    await setAudioVideoEnabled(enabled: true)
-//                    try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
-//                    await setAudioVideoEnabled(enabled: true)
-//                    
-//                }
-              
-         
     
            
             }
         }
     }
-    
-    
-    
     
     
     private func handleBackwardsNavigation() async {
@@ -283,7 +252,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
     
     private func postJSONToWidget(_ json: String) async {
         
-//        print("postJSONToWidget==>: \(json)")
+        print("postJSONToWidget==>: \(json)")
         do {
             let message = "postMessage(\(json), '*')"
             let result = try await state.bindings.javaScriptEvaluator?(message)

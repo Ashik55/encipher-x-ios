@@ -150,7 +150,7 @@ private extension String {
     static let key3 = "foo.codable"
     static let key4 = "foo.volatile.codable"
     static let key5 = "foo.plist.array"
-    static let userDefaultsSuiteName = "io.element.elementx.unitests"
+    static let userDefaultsSuiteName = "com.plx.encipherX.unitests"
 }
 
 private extension UserDefaults {

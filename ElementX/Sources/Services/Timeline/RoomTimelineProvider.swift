@@ -46,7 +46,7 @@ class RoomTimelineProvider: RoomTimelineProviderProtocol {
     }
 
     init(timeline: Timeline, kind: TimelineKind, paginationStatePublisher: AnyPublisher<PaginationState, Never>) {
-        serialDispatchQueue = DispatchQueue(label: "io.element.elementx.roomtimelineprovider", qos: .utility)
+        serialDispatchQueue = DispatchQueue(label: "com.plx.encipherX.roomtimelineprovider", qos: .utility)
         itemProxiesSubject = CurrentValueSubject<[TimelineItemProxy], Never>([])
         self.kind = kind
         

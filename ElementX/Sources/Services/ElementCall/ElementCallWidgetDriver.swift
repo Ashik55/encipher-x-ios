@@ -17,7 +17,7 @@ struct ElementCallWidgetMessage: Codable {
     
     enum Action: String, Codable {
         case hangup = "im.vector.hangup"
-        case mediaState = "io.element.device_mute"
+        case mediaState = "com.plx.device_mute"
     }
     
     struct Data: Codable {

@@ -47,12 +47,12 @@ struct RoomAttachmentPicker: View {
             }
             .accessibilityIdentifier(A11yIdentifiers.roomScreen.attachmentPickerPoll)
             
-            Button {
-                context.send(viewAction: .attach(.location))
-            } label: {
-                Label(L10n.screenRoomAttachmentSourceLocation, icon: \.locationPin)
-            }
-            .accessibilityIdentifier(A11yIdentifiers.roomScreen.attachmentPickerLocation)
+//            Button {
+//                context.send(viewAction: .attach(.location))
+//            } label: {
+//                Label(L10n.screenRoomAttachmentSourceLocation, icon: \.locationPin)
+//            }
+//            .accessibilityIdentifier(A11yIdentifiers.roomScreen.attachmentPickerLocation)
             
             Button {
                 context.send(viewAction: .attach(.file))

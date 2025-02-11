@@ -65,6 +65,9 @@ struct HomeScreenInviteCell: View {
                 .padding(.top, 14)
                 .padding(.trailing, 22)
         }
+        .onAppear {
+            print("Invite Room==>>>> \(room)")
+        }
     }
 
     @ViewBuilder
@@ -115,7 +118,16 @@ struct HomeScreenInviteCell: View {
     }
         
     private var title: String {
-        room.name
+        print("Room ==> ")
+        print(room)
+
+        let pattern = #"^![A-Za-z0-9]+:dev\.enciph-er\.com$"#  // Matches "!<room_id>:dev.enciph-er.com"
+        
+        if room.name.range(of: pattern, options: .regularExpression) != nil {
+            return room.inviter?.displayName ?? room.name
+        }
+
+        return room.name
     }
     
     private var subtitle: String? {

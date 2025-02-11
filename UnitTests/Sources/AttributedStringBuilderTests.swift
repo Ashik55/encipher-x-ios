@@ -296,7 +296,7 @@ class AttributedStringBuilderTests: XCTestCase {
         
         XCTAssertEqual(attributedString.formattedComponents.count, 1)
         
-        for run in attributedString.runs where run.elementX.blockquote ?? false {
+        for run in attributedString.runs where run.encipherX.blockquote ?? false {
             return
         }
         
@@ -320,7 +320,7 @@ class AttributedStringBuilderTests: XCTestCase {
         
         XCTAssertEqual(attributedString.formattedComponents.count, 3)
         
-        for run in attributedString.runs where run.elementX.blockquote ?? false {
+        for run in attributedString.runs where run.encipherX.blockquote ?? false {
             return
         }
         
@@ -346,7 +346,7 @@ class AttributedStringBuilderTests: XCTestCase {
         XCTAssertEqual(coalescedComponents.first?.attributedString.runs.count, 3, "Link not present in the component")
         
         var foundBlockquoteAndLink = false
-        for run in attributedString.runs where run.elementX.blockquote ?? false && run.link != nil {
+        for run in attributedString.runs where run.encipherX.blockquote ?? false && run.link != nil {
             foundBlockquoteAndLink = true
         }
         
@@ -389,7 +389,7 @@ class AttributedStringBuilderTests: XCTestCase {
         XCTAssertEqual(attributedString.formattedComponents.count, 1)
         
         var numberOfBlockquotes = 0
-        for run in attributedString.runs where run.elementX.blockquote ?? false && run.link != nil {
+        for run in attributedString.runs where run.encipherX.blockquote ?? false && run.link != nil {
             numberOfBlockquotes += 1
         }
         
@@ -418,7 +418,7 @@ class AttributedStringBuilderTests: XCTestCase {
         XCTAssertEqual(coalescedComponents.count, 6)
         
         var numberOfBlockquotes = 0
-        for run in attributedString.runs where run.elementX.blockquote ?? false && run.link != nil {
+        for run in attributedString.runs where run.encipherX.blockquote ?? false && run.link != nil {
             numberOfBlockquotes += 1
         }
         

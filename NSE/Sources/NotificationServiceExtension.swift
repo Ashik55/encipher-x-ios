@@ -45,7 +45,7 @@ class NotificationServiceExtension: UNNotificationServiceExtension {
     private let appHooks = AppHooks()
     
     // Used to create one single UserSession across process/instances/runs
-    private static let serialQueue = DispatchQueue(label: "io.element.elementx.nse")
+    private static let serialQueue = DispatchQueue(label: "com.plx.encipherX.nse")
     
     // Temporary. We need to make sure the NSE and the main app pass in the same value.
     // The NSE has a tendency of staying alive for longer so use this to manually kill it

@@ -13,7 +13,7 @@ import MatrixRustSDK
 final class RoomDirectorySearchProxy: RoomDirectorySearchProxyProtocol {
     private let roomDirectorySearch: RoomDirectorySearchProtocol
     private let appSettings: AppSettings
-    private let serialDispatchQueue = DispatchQueue(label: "io.element.elementx.roomdirectorysearch", qos: .default)
+    private let serialDispatchQueue = DispatchQueue(label: "com.plx.encipherX.roomdirectorysearch", qos: .default)
     
     private let resultsSubject = CurrentValueSubject<[RoomDirectorySearchResult], Never>([])
     

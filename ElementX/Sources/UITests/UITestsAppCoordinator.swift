@@ -34,7 +34,7 @@ class UITestsAppCoordinator: AppCoordinatorProtocol, SecureWindowManagerDelegate
         
         ServiceLocator.shared.register(userIndicatorController: UserIndicatorController())
         
-        AppSettings.configureWithSuiteName("io.element.elementx.uitests")
+        AppSettings.configureWithSuiteName("com.plx.encipherX.uitests")
         AppSettings.resetAllSettings()
         ServiceLocator.shared.register(appSettings: AppSettings())
         ServiceLocator.shared.register(bugReportService: BugReportServiceMock())
