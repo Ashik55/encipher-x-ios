@@ -54,20 +54,23 @@ class StartChatScreenViewModel: StartChatScreenViewModelType, StartChatScreenVie
         case .createRoom:
             actionsSubject.send(.createRoom)
         case .selectUser(let user):
-            showLoadingIndicator()
+            showLoadingIndicator(delay: .milliseconds(200))
             Task {
                 let currentDirectRoom = await userSession.clientProxy.directRoomForUserID(user.userID)
                 switch currentDirectRoom {
                 case .success(.some(let roomId)):
-                    self.hideLoadingIndicator()
-                    self.actionsSubject.send(.openRoom(withIdentifier: roomId))
+                    hideLoadingIndicator()
+                    actionsSubject.send(.openRoom(withIdentifier: roomId))
                 case .success:
-                    await self.createDirectRoom(with: user)
+                    hideLoadingIndicator()
+                    state.bindings.selectedUserToInvite = user
                 case .failure:
-                    self.hideLoadingIndicator()
-                    self.displayError()
+                    hideLoadingIndicator()
+                    displayError()
                 }
             }
+        case .createDM(let user):
+            Task { await createDirectRoom(user: user) }
         }
     }
     
@@ -124,7 +127,7 @@ class StartChatScreenViewModel: StartChatScreenViewModelType, StartChatScreenVie
         }
     }
         
-    private func createDirectRoom(with user: UserProfileProxy) async {
+    private func createDirectRoom(user: UserProfileProxy) async {
         defer {
             hideLoadingIndicator()
         }
@@ -148,11 +151,12 @@ class StartChatScreenViewModel: StartChatScreenViewModelType, StartChatScreenVie
     
     private static let loadingIndicatorIdentifier = "\(StartChatScreenViewModel.self)-Loading"
     
-    private func showLoadingIndicator() {
+    private func showLoadingIndicator(delay: Duration? = nil) {
         userIndicatorController.submitIndicator(UserIndicator(id: Self.loadingIndicatorIdentifier,
                                                               type: .modal(progress: .indeterminate, interactiveDismissDisabled: true, allowsInteraction: false),
                                                               title: L10n.commonLoading,
-                                                              persistent: true))
+                                                              persistent: true),
+                                                delay: delay)
     }
     
     private func hideLoadingIndicator() {

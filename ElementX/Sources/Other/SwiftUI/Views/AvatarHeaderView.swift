@@ -37,7 +37,14 @@ struct AvatarHeaderView<Footer: View>: View {
          @ViewBuilder footer: @escaping () -> Footer) {
         avatarInfo = .room(room.avatar)
         title = room.name ?? room.id
-        subtitle = room.canonicalAlias
+        
+        if let roomAlias = room.canonicalAlias {
+            subtitle = roomAlias
+        } else if room.isDirect, case let .heroes(heroes) = room.avatar, heroes.count == 1 {
+            subtitle = heroes[0].userID
+        } else {
+            subtitle = nil
+        }
         
         self.avatarSize = avatarSize
         self.mediaProvider = mediaProvider

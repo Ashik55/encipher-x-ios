@@ -21,7 +21,7 @@ class RoomDetailsScreenViewModel: RoomDetailsScreenViewModelType, RoomDetailsScr
     private let appSettings: AppSettings
 
     private var dmRecipient: RoomMemberProxyProtocol?
-    private var pinnedEventsTimelineProvider: RoomTimelineProviderProtocol? {
+    private var pinnedEventsTimelineProvider: TimelineProviderProtocol? {
         didSet {
             guard let pinnedEventsTimelineProvider else {
                 return
@@ -170,6 +170,11 @@ class RoomDetailsScreenViewModel: RoomDetailsScreenViewModelType, RoomDetailsScr
             actionsSubject.send(.displayKnockingRequests)
         case .processTapSecurityAndPrivacy:
             actionsSubject.send(.displaySecurityAndPrivacy)
+        case .processTapRecipientProfile:
+            guard let userID = dmRecipient?.userID else {
+                return
+            }
+            actionsSubject.send(.requestRecipientDetailsPresentation(userID: userID))
         }
     }
     
@@ -194,6 +199,12 @@ class RoomDetailsScreenViewModel: RoomDetailsScreenViewModelType, RoomDetailsScr
             .removeDuplicates()
             .throttle(for: .milliseconds(100), scheduler: DispatchQueue.main, latest: true)
             .weakAssign(to: \.state.knockRequestsCount, on: self)
+            .store(in: &cancellables)
+        
+        roomProxy.membersPublisher.combineLatest(roomProxy.identityStatusChangesPublisher)
+            .sink { _ in
+                Task { await self.updateMemberIdentityVerificationStates() }
+            }
             .store(in: &cancellables)
     }
     
@@ -232,6 +243,24 @@ class RoomDetailsScreenViewModel: RoomDetailsScreenViewModelType, RoomDetailsScr
             .store(in: &cancellables)
         
         await roomProxy.updateMembers()
+    }
+    
+    private func updateMemberIdentityVerificationStates() async {
+        guard roomProxy.isEncrypted else {
+            // We don't care about identity statuses on non-encrypted rooms
+            return
+        }
+        
+        for member in roomProxy.membersPublisher.value {
+            if case let .success(identity) = await clientProxy.userIdentity(for: member.userID) {
+                if identity?.verificationState == .verificationViolation {
+                    state.hasMemberIdentityVerificationStateViolations = true
+                    return
+                }
+            }
+        }
+        
+        state.hasMemberIdentityVerificationStateViolations = false
     }
     
     private func updatePowerLevelPermissions() async {

@@ -30,10 +30,11 @@ enum ClientProxyLoadingState {
 
 enum ClientProxyError: Error {
     case sdkError(Error)
+    case forbiddenAccess
     
     case invalidMedia
     case invalidServerName
-    case failedUploadingMedia(Error, MatrixErrorCode)
+    case failedUploadingMedia(ErrorKind)
     case roomPreviewIsPrivate
     case failedRetrievingUserIdentity
     case failedResolvingRoomAlias
@@ -74,9 +75,11 @@ protocol ClientProxyProtocol: AnyObject, MediaLoaderProtocol {
     var deviceID: String? { get }
 
     var homeserver: String { get }
-
+    
+    // TODO: This is a temporary value, in the future we should throw a migration error
+    // when decoding a session that contains a sliding sync proxy URL instead of restoring it.
+    var needsSlidingSyncMigration: Bool { get }
     var slidingSyncVersion: SlidingSyncVersion { get }
-    var availableSlidingSyncVersions: [SlidingSyncVersion] { get async }
     
     var canDeactivateAccount: Bool { get }
     
@@ -113,13 +116,10 @@ protocol ClientProxyProtocol: AnyObject, MediaLoaderProtocol {
     
     func accountURL(action: AccountManagementAction) async -> URL?
     
-    func createDirectRoomIfNeeded(with userID: String, expectedRoomName: String?) async -> Result<(roomID: String, isNewRoom: Bool), ClientProxyError>
-    
     func directRoomForUserID(_ userID: String) async -> Result<String?, ClientProxyError>
     
     func createDirectRoom(with userID: String, expectedRoomName: String?) async -> Result<String, ClientProxyError>
     
-    // swiftlint:disable:next function_parameter_count
     func createRoom(name: String,
                     topic: String?,
                     isRoomPrivate: Bool,
@@ -193,5 +193,5 @@ protocol ClientProxyProtocol: AnyObject, MediaLoaderProtocol {
     func withdrawUserIdentityVerification(_ userID: String) async -> Result<Void, ClientProxyError>
     func resetIdentity() async -> Result<IdentityResetHandle?, ClientProxyError>
     
-    func userIdentity(for userID: String) async -> Result<UserIdentity?, ClientProxyError>
+    func userIdentity(for userID: String) async -> Result<UserIdentityProxyProtocol?, ClientProxyError>
 }

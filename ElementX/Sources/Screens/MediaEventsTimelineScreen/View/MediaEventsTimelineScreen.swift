@@ -11,32 +11,19 @@ import SwiftUI
 struct MediaEventsTimelineScreen: View {
     @ObservedObject var context: MediaEventsTimelineScreenViewModel.Context
     
-    @Namespace private var zoomTransition
-    
     var body: some View {
         mainContent
             .navigationBarTitleDisplayMode(.inline)
             .background(.compound.bgCanvasDefault)
             // Doesn't play well with the transformed scrollView
             .toolbarBackground(.visible, for: .navigationBar)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Picker("", selection: $context.screenMode) {
-                        Text(L10n.screenMediaBrowserListModeMedia)
-                            .padding()
-                            .tag(MediaEventsTimelineScreenMode.media)
-                        Text(L10n.screenMediaBrowserListModeFiles)
-                            .padding()
-                            .tag(MediaEventsTimelineScreenMode.files)
-                    }
-                    .pickerStyle(.segmented)
-                }
-            }
-            .environmentObject(context.viewState.activeTimelineContextProvider())
-            .environment(\.timelineContext, context.viewState.activeTimelineContextProvider())
+            .toolbar { toolbar }
+            .environmentObject(context.viewState.activeTimelineContext)
+            .environment(\.timelineContext, context.viewState.activeTimelineContext)
             .onChange(of: context.screenMode) { _, _ in
                 context.send(viewAction: .changedScreenMode)
             }
+            .timelineMediaPreview(viewModel: $context.mediaPreviewViewModel)
     }
     
     // The scale effects do the following:
@@ -77,9 +64,8 @@ struct MediaEventsTimelineScreen: View {
                             tappedItem(item)
                         } label: {
                             viewForTimelineItem(item)
-                                .scaleEffect(scale(for: item, isGridLayout: true))
+                                .scaleEffect(CGSize(width: -1, height: -1))
                         }
-                        .zoomTransitionSource(id: item.identifier, in: zoomTransition)
                     }
                 } footer: {
                     // Use a footer as the header because the scrollView is flipped
@@ -104,9 +90,8 @@ struct MediaEventsTimelineScreen: View {
                                 tappedItem(item)
                             } label: {
                                 viewForTimelineItem(item)
-                                    .scaleEffect(scale(for: item, isGridLayout: false))
+                                    .scaleEffect(CGSize(width: 1, height: -1))
                             }
-                            .zoomTransitionSource(id: item.identifier, in: zoomTransition)
                         }
                         .padding(.horizontal, 16)
                     }
@@ -152,7 +137,7 @@ struct MediaEventsTimelineScreen: View {
             AudioMediaEventsTimelineView(timelineItem: timelineItem)
         case .voice(let timelineItem):
             let defaultPlayerState = AudioPlayerState(id: .timelineItemIdentifier(timelineItem.id), title: L10n.commonVoiceMessage, duration: 0)
-            let playerState = context.viewState.activeTimelineContextProvider().viewState.audioPlayerStateProvider?(timelineItem.id) ?? defaultPlayerState
+            let playerState = context.viewState.activeTimelineContext.viewState.audioPlayerStateProvider?(timelineItem.id) ?? defaultPlayerState
             VoiceMessageMediaEventsTimelineView(timelineItem: timelineItem, playerState: playerState)
         default:
             EmptyView()
@@ -206,17 +191,29 @@ struct MediaEventsTimelineScreen: View {
         }
     }
     
-    func tappedItem(_ item: RoomTimelineItemViewState) {
-        context.send(viewAction: .tappedItem(item: item, namespace: zoomTransition))
+    @ToolbarContentBuilder
+    private var toolbar: some ToolbarContent {
+        ToolbarItem(placement: .principal) {
+            Picker("", selection: $context.screenMode) {
+                Text(L10n.screenMediaBrowserListModeMedia)
+                    .padding()
+                    .tag(MediaEventsTimelineScreenMode.media)
+                Text(L10n.screenMediaBrowserListModeFiles)
+                    .padding()
+                    .tag(MediaEventsTimelineScreenMode.files)
+            }
+            .pickerStyle(.segmented)
+            .frame(idealWidth: .greatestFiniteMagnitude)
+        }
+        
+        ToolbarItem(placement: .primaryAction) {
+            // Reserve the space trailing space to match the back button.
+            CompoundIcon(\.search).hidden()
+        }
     }
     
-    func scale(for item: RoomTimelineItemViewState, isGridLayout: Bool) -> CGSize {
-        if item.identifier == context.viewState.currentPreviewItemID, #available(iOS 18.0, *) {
-            // Remove the flip when presenting a preview so that the zoom transition is the right way up 🙃
-            CGSize(width: 1, height: 1)
-        } else {
-            CGSize(width: isGridLayout ? -1 : 1, height: -1)
-        }
+    func tappedItem(_ item: RoomTimelineItemViewState) {
+        context.send(viewAction: .tappedItem(item: item))
     }
 }
 
@@ -254,16 +251,17 @@ struct MediaEventsTimelineScreen_Previews: PreviewProvider, TestablePreview {
                                       screenMode: MediaEventsTimelineScreenMode) -> MediaEventsTimelineScreenViewModel {
         MediaEventsTimelineScreenViewModel(mediaTimelineViewModel: makeTimelineViewModel(empty: empty),
                                            filesTimelineViewModel: makeTimelineViewModel(empty: empty),
-                                           initialViewState: .init(bindings: .init(screenMode: screenMode)),
+                                           initialScreenMode: screenMode,
                                            mediaProvider: MediaProviderMock(configuration: .init()),
-                                           userIndicatorController: UserIndicatorControllerMock())
+                                           userIndicatorController: UserIndicatorControllerMock(),
+                                           appMediator: AppMediatorMock())
     }
     
     private static func makeTimelineViewModel(empty: Bool) -> TimelineViewModel {
         let timelineController = if empty {
-            MockRoomTimelineController.emptyMediaGallery
+            MockTimelineController.emptyMediaGallery
         } else {
-            MockRoomTimelineController.mediaGallery
+            MockTimelineController.mediaGallery
         }
         
         return TimelineViewModel(roomProxy: JoinedRoomProxyMock(.init(name: "Preview room")),
@@ -275,6 +273,7 @@ struct MediaEventsTimelineScreen_Previews: PreviewProvider, TestablePreview {
                                  appMediator: AppMediatorMock.default,
                                  appSettings: ServiceLocator.shared.settings,
                                  analyticsService: ServiceLocator.shared.analytics,
-                                 emojiProvider: EmojiProvider(appSettings: ServiceLocator.shared.settings))
+                                 emojiProvider: EmojiProvider(appSettings: ServiceLocator.shared.settings),
+                                 timelineControllerFactory: TimelineControllerFactoryMock(.init()))
     }
 }

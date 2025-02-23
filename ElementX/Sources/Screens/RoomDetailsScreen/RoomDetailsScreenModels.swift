@@ -12,9 +12,10 @@ import SwiftUI
 
 // MARK: View model
 
-enum RoomDetailsScreenViewModelAction {
+enum RoomDetailsScreenViewModelAction: Equatable {
     case requestNotificationSettingsPresentation
     case requestMemberDetailsPresentation
+    case requestRecipientDetailsPresentation(userID: String)
     case requestInvitePeoplePresentation
     case leftRoom
     case requestEditDetailsPresentation
@@ -38,7 +39,10 @@ struct RoomDetailsScreenViewState: BindableState {
 
     var topic: AttributedString?
     var topicSummary: AttributedString?
+    
     var joinedMembersCount: Int
+    var hasMemberIdentityVerificationStateViolations = false
+    
     var isProcessingIgnoreRequest = false
     var canInviteUsers = false
     var canEditRoomName = false
@@ -68,7 +72,7 @@ struct RoomDetailsScreenViewState: BindableState {
     }
     
     var hasTopicSection: Bool {
-        topic != nil || (canEdit && canEditRoomTopic)
+        topic != nil || canEditRoomTopic
     }
 
     var bindings: RoomDetailsScreenViewStateBindings
@@ -198,6 +202,7 @@ enum RoomDetailsScreenViewAction {
     case ignoreConfirmed
     case unignoreConfirmed
     case processTapNotifications
+    case processTapRecipientProfile
     case processToggleMuteNotifications
     case displayAvatar(URL)
     case processTapPolls

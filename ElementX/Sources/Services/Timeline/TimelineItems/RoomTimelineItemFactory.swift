@@ -205,6 +205,7 @@ struct RoomTimelineItemFactory: RoomTimelineItemFactoryProtocol {
                              isEditable: eventItemProxy.isEditable,
                              canBeRepliedTo: eventItemProxy.canBeRepliedTo,
                              isThreaded: messageContent.threadRoot != nil,
+                             shouldBoost: eventItemProxy.shouldBoost,
                              sender: eventItemProxy.sender,
                              content: buildTextTimelineItemContent(textMessageContent),
                              replyDetails: buildReplyToDetailsFromDetailsIfAvailable(details: messageContent.inReplyTo),
@@ -225,6 +226,7 @@ struct RoomTimelineItemFactory: RoomTimelineItemFactoryProtocol {
                               isEditable: eventItemProxy.isEditable,
                               canBeRepliedTo: eventItemProxy.canBeRepliedTo,
                               isThreaded: messageContent.threadRoot != nil,
+                              shouldBoost: eventItemProxy.shouldBoost,
                               sender: eventItemProxy.sender,
                               content: buildImageTimelineItemContent(imageMessageContent),
                               replyDetails: buildReplyToDetailsFromDetailsIfAvailable(details: messageContent.inReplyTo),
@@ -245,6 +247,7 @@ struct RoomTimelineItemFactory: RoomTimelineItemFactoryProtocol {
                               isEditable: eventItemProxy.isEditable,
                               canBeRepliedTo: eventItemProxy.canBeRepliedTo,
                               isThreaded: messageContent.threadRoot != nil,
+                              shouldBoost: eventItemProxy.shouldBoost,
                               sender: eventItemProxy.sender,
                               content: buildVideoTimelineItemContent(videoMessageContent),
                               replyDetails: buildReplyToDetailsFromDetailsIfAvailable(details: messageContent.inReplyTo),
@@ -265,6 +268,7 @@ struct RoomTimelineItemFactory: RoomTimelineItemFactoryProtocol {
                               isEditable: eventItemProxy.isEditable,
                               canBeRepliedTo: eventItemProxy.canBeRepliedTo,
                               isThreaded: messageContent.threadRoot != nil,
+                              shouldBoost: eventItemProxy.shouldBoost,
                               sender: eventItemProxy.sender,
                               content: buildAudioTimelineItemContent(audioMessageContent),
                               replyDetails: buildReplyToDetailsFromDetailsIfAvailable(details: messageContent.inReplyTo),
@@ -305,6 +309,7 @@ struct RoomTimelineItemFactory: RoomTimelineItemFactoryProtocol {
                              isEditable: eventItemProxy.isEditable,
                              canBeRepliedTo: eventItemProxy.canBeRepliedTo,
                              isThreaded: messageContent.threadRoot != nil,
+                             shouldBoost: eventItemProxy.shouldBoost,
                              sender: eventItemProxy.sender,
                              content: buildFileTimelineItemContent(fileMessageContent),
                              replyDetails: buildReplyToDetailsFromDetailsIfAvailable(details: messageContent.inReplyTo),
@@ -374,8 +379,7 @@ struct RoomTimelineItemFactory: RoomTimelineItemFactoryProtocol {
                                                                         orderedReadReceipts: orderReadReceipts(eventItemProxy.readReceipts),
                                                                         encryptionAuthenticity: authenticity(eventItemProxy.shieldState)))
     }
-
-    // swiftlint:disable:next function_parameter_count
+    
     private func buildPollTimelineItem(_ question: String,
                                        _ pollKind: PollKind,
                                        _ maxSelections: UInt64,
@@ -640,7 +644,6 @@ struct RoomTimelineItemFactory: RoomTimelineItemFactoryProtocol {
         return buildStateTimelineItem(for: eventItemProxy, text: text, isOutgoing: isOutgoing)
     }
     
-    // swiftlint:disable:next function_parameter_count
     private func buildStateProfileChangeTimelineItem(for eventItemProxy: EventTimelineItemProxy,
                                                      displayName: String?,
                                                      previousDisplayName: String?,

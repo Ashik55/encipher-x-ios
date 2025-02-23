@@ -10,12 +10,13 @@ import SwiftUI
 
 struct PinnedEventsTimelineScreenCoordinatorParameters {
     let roomProxy: JoinedRoomProxyProtocol
-    let timelineController: RoomTimelineControllerProtocol
+    let timelineController: TimelineControllerProtocol
     let mediaProvider: MediaProviderProtocol
     let mediaPlayerProvider: MediaPlayerProviderProtocol
     let voiceMessageMediaManager: VoiceMessageMediaManagerProtocol
     let appMediator: AppMediatorProtocol
     let emojiProvider: EmojiProviderProtocol
+    let timelineControllerFactory: TimelineControllerFactoryProtocol
 }
 
 enum PinnedEventsTimelineScreenCoordinatorAction {
@@ -51,7 +52,8 @@ final class PinnedEventsTimelineScreenCoordinator: CoordinatorProtocol {
                                               appMediator: parameters.appMediator,
                                               appSettings: ServiceLocator.shared.settings,
                                               analyticsService: ServiceLocator.shared.analytics,
-                                              emojiProvider: parameters.emojiProvider)
+                                              emojiProvider: parameters.emojiProvider,
+                                              timelineControllerFactory: parameters.timelineControllerFactory)
     }
     
     func start() {
@@ -60,6 +62,9 @@ final class PinnedEventsTimelineScreenCoordinator: CoordinatorProtocol {
             
             guard let self else { return }
             switch action {
+            case .viewInRoomTimeline(let itemID):
+                guard let eventID = itemID.eventID else { fatalError("A pinned event must have an event ID.") }
+                actionsSubject.send(.displayRoomScreenWithFocussedPin(eventID: eventID))
             case .dismiss:
                 self.actionsSubject.send(.dismiss)
             }
@@ -75,6 +80,8 @@ final class PinnedEventsTimelineScreenCoordinator: CoordinatorProtocol {
                 actionsSubject.send(.displayUser(userID: userID))
             case .displayMessageForwarding(let forwardingItem):
                 actionsSubject.send(.displayMessageForwarding(forwardingItem: forwardingItem))
+            case .displayMediaPreview(let mediaPreviewViewModel):
+                viewModel.displayMediaPreview(mediaPreviewViewModel)
             case .displayLocation(_, let geoURI, let description):
                 actionsSubject.send(.presentLocationViewer(geoURI: geoURI, description: description))
             case .viewInRoomTimeline(let eventID):
@@ -88,6 +95,10 @@ final class PinnedEventsTimelineScreenCoordinator: CoordinatorProtocol {
             }
         }
         .store(in: &cancellables)
+    }
+    
+    func stop() {
+        viewModel.stop()
     }
         
     func toPresentable() -> AnyView {

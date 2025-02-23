@@ -159,11 +159,8 @@ private struct CallView: UIViewRepresentable {
             }
         }
         
-        nonisolated func userContentController(_ userContentController: WKUserContentController,
-                                               didReceive message: WKScriptMessage) {
-            Task { @MainActor [weak self] in
-                self?.viewModelContext?.javaScriptMessageHandler?(message.body)
-            }
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            viewModelContext?.javaScriptMessageHandler?(message.body)
         }
         
         // MARK: - WKUIDelegate
@@ -198,10 +195,8 @@ private struct CallView: UIViewRepresentable {
             return .cancel
         }
         
-        nonisolated func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            Task { @MainActor in
-                viewModelContext?.send(viewAction: .urlChanged(webView.url))
-            }
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            viewModelContext?.send(viewAction: .urlChanged(webView.url))
         }
         
         // MARK: - Picture in Picture
@@ -278,8 +273,7 @@ private struct CallView: UIViewRepresentable {
         
         // MARK: - WKScriptMessageHandler
         
-        nonisolated func userContentController(_ userContentController: WKUserContentController,
-                                               didReceive message: WKScriptMessage) {
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
             coordinator?.userContentController(userContentController, didReceive: message)
         }
     }

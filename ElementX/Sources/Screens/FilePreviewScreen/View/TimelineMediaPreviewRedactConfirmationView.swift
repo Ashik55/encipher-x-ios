@@ -11,8 +11,11 @@ import SwiftUI
 struct TimelineMediaPreviewRedactConfirmationView: View {
     @Environment(\.dismiss) private var dismiss
     
-    let item: TimelineMediaPreviewItem
+    let item: TimelineMediaPreviewItem.Media
     @ObservedObject var context: TimelineMediaPreviewViewModel.Context
+    
+    @State private var sheetHeight: CGFloat = .zero
+    private let topPadding: CGFloat = 19
     
     var body: some View {
         ScrollView {
@@ -21,10 +24,12 @@ struct TimelineMediaPreviewRedactConfirmationView: View {
                 preview
                 buttons
             }
+            .readHeight($sheetHeight)
         }
-        .presentationDetents([.medium])
+        .scrollBounceBehavior(.basedOnSize)
+        .padding(.top, topPadding) // For the drag indicator
+        .presentationDetents([.height(sheetHeight + topPadding)])
         .presentationDragIndicator(.visible)
-        .padding(.top, 19) // For the drag indicator
         .presentationBackground(.compound.bgCanvasDefault)
         .preferredColorScheme(.dark)
     }
@@ -34,12 +39,12 @@ struct TimelineMediaPreviewRedactConfirmationView: View {
             BigIcon(icon: \.delete, style: .alertSolid)
             
             VStack(spacing: 8) {
-                Text(L10n.screenMediaDetailsRedactConfirmationTitle)
+                Text(L10n.screenMediaBrowserDeleteConfirmationTitle)
                     .font(.compound.headingMDBold)
                     .foregroundStyle(.compound.textPrimary)
                     .multilineTextAlignment(.center)
                 
-                Text(L10n.screenMediaDetailsRedactConfirmationMessage)
+                Text(L10n.screenMediaBrowserDeleteConfirmationSubtitle)
                     .font(.compound.bodyMD)
                     .foregroundStyle(.compound.textSecondary)
                     .multilineTextAlignment(.center)
@@ -58,7 +63,7 @@ struct TimelineMediaPreviewRedactConfirmationView: View {
                     .scaledFrame(size: 40)
                     .background {
                         LoadableImage(mediaSource: mediaSource,
-                                      mediaType: .timelineItem(uniqueID: item.id.uniqueID.id),
+                                      mediaType: .generic,
                                       blurhash: item.blurhash,
                                       mediaProvider: context.mediaProvider) {
                             Color.compound.bgSubtleSecondary
@@ -116,11 +121,12 @@ struct TimelineMediaPreviewRedactConfirmationView: View {
 import UniformTypeIdentifiers
 
 struct TimelineMediaPreviewRedactConfirmationView_Previews: PreviewProvider, TestablePreview {
-    @Namespace private static var previewNamespace
     static let viewModel = makeViewModel(contentType: .jpeg)
     
     static var previews: some View {
-        TimelineMediaPreviewRedactConfirmationView(item: viewModel.state.currentItem, context: viewModel.context)
+        if case let .media(mediaItem) = viewModel.state.currentItem {
+            TimelineMediaPreviewRedactConfirmationView(item: mediaItem, context: viewModel.context)
+        }
     }
     
     static func makeViewModel(contentType: UTType? = nil) -> TimelineMediaPreviewViewModel {
@@ -138,12 +144,11 @@ struct TimelineMediaPreviewRedactConfirmationView_Previews: PreviewProvider, Tes
                                                         thumbnailInfo: .mockThumbnail,
                                                         contentType: contentType))
         
-        let timelineController = MockRoomTimelineController(timelineKind: .media(.mediaFilesScreen))
+        let timelineController = MockTimelineController(timelineKind: .media(.mediaFilesScreen))
         timelineController.timelineItems = [item]
-        return TimelineMediaPreviewViewModel(context: .init(item: item,
-                                                            viewModel: TimelineViewModel.mock(timelineKind: timelineController.timelineKind,
-                                                                                              timelineController: timelineController),
-                                                            namespace: previewNamespace),
+        return TimelineMediaPreviewViewModel(initialItem: item,
+                                             timelineViewModel: TimelineViewModel.mock(timelineKind: timelineController.timelineKind,
+                                                                                       timelineController: timelineController),
                                              mediaProvider: MediaProviderMock(configuration: .init()),
                                              photoLibraryManager: PhotoLibraryManagerMock(.init()),
                                              userIndicatorController: UserIndicatorControllerMock(),

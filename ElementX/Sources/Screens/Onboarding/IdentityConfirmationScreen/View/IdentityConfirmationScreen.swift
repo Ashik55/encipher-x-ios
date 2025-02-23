@@ -116,6 +116,8 @@ struct IdentityConfirmationScreen: View {
 // MARK: - Previews
 
 struct IdentityConfirmationScreen_Previews: PreviewProvider, TestablePreview {
+    static var viewModel = makeViewModel()
+    
     static var previews: some View {
         NavigationStack {
             IdentityConfirmationScreen(context: viewModel.context)
@@ -125,7 +127,7 @@ struct IdentityConfirmationScreen_Previews: PreviewProvider, TestablePreview {
         })
     }
     
-    private static var viewModel: IdentityConfirmationScreenViewModel {
+    static func makeViewModel() -> IdentityConfirmationScreenViewModel {
         let clientProxy = ClientProxyMock(.init())
         let userSession = UserSessionMock(.init(clientProxy: clientProxy))
         userSession.sessionSecurityStatePublisher = CurrentValuePublisher<SessionSecurityState, Never>(.init(verificationState: .unverified, recoveryState: .enabled))

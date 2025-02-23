@@ -15,6 +15,7 @@ typealias PasteHandler = (NSItemProvider) -> Void
 struct MessageComposer: View {
     @Binding var plainComposerText: NSAttributedString
     @Binding var presendCallback: (() -> Void)?
+    @Binding var selectedRange: NSRange
     let composerView: WysiwygComposerView
     let mode: ComposerMode
     let composerFormattingEnabled: Bool
@@ -66,6 +67,7 @@ struct MessageComposer: View {
             MessageComposerTextField(placeholder: L10n.richTextEditorComposerPlaceholder,
                                      text: $plainComposerText,
                                      presendCallback: $presendCallback,
+                                     selectedRange: $selectedRange,
                                      maxHeight: ComposerConstant.maxHeight,
                                      keyHandler: { handleKeyPress($0) },
                                      pasteHandler: pasteAction)
@@ -91,7 +93,7 @@ struct MessageComposer: View {
 
     private var resizeGrabber: some View {
         Capsule()
-            .foregroundColor(Asset.Colors.grabber.swiftUIColor)
+            .foregroundStyle(.tertiary)
             .frame(width: 36, height: 5)
             .padding(.vertical, 2)
             .frame(maxWidth: .infinity)
@@ -285,6 +287,7 @@ struct MessageComposer_Previews: PreviewProvider, TestablePreview {
         
         return MessageComposer(plainComposerText: .constant(content),
                                presendCallback: .constant(nil),
+                               selectedRange: .constant(NSRange(location: 0, length: 0)),
                                composerView: composerView,
                                mode: mode,
                                composerFormattingEnabled: false,
@@ -302,7 +305,7 @@ struct MessageComposer_Previews: PreviewProvider, TestablePreview {
             messageComposer()
             
             messageComposer(.init(string: "Some message"),
-                            mode: .edit(originalEventOrTransactionID: .eventId(eventId: UUID().uuidString), type: .default))
+                            mode: .edit(originalEventOrTransactionID: .eventID(UUID().uuidString), type: .default))
             
             messageComposer(mode: .reply(eventID: UUID().uuidString,
                                          replyDetails: .loaded(sender: .init(id: "Kirk"),
@@ -313,9 +316,9 @@ struct MessageComposer_Previews: PreviewProvider, TestablePreview {
             Color.clear.frame(height: 20)
             
             messageComposer(.init(string: "Some new caption"),
-                            mode: .edit(originalEventOrTransactionID: .eventId(eventId: UUID().uuidString), type: .addCaption))
+                            mode: .edit(originalEventOrTransactionID: .eventID(UUID().uuidString), type: .addCaption))
             messageComposer(.init(string: "Some updated caption"),
-                            mode: .edit(originalEventOrTransactionID: .eventId(eventId: UUID().uuidString), type: .editCaption))
+                            mode: .edit(originalEventOrTransactionID: .eventID(UUID().uuidString), type: .editCaption))
         }
         .padding(.horizontal)
         

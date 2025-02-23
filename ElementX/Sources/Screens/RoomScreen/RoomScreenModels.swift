@@ -35,6 +35,7 @@ enum RoomScreenViewAction {
 struct RoomScreenViewState: BindableState {
     var roomTitle = ""
     var roomAvatar: RoomAvatar
+    var dmRecipientVerificationState: UserIdentityVerificationState?
     
     var lastScrollDirection: ScrollDirection?
     // This is used to control the banner
@@ -71,7 +72,10 @@ struct RoomScreenViewState: BindableState {
     var bindings: RoomScreenViewStateBindings
 }
 
-struct RoomScreenViewStateBindings { }
+struct RoomScreenViewStateBindings {
+    /// The view model used to present a QuickLook media preview.
+    var mediaPreviewViewModel: TimelineMediaPreviewViewModel?
+}
 
 enum RoomScreenFooterViewAction {
     case resolvePinViolation(userID: String)

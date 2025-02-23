@@ -18,7 +18,8 @@ struct FileRoomTimelineView: View {
                                          fileSize: timelineItem.content.fileSize,
                                          caption: timelineItem.content.caption,
                                          formattedCaption: timelineItem.content.formattedCaption,
-                                         additionalWhitespaces: timelineItem.additionalWhitespaces()) {
+                                         additionalWhitespaces: timelineItem.additionalWhitespaces(),
+                                         shouldBoost: timelineItem.shouldBoost) {
                 context?.send(viewAction: .mediaTapped(itemID: timelineItem.id))
             }
             .accessibilityLabel(L10n.commonFile)
@@ -34,7 +35,16 @@ struct MediaFileRoomTimelineContent: View {
     let caption: String?
     let formattedCaption: AttributedString?
     let additionalWhitespaces: Int
+    var shouldBoost = false
     var isAudioFile = false
+    
+    private var fileDescription: String {
+        var fileDescription = "\(filename.validatedFileExtension.uppercased())"
+        if let fileSize {
+            fileDescription += " (\(fileSize.formatted(.byteCount(style: .file))))"
+        }
+        return fileDescription
+    }
     
     var onMediaTap: (() -> Void)?
     
@@ -55,24 +65,25 @@ struct MediaFileRoomTimelineContent: View {
             
             if let formattedCaption {
                 FormattedBodyText(attributedString: formattedCaption,
-                                  additionalWhitespacesCount: additionalWhitespaces)
+                                  additionalWhitespacesCount: additionalWhitespaces,
+                                  boostFontSize: shouldBoost)
             } else if let caption {
                 FormattedBodyText(text: caption,
-                                  additionalWhitespacesCount: additionalWhitespaces)
+                                  additionalWhitespacesCount: additionalWhitespaces,
+                                  boostFontSize: shouldBoost)
             }
         }
     }
     
     var filePreview: some View {
         Label {
-            HStack(spacing: 4) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(filename)
-                    .truncationMode(.middle)
-                
-                if let fileSize {
-                    Text("(\(fileSize.formatted(.byteCount(style: .file))))")
-                        .layoutPriority(1) // We want the filename to truncate rather than the size.
-                }
+                    .foregroundStyle(.compound.textPrimary)
+                    .font(.compound.bodyLG)
+                Text(fileDescription)
+                    .font(.compound.bodySM)
+                    .foregroundStyle(.compound.textSecondary)
             }
             .font(.compound.bodyLG)
             .foregroundStyle(.compound.textPrimary)
