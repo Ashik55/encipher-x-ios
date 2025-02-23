@@ -68,11 +68,11 @@ struct JoinRoomScreenViewState: BindableState {
     
     var avatar: RoomAvatar? {
         if isDMInvite, let inviter = roomDetails?.inviter {
-            return .room(id: roomID, name: inviter.displayName, avatarURL: inviter.avatarURL)
+            return .room(id: roomID, name: inviter.displayName, avatarURL: inviter.avatarURL, isDirect: roomDetails?.isDirect)
         } else if let avatar = roomDetails?.avatar {
             return avatar
         } else if let name = roomDetails?.name {
-            return .room(id: roomID, name: name, avatarURL: nil)
+            return .room(id: roomID, name: name, avatarURL: nil, isDirect: roomDetails?.isDirect)
         } else {
             return nil
         }

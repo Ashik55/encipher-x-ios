@@ -610,9 +610,14 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
             guard let self else { return }
             
             switch action {
+                
             case .presentCallScreen(let callRoomProxy):
                 // Here we assume that the app is running and the call state is already up to date
-                presentCallScreen(roomProxy: roomProxy, notifyOtherParticipants: !roomProxy.infoPublisher.value.hasRoomCall,  isAudioCall: callRoomProxy.audioCall ?? false)
+                presentCallScreen(roomProxy: callRoomProxy.roomProxy, notifyOtherParticipants: !callRoomProxy.roomProxy.infoPublisher.value.hasRoomCall, isAudioCall: callRoomProxy.audioCall ?? false)
+                
+//            case .presentCallScreen(let callRoomProxy):
+//                // Here we assume that the app is running and the call state is already up to date
+//                presentCallScreen(roomProxy: roomProxy, notifyOtherParticipants: !roomProxy.infoPublisher.value.hasRoomCall,  isAudioCall: callRoomProxy.audioCall ?? false)
             case .verifyUser(let userID):
                 presentSessionVerificationScreen(flow: .userIntiator(userID: userID))
             case .finished:

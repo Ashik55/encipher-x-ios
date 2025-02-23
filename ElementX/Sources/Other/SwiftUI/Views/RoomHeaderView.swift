@@ -62,7 +62,7 @@ struct RoomHeaderView_Previews: PreviewProvider, TestablePreview {
         RoomHeaderView(roomName: "Some Room name",
                        roomAvatar: .room(id: "1",
                                          name: "Some Room Name",
-                                         avatarURL: avatarURL),
+                                         avatarURL: avatarURL, isDirect: nil),
                        dmRecipientVerificationState: verificationState,
                        mediaProvider: MediaProviderMock(configuration: .init()))
             .padding()

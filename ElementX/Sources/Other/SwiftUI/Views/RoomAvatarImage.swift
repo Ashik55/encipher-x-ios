@@ -21,7 +21,6 @@ enum RoomAvatar: Equatable {
 /// room avatar so that DMs have a consistent appearance throughout the app.
 struct RoomAvatarImage: View {
     let avatar: RoomAvatar
-    
     let avatarSize: Avatars.Size
     let mediaProvider: MediaProviderProtocol?
     

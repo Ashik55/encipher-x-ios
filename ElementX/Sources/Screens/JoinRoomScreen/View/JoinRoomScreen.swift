@@ -71,7 +71,7 @@ struct JoinRoomScreen: View {
                                 mediaProvider: context.mediaProvider)
                     .dynamicTypeSize(dynamicTypeSize < .accessibility1 ? dynamicTypeSize : .accessibility1)
             } else {
-                RoomAvatarImage(avatar: .room(id: "", name: nil, avatarURL: nil),
+                RoomAvatarImage(avatar: .room(id: "", name: nil, avatarURL: nil, isDirect: nil ),
                                 avatarSize: .room(on: .joinRoom),
                                 mediaProvider: context.mediaProvider)
                     .dynamicTypeSize(dynamicTypeSize < .accessibility1 ? dynamicTypeSize : .accessibility1)
@@ -253,7 +253,7 @@ struct JoinRoomScreen: View {
                 }
             }
         } icon: {
-            CompoundIcon(\.errorSolid)
+            CompoundIcon(\.error)
                 .foregroundStyle(.compound.iconCriticalPrimary)
         }
         .labelStyle(.custom(spacing: 12, alignment: .top))

@@ -189,12 +189,13 @@ class TimelineController: TimelineControllerProtocol {
                                                     sender: nil,
                                                     attachments: nil)
         
-        let avatarURL = switch roomProxy.details.avatar {
-        case .room(_, _, let avatarURL):
-            avatarURL
-        case .heroes(let userProfiles):
-            userProfiles.first?.avatarURL
+        let avatarURL: URL? = switch roomProxy.details.avatar {
+            case .room(_, _, let avatarURL, _):
+                avatarURL
+            case .heroes(let userProfiles):
+                userProfiles.first?.avatarURL
         }
+        
         
         func addPlacehoder() {
             if let imageData = Avatars.generatePlaceholderAvatarImageData(name: displayName, id: roomProxy.id, size: .init(width: 100, height: 100)) {

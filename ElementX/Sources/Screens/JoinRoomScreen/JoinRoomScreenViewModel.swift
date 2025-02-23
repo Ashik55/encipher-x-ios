@@ -163,7 +163,7 @@ class JoinRoomScreenViewModel: JoinRoomScreenViewModelType, JoinRoomScreenViewMo
         let avatar: RoomAvatar? = if let avatar = info?.avatar {
             avatar
         } else if let displayName = info?.displayName {
-            .room(id: roomID, name: displayName, avatarURL: nil)
+            .room(id: roomID, name: displayName, avatarURL: nil, isDirect: info?.isDirect)
         } else {
             nil
         }
