@@ -89,18 +89,20 @@ class StartChatScreenViewModel: StartChatScreenViewModelType, StartChatScreenVie
     
     private var searchQuery: String {
         let query = context.searchQuery
-           
-           switch true {
-           case query.starts(with: "@") && query.contains(":"):
-               return query // Full MXID
-           case query.starts(with: "@"):
-               return "\(query):dev.enciph-er.com" // Only @username
-           case !query.isEmpty:
-               return "@\(query):dev.enciph-er.com" // Just username
-           default:
-               return query
-           }
+        
+        switch true {
+        case query.starts(with: "@") && query.contains(":"):
+            return query // Full MXID
+        case query.starts(with: "@"):
+            return "\(query):\(AppCustomConfig.baseUrl)" // Only @username, use baseUrl
+        case !query.isEmpty:
+            return "@\(query):\(AppCustomConfig.baseUrl)" // Just username, use baseUrl
+        default:
+            return query
+        }
     }
+    
+ 
     
     private func fetchUsers() {
         guard searchQuery.count >= 1 else {

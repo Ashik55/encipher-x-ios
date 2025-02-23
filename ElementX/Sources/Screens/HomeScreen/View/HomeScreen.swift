@@ -48,7 +48,8 @@ struct HomeScreen: View {
                        message: leaveRoomAlertMessage)
                 .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
                 .toolbar { toolbar }
-                .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+//                .background(Color.gray)
+           
                 .track(screen: .Home)
                 .sentryTrace("\(Self.self)")
                 .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
@@ -58,6 +59,7 @@ struct HomeScreen: View {
                               isKeyboardVisible = false
                           }
 
+   
                 if !isKeyboardVisible { // Hide when keyboard is visible
                             HStack {
                                 Spacer()
@@ -89,10 +91,14 @@ struct HomeScreen: View {
                                 Spacer()
                             }
                             .padding()
-                            .background(Color.gray.opacity(0.1)) // Background for the bottom bar
+//
+                            .background(Color.gray.opacity(0.1))
                             .transition(.move(edge: .bottom)) // Optional animation
                     }
-                }
+            
+            
+        }     .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+        
             }
 
     private func handleSettingsTapped() {
@@ -274,9 +280,12 @@ struct HomeScreen: View {
                 context.send(viewAction: .startChat)
             } label: {
 //                CompoundIcon(\.compose)
-                Image(asset: ImageAsset(name: "add"))
-                            .resizable() // Ensures the image is resizable
-                            .frame(width: 32, height: 32) // Add size here
+                Image(asset: ImageAsset(name: "plus"))
+                        .resizable() // Ensures the image is resizable
+                        .frame(width: 30, height: 30) // Add size here
+               
+                       
+                
             }
             .accessibilityLabel(L10n.actionStartChat)
             .accessibilityIdentifier(A11yIdentifiers.homeScreen.startChat)

@@ -110,8 +110,8 @@ final class AppSettings {
     
     
     // base url
-    // private(set) var defaultHomeserverAddress = "new.enciph-er.com"
-    private(set) var defaultHomeserverAddress = "dev.enciph-er.com"
+    private(set) var defaultHomeserverAddress = AppCustomConfig.baseUrl
+
     
     /// The task identifier used for background app refresh. Also used in main target's the Info.plist
     let backgroundAppRefreshTaskIdentifier = "com.plx.encipherX.background.refresh"
@@ -262,7 +262,7 @@ final class AppSettings {
     
     //Call base url
     // let elementCallBaseURL: URL = "https://call.enciph-er.com"
-    let elementCallBaseURL: URL = "https://call.dev.enciph-er.com"
+    let elementCallBaseURL: URL = AppCustomConfig.callBaseUrl
     
     @UserPreference(key: UserDefaultsKeys.elementCallBaseURLOverride, defaultValue: nil, storageType: .userDefaults(store))
     var elementCallBaseURLOverride: URL?

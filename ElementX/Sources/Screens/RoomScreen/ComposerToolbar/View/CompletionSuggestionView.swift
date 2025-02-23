@@ -50,6 +50,7 @@ struct CompletionSuggestionView: View {
     private func list() -> some View {
         List(items) { item in
             Button {
+                print("List Button ===>> \(item)")
                 onTap(item)
             } label: {
                 switch item {
