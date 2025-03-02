@@ -20,6 +20,8 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
     
     private let widgetDriver: ElementCallWidgetDriverProtocol
     
+    var audioCall: Bool = false  // Changed from `let` to `var`
+    
     private let actionsSubject: PassthroughSubject<CallScreenViewModelAction, Never> = .init()
     var actions: AnyPublisher<CallScreenViewModelAction, Never> {
         actionsSubject.eraseToAnyPublisher()
@@ -44,9 +46,14 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
         switch configuration.kind {
         case .genericCallLink(let url):
             widgetDriver = GenericCallLinkWidgetDriver(url: url)
-        case .roomCall(let roomProxy, let clientProxy, _, _, _, _, _,_):
+            
+            
+        case .roomCall(let roomProxy, let clientProxy, _, _, _, _, _,let isAudioCall):
+            audioCall = isAudioCall
             guard let deviceID = clientProxy.deviceID else { fatalError("Missing device ID for the call.") }
             widgetDriver = roomProxy.elementCallWidgetDriver(deviceID: deviceID)
+            
+            
         }
         
         super.init(initialViewState: CallScreenViewState(messageHandler: Self.eventHandlerName,
@@ -69,7 +76,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                         MXLog.error("Received mute request for a different room: \(roomID) != \(configuration.callRoomID)")
                         return
                     }
-                    print(" elementCallService.actions audio==>\(enabled)")
+//                    print(" elementCallService.actions audio==>\(enabled)")
                     Task {
                         await self.setAudioEnabled(enabled)
                     }
@@ -102,7 +109,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                 case .callEnded:
                     actionsSubject.send(.dismiss)
                 case .mediaStateChanged(let audioEnabled, let videoEnabled):
-                    print("mediaStateChanged Triggered==>\(audioEnabled) \(videoEnabled)")
+//                    print("mediaStateChanged Triggered==>\(audioEnabled) \(videoEnabled)")
                     elementCallService.setAudioEnabled(audioEnabled, roomID: configuration.callRoomID)
                 }
             }
@@ -115,7 +122,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
         switch viewAction {
         case .urlChanged(let url):
             guard let url else { return }
-            print("URL changed to==>>>> \(url)")
+//            print("URL changed to==>>>> \(url)")
         case .pictureInPictureIsAvailable(let controller):
             MXLog.info("pictureInPictureIsAvailable==>")
             actionsSubject.send(.pictureInPictureIsAvailable(controller))
@@ -136,13 +143,44 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
         elementCallService.tearDownCallSession()
     }
     
+    func extractRoomIDAndDisplayName(from url: URL) -> (roomId: String?, displayName: String?) {
+        var urlString = url.absoluteString
+        // Extract fragment if it exists
+        if let fragmentIndex = urlString.firstIndex(of: "#") {
+            urlString = String(urlString[fragmentIndex...]).dropFirst().description
+        }
+
+        guard let components = URLComponents(string: "https://dummy.com?\(urlString)"),
+              let queryItems = components.queryItems else {
+            return (nil, nil)
+        }
+
+        let roomId = queryItems.first(where: { $0.name == "roomId" })?.value
+        let displayName = queryItems.first(where: { $0.name == "displayName" })?.value
+
+        return (roomId, displayName)
+    }
+    
+    func extractRoomID(from url: URL) -> String? {
+        var urlString = url.absoluteString
+        // Extract fragment if it exists
+        if let fragmentIndex = urlString.firstIndex(of: "#") {
+            urlString = String(urlString[fragmentIndex...]).dropFirst().description
+        }
+
+        guard let components = URLComponents(string: "https://dummy.com?\(urlString)"),
+              let queryItems = components.queryItems else {
+            return nil
+        }
+
+        return queryItems.first(where: { $0.name == "roomId" })?.value
+    }
+    
     // MARK: - Private
     
     private func setupCall() {
         
-        print("setupCall Running==>")
-
-        
+//        print("setupCall Running==>")
         switch configuration.kind {
         case .genericCallLink(let url):
             state.url = url
@@ -163,8 +201,13 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                 switch await widgetDriver.start(baseURL: baseURL, clientID: clientID, colorScheme: colorScheme) {
                 case .success(let url):
                     print("Call URL ==>> \(url)")
+                    let (roomId, displayName) = extractRoomIDAndDisplayName(from: url)
+                    
                     state.url = url
-
+                    state.roomId = roomId
+                    state.displayName = displayName
+                    state.isAudioCall = audioCall
+                    
                     
                 case .failure(let error):
                     MXLog.error("Failed starting ElementCall Widget Driver with error: \(error)")
@@ -200,7 +243,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
         
         switch await requestPictureInPictureHandler() {
         case .success:
-            print("pictureInPictureStarted==>> requestPictureInPictureHandler")
+//            print("pictureInPictureStarted==>> requestPictureInPictureHandler")
             actionsSubject.send(.pictureInPictureStarted)
         case .failure:
             actionsSubject.send(.dismiss)
@@ -208,7 +251,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
     }
     
     private func setAudioVideoEnabled(enabled: Bool) async {
-        print("setAudioVideoEnabled==> \(enabled)")
+//        print("setAudioVideoEnabled==> \(enabled)")
         let message = ElementCallWidgetMessage(direction: .toWidget,
                                                action: .mediaState,
                                                data: .init(audioEnabled: enabled, videoEnabled: enabled),
@@ -217,7 +260,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
     }
     
     private func setAudioEnabled(_ enabled: Bool) async {
-        print("setAudioEnabled VM postMessageToWidget==> \(enabled)")
+//        print("setAudioEnabled VM postMessageToWidget==> \(enabled)")
         let message = ElementCallWidgetMessage(direction: .toWidget,
                                                action: .mediaState,
                                                data: .init(audioEnabled: enabled),
@@ -252,7 +295,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
     
     private func postJSONToWidget(_ json: String) async {
         
-        print("postJSONToWidget==>: \(json)")
+//        print("postJSONToWidget==>: \(json)")
         do {
             let message = "postMessage(\(json), '*')"
             let result = try await state.bindings.javaScriptEvaluator?(message)

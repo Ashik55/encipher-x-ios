@@ -7,15 +7,17 @@
 
 import Combine
 import SwiftUI
+import UIKit
 
 enum AppDelegateCallback {
     case registeredNotifications(deviceToken: Data)
     case failedToRegisteredNotifications(error: Error)
 }
 
-final class AppDelegate: NSObject, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
     let callbacks = PassthroughSubject<AppDelegateCallback, Never>()
     var orientationLock = UIInterfaceOrientationMask.all
+    var window: UIWindow?
     
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         // Add a SceneDelegate to the SwiftUI scene so that we can connect up the WindowManager.

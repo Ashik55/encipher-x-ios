@@ -1,4 +1,6 @@
+platform :ios, '17.6'
+use_frameworks!
+
 target 'ElementX' do
-  use_frameworks!
-    pod 'JitsiMeetSDK'
+  pod 'JitsiMeetSDK'
 end

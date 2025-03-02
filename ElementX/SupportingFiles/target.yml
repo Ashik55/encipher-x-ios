@@ -41,6 +41,9 @@ targets:
   ElementX:
     type: application
     platform: iOS
+    # Add this line to inherit from the App template
+    templates:
+      - App
 
     configFiles:
       Debug: ../SupportingFiles/secrets.xcconfig
@@ -114,6 +117,7 @@ targets:
         PILLS_UT_TYPE_IDENTIFIER: $(BASE_BUNDLE_IDENTIFIER).pills
         DEVELOPMENT_ASSET_PATHS: DevelopmentAssets/Media
         OTHER_SWIFT_FLAGS:
+          - "$(inherited)"
           - "-DIS_MAIN_APP"
 
     preBuildScripts:

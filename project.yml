@@ -33,7 +33,7 @@ options:
         - Screens
         - Other
         - UITests
-  postGenCommand: cd Tools/XcodeGen && sh postGenCommand.sh
+  postGenCommand: cd Tools/XcodeGen && sh postGenCommand.sh && pod install
 
 settings:
   BASE_BUNDLE_IDENTIFIER: com.plx.encipherX
@@ -47,6 +47,29 @@ settings:
   MARKETING_VERSION: 1.9.11
   CURRENT_PROJECT_VERSION: 1
   SUPPORTS_MACCATALYST: false
+
+targetTemplates:
+  App:
+    postBuildScripts:
+      - name: "[CP] Check Pods Manifest.lock"
+        script: |
+          diff "${PODS_PODFILE_DIR_PATH}/Podfile.lock" "${PODS_ROOT}/Manifest.lock" > /dev/null
+          if [ $? != 0 ] ; then
+              # print error to STDERR
+              echo "error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation." >&2
+              exit 1
+          fi
+        inputFiles:
+          - ${PODS_PODFILE_DIR_PATH}/Podfile.lock
+          - ${PODS_ROOT}/Manifest.lock
+        outputFiles:
+          - $(DERIVED_FILE_DIR)/Pods-ElementX-checkManifestLockResult.txt
+      - name: "[CP] Embed Pods Frameworks"
+        script: "${PODS_ROOT}/Target Support Files/Pods-ElementX/Pods-ElementX-frameworks.sh"
+        inputFileListPaths:
+          - "${PODS_ROOT}/Target Support Files/Pods-ElementX/Pods-ElementX-frameworks-${CONFIGURATION}-input-files.xcfilelist"
+        outputFileListPaths:
+          - "${PODS_ROOT}/Target Support Files/Pods-ElementX/Pods-ElementX-frameworks-${CONFIGURATION}-output-files.xcfilelist"
 
 include:
   - path: app.yml

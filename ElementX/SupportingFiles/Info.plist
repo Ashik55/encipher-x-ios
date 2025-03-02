@@ -74,10 +74,18 @@
 	<string>To record and send messages with audio, $(APP_DISPLAY_NAME) needs to access the microphone.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>This lets you save images and videos to your photo library.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Local network access is needed for P2P connections.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Encipher needs access to the calendar to sync important events with your schedule.</string>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>INSendMessageIntent</string>
 		<string>INStartCallIntent</string>
+	</array>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

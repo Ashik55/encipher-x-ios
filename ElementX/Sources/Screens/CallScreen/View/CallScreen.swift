@@ -36,13 +36,24 @@ struct CallScreen: View {
     
     @ViewBuilder
     var content: some View {
-        if context.viewState.url == nil {
+        if context.viewState.roomId == nil {
             ProgressView()
         } else {
-            CallView(url: context.viewState.url, viewModelContext: context)
-                // This URL is stable, forces view reloads if this representable is ever reused for another url
-                .id(context.viewState.url)
-                .ignoresSafeArea(edges: .bottom)
+            JitsiMeetViewController(
+                roomName: context.viewState.roomId!,
+                displayName: context.viewState.displayName!,
+                isAudioCall: context.viewState.isAudioCall ?? false,
+                onCallEnded: {
+                    print("onCallEnded===>>>>")
+                    context.send(viewAction: .navigateBack)
+                }
+            )
+            
+                .edgesIgnoringSafeArea(.all)
+//            CallView(url: context.viewState.url, viewModelContext: context)
+//                // This URL is stable, forces view reloads if this representable is ever reused for another url
+//                .id(context.viewState.url)
+//                .ignoresSafeArea(edges: .bottom)
         }
     }
 }

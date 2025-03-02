@@ -15,6 +15,8 @@ enum CallScreenViewModelAction {
     case dismiss
 }
 
+
+
 struct CallScreenViewState: BindableState {
     let messageHandler: String
     let script: String?
@@ -23,6 +25,28 @@ struct CallScreenViewState: BindableState {
     let certificateValidator: CertificateValidatorHookProtocol
     
     var bindings = Bindings()
+    
+    // New properties to store extracted values
+    var roomId: String?
+    var displayName: String?
+    var isAudioCall: Bool?
+    
+    
+    
+    var userId: String?
+    var theme: String?
+    var language: String?
+    var baseUrl: String?
+    var widgetId: String?
+    var clientId: String?
+    var deviceId: String?
+    var parentUrl: String?
+    var skipLobby: Bool?
+    var confineToRoom: Bool?
+    var appPrompt: Bool?
+    var hideHeader: Bool?
+    var preload: Bool?
+    var perParticipantE2EE: Bool?
 }
 
 struct Bindings {
