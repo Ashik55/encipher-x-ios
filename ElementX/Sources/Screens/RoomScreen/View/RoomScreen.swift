@@ -261,14 +261,14 @@ struct RoomScreen: View {
                    }
                    .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
 
-                   Button {
-                       roomContext.send(viewAction: .displayCall)
-                   } label: {
-                       Image(systemName: "video") // Using Apple's video call icon name = video
-                           .resizable() // Ensures the image is resizable
-                           .frame(width: 22, height: 17) // Adjust size as needed
-                   }
-                   .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
+//                   Button {
+//                       roomContext.send(viewAction: .displayCall)
+//                   } label: {
+//                       Image(systemName: "video") // Using Apple's video call icon name = video
+//                           .resizable() // Ensures the image is resizable
+//                           .frame(width: 22, height: 17) // Adjust size as needed
+//                   }
+//                   .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
                }
                .padding() // Optional padding for spacing around the buttons
         }

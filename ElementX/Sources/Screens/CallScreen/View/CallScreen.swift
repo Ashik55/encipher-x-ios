@@ -15,22 +15,26 @@ struct CallScreen: View {
     @ObservedObject var context: CallScreenViewModel.Context
     
     var body: some View {
-        NavigationStack {
-            content
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button { context.send(viewAction: .navigateBack) } label: {
-                            Image(systemSymbol: .chevronBackward)
-                                .fontWeight(.semibold)
-                        }
-                    }
-                }
-//                .toolbarBackground(Color.black, for: .navigationBar)
-//                .toolbarBackground(.visible, for: .navigationBar)
-        }
+        content
+            .navigationBarHidden(true)
+            .edgesIgnoringSafeArea(.all)
+        
+//        NavigationStack {
+//            content
+//                .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+//                .navigationBarTitleDisplayMode(.inline)
+//                .toolbar {
+//                    ToolbarItem(placement: .cancellationAction) {
+//                        Button { context.send(viewAction: .navigateBack) } label: {
+//                            Image(systemSymbol: .chevronBackward)
+//                                .fontWeight(.semibold)
+//                        }
+//                    }
+//                }
+////                .toolbarBackground(Color.black, for: .navigationBar)
+////                .toolbarBackground(.visible, for: .navigationBar)
+//        }
         .alert(item: $context.alertInfo)
     }
     
@@ -42,7 +46,7 @@ struct CallScreen: View {
             JitsiMeetViewController(
                 roomName: context.viewState.roomId!,
                 displayName: context.viewState.displayName!,
-                isAudioCall: context.viewState.isAudioCall ?? false,
+                isAudioCall: context.viewState.isAudioCall,
                 onCallEnded: {
                     print("onCallEnded===>>>>")
                     context.send(viewAction: .navigateBack)

@@ -744,9 +744,12 @@ class RoomFlowCoordinator: FlowCoordinatorProtocol {
                     stateMachine.tryEvent(.presentRoomMemberDetails(userID: userID))
                 case .presentMessageForwarding(let forwardingItem):
                     stateMachine.tryEvent(.presentMessageForwarding(forwardingItem: forwardingItem))
+                    
+                    
                 case .presentCallScreen:
-                    let callRoomProxy = CallRoomProxy(roomProxy: roomProxy, audioCall: false) // Or use `nil` if no audio call is needed
+                    let callRoomProxy = CallRoomProxy(roomProxy: roomProxy, audioCall: nil) // Or use `nil` if no audio call is needed
                     actionsSubject.send(.presentCallScreen(callRoomProxy: callRoomProxy))
+                    
                 case .presentPinnedEventsTimeline:
                     stateMachine.tryEvent(.presentPinnedEventsTimeline)
                 case .presentResolveSendFailure(failure: let failure, sendHandle: let sendHandle):
@@ -1546,7 +1549,7 @@ class RoomFlowCoordinator: FlowCoordinatorProtocol {
             switch action {
             case .presentCallScreen(let roomProxy):
            
-                let callRoomProxy = CallRoomProxy(roomProxy: roomProxy as! JoinedRoomProxyProtocol, audioCall: false)
+                let callRoomProxy = CallRoomProxy(roomProxy: roomProxy as! JoinedRoomProxyProtocol, audioCall: nil)
                 actionsSubject.send(.presentCallScreen(callRoomProxy: callRoomProxy))
 //                actionsSubject.send(.presentCallScreen(roomProxy: roomProxy))
             case .finished:

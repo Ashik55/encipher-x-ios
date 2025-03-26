@@ -719,12 +719,12 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
         
         
         // Extract isAudioCall and other necessary properties from the configuration
-        var isAudioCall: Bool = false
+        var isAudioCall: Bool? = false
         switch configuration.kind {
         case .genericCallLink:
             isAudioCall = false // Default for generic calls
         case .roomCall(_, _, _, _, _, _, _, let audioCall):
-            isAudioCall = audioCall
+            isAudioCall = audioCall ?? false
         }
 
         print("isAudioCall==> \(isAudioCall)")

@@ -1,6 +1,4 @@
 ${PODS_ROOT}/Target Support Files/Pods-ElementX/Pods-ElementX-frameworks.sh
 ${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework
 ${PODS_XCFRAMEWORKS_BUILD_DIR}/Giphy/GiphyUISDK.framework/GiphyUISDK
-${PODS_XCFRAMEWORKS_BUILD_DIR}/JitsiMeetSDK/JitsiMeetSDK.framework/JitsiMeetSDK
-${PODS_XCFRAMEWORKS_BUILD_DIR}/JitsiMeetSDK/hermes.framework/hermes
 ${PODS_XCFRAMEWORKS_BUILD_DIR}/JitsiWebRTC/WebRTC.framework/WebRTC

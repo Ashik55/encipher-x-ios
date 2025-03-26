@@ -23,7 +23,7 @@ struct ElementCallConfiguration {
                       elementCallBaseURLOverride: URL?,
                       colorScheme: ColorScheme,
                       notifyOtherParticipants: Bool,
-                      isAudioCall: Bool
+                      isAudioCall: Bool?
         
         )
     }
@@ -64,7 +64,7 @@ struct ElementCallConfiguration {
          elementCallBaseURLOverride: URL?,
          colorScheme: ColorScheme,
          notifyOtherParticipants: Bool,
-         isAudioCall: Bool
+         isAudioCall: Bool?
     
     ) {
         kind = .roomCall(roomProxy: roomProxy,

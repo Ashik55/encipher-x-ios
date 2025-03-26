@@ -14,7 +14,7 @@ enum AppDelegateCallback {
     case failedToRegisteredNotifications(error: Error)
 }
 
-final class AppDelegate: UIResponder, UIApplicationDelegate {
+final class AppDelegate: NSObject, UIApplicationDelegate {
     let callbacks = PassthroughSubject<AppDelegateCallback, Never>()
     var orientationLock = UIInterfaceOrientationMask.all
     var window: UIWindow?

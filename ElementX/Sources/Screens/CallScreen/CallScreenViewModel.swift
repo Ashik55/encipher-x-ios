@@ -20,7 +20,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
     
     private let widgetDriver: ElementCallWidgetDriverProtocol
     
-    var audioCall: Bool = false  // Changed from `let` to `var`
+    var audioCall: Bool? = nil  // Changed from `let` to `var`
     
     private let actionsSubject: PassthroughSubject<CallScreenViewModelAction, Never> = .init()
     var actions: AnyPublisher<CallScreenViewModelAction, Never> {
@@ -49,6 +49,9 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
             
             
         case .roomCall(let roomProxy, let clientProxy, _, _, _, _, _,let isAudioCall):
+            
+            
+            print("roomCall==>>\(isAudioCall)")
             audioCall = isAudioCall
             guard let deviceID = clientProxy.deviceID else { fatalError("Missing device ID for the call.") }
             widgetDriver = roomProxy.elementCallWidgetDriver(deviceID: deviceID)
