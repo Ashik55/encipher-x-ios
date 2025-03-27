@@ -113,10 +113,20 @@ class RoomScreenViewModel: RoomScreenViewModelType, RoomScreenViewModelProtocol 
             Task { await markAllKnocksAsSeen() }
         case .viewKnockRequests:
             actionsSubject.send(.displayKnockRequests)
+            
+            
         case .displayAudioCall:
+            
+            print("Room proxy : \(roomProxy)")
+            print(roomProxy)
+            print(roomProxy.ownUserID)
+            
+            
             actionsSubject.send(.displayAudioCall)
             actionsSubject.send(.removeComposerFocus)
             analyticsService.trackInteraction(name: .MobileRoomCallButton)
+            
+            
         case .displayVideoCall:
             actionsSubject.send(.displayVideoCall)
             actionsSubject.send(.removeComposerFocus)

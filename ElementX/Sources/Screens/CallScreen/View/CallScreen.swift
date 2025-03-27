@@ -44,8 +44,8 @@ struct CallScreen: View {
             ProgressView()
         } else {
             JitsiMeetViewController(
-                roomName: context.viewState.roomId!,
-                displayName: context.viewState.displayName!,
+                roomName: context.viewState.roomId,
+                displayName: context.viewState.displayName,
                 isAudioCall: context.viewState.isAudioCall,
                 onCallEnded: {
                     print("onCallEnded===>>>>")

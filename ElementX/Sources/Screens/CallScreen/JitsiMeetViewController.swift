@@ -134,8 +134,8 @@ import SwiftUI
 import JitsiMeetSDK
 
 struct JitsiMeetViewController: UIViewRepresentable {
-    var roomName: String
-    var displayName: String
+    var roomName: String?
+    var displayName: String?
     var isAudioCall: Bool? = nil
     var onCallEnded: (() -> Void)?
 
@@ -146,6 +146,8 @@ struct JitsiMeetViewController: UIViewRepresentable {
     func makeUIView(context: Context) -> JitsiMeetView {
         let meetUrl = "https://meet.enciph-er.com"
         
+        print("JitsiMeetViewController running==>>")
+        
         // Set default options
         let userInfo = JitsiMeetUserInfo()
         userInfo.displayName = displayName
@@ -153,7 +155,7 @@ struct JitsiMeetViewController: UIViewRepresentable {
         let defaultOptions = JitsiMeetConferenceOptions.fromBuilder { (builder) in
             builder.serverURL = URL(string: meetUrl)
             builder.userInfo = userInfo
-            builder.setAudioOnly(true)
+            builder.setAudioOnly(isAudioCall ?? false)
             builder.setFeatureFlag("welcomepage.enabled", withValue: false)
             builder.setFeatureFlag("prejoinpage.enabled", withValue: false)
             builder.setFeatureFlag("toolbox.alwaysVisible", withValue: false)
