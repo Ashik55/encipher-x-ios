@@ -21,7 +21,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
     
     private let widgetDriver: ElementCallWidgetDriverProtocol
     
-    var audioCall: Bool? = nil  // Changed from `let` to `var`
+    var audioCall: Bool?
     
     private let actionsSubject: PassthroughSubject<CallScreenViewModelAction, Never> = .init()
     var actions: AnyPublisher<CallScreenViewModelAction, Never> {
@@ -52,7 +52,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
         case .roomCall(let roomProxy, let clientProxy, _, _, _, _, _,let isAudioCall):
             
             
-            print("roomCall==>>\(isAudioCall)")
+            print("isAudioCall params ==>>\(String(describing: isAudioCall))")
             audioCall = isAudioCall
             guard let deviceID = clientProxy.deviceID else { fatalError("Missing device ID for the call.") }
             widgetDriver = roomProxy.elementCallWidgetDriver(deviceID: deviceID)
@@ -217,136 +217,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
 
         return queryItems.first(where: { $0.name == "roomId" })?.value
     }
-    
-//    
-//    func createCall(roomId: String?, userId: String?, isAudioCall: Bool) {
-//        // Ensure we have a valid userId
-//        guard let userId = userId else {
-//            print("Error: User ID is missing")
-//            return
-//        }
-//        // Construct the base URL
-//        let baseURL = "https://dev.enciph-er.com/_matrix/client/v3/call/\(userId)"
-//        
-//        // Prepare the URL
-//        guard let url = URL(string: baseURL) else {
-//            print("Error: Invalid URL")
-//            return
-//        }
-//        // Prepare the request body
-//        let requestBody: [String: Any] = [
-//            "room_id": roomId ?? "",
-//            "call_type": isAudioCall ? "audio" : "video"
-//        ]
-//        
-//        print("Create Call RequestBody ==>> \(requestBody)")
-//        // Convert the body to JSON data
-//        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
-//            print("Error: Failed to serialize request body")
-//            return
-//        }
-//        // Create the URLRequest
-//        var request = URLRequest(url: url)
-//        request.httpMethod = "POST"
-//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//        
-//        // Optional: Add authentication headers if required
-//        // request.setValue("Bearer YOUR_TOKEN", forHTTPHeaderField: "Authorization")
-//        request.httpBody = jsonData
-//        // Create URLSession data task
-//        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-//            // Check for errors
-//            if let error = error {
-//                print("Network Error: \(error.localizedDescription)")
-//                return
-//            }
-//            // Check HTTP response
-//            guard let httpResponse = response as? HTTPURLResponse else {
-//                print("Invalid response")
-//                return
-//            }
-//            // Check response status code
-//            print("Response Status Code: \(httpResponse.statusCode)")
-//            // Process the response data
-//            if let data = data {
-//                do {
-//                    // Try to parse the response as JSON
-//                    if let jsonResult = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-//                        print("Create Call Response JSON==>: \(jsonResult)")
-//                    }
-//                } catch {
-//                    print("Error parsing response JSON: \(error)")
-//                }
-//            }
-//        }
-//        
-//        // Start the network request
-//        task.resume()
-//    }
-//
-//    func getCallDetails(userId: String?, roomId: String?, completion: @escaping (Result<[String: Any], Error>) -> Void) {
-//        // Construct the full URL
-//        guard let url = URL(string: "https://dev.enciph-er.com/_matrix/client/v3/call/\(userId)?room_id=\(roomId)") else {
-//            completion(.failure(NSError(domain: "URLError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
-//            return
-//        }
-//        
-//        // Create the URLRequest
-//        var request = URLRequest(url: url)
-//        request.httpMethod = "GET"
-//        
-//        // Optional: Add authentication headers if needed
-//        // request.setValue("Bearer YOUR_TOKEN", forHTTPHeaderField: "Authorization")
-//        
-//        // Create URLSession data task
-//        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-//            // Check for network errors
-//            if let error = error {
-//                completion(.failure(error))
-//                return
-//            }
-//            
-//            // Verify HTTP response
-//            guard let httpResponse = response as? HTTPURLResponse else {
-//                completion(.failure(NSError(domain: "ResponseError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])))
-//                return
-//            }
-//            
-//            // Check response status code
-//            guard (200...299).contains(httpResponse.statusCode) else {
-//                completion(.failure(NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "HTTP \(httpResponse.statusCode) error"])))
-//                return
-//            }
-//            
-//            // Process the response data
-//            guard let data = data else {
-//                completion(.failure(NSError(domain: "DataError", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
-//                return
-//            }
-//            
-//            do {
-//                // Parse JSON response
-//                guard let jsonResult = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-//                    completion(.failure(NSError(domain: "ParsingError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse JSON"])))
-//                    return
-//                }
-//                
-//                // Successfully parsed, return the result
-//                completion(.success(jsonResult))
-//            } catch {
-//                // JSON parsing error
-//                completion(.failure(error))
-//            }
-//        }
-//        
-//        // Start the network request
-//        task.resume()
-//    }
-
-
-    
-//    async - await
-
+  
 
     // Create Call Function (Async/Await)
     func createCall(roomId: String?, userId: String?, isAudioCall: Bool) async throws -> [String: Any] {
@@ -436,135 +307,65 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                     print("Call URL ==>> \(url)")
                     let (roomId, displayName, userId) = extractRoomDetails(from: url)
                     
-                    do {
-                        let callDetails = try await getCallDetails(userId: userId, roomId: roomId)
+                    if(audioCall != nil){
+                        //primary User Call generator, Create Call
+                        // Call createCall only when no call details exist
+                        print("AudioCall  ==>>\(String(describing: audioCall)), Creating new Call for primary User")
+                        let newCallResponse = try await createCall(roomId: roomId, userId: userId, isAudioCall: audioCall!)
+                        print("New Call Created: \(newCallResponse)")
 
-                        if let calls = callDetails["calls"] as? [[String: Any]], let firstCall = calls.first {
-                            let callType = firstCall["call_type"] as? String ?? "N/A"
-                   
-
-                            print("Call Type: \(callType)")
-                     
-
-                            // Update state on the main thread **after API completion**
-                            DispatchQueue.main.async {
-                                self.state.roomId = roomId
-                                self.state.displayName = displayName
-                                self.state.isAudioCall = (callType == "audio")
-                                self.state.url = url
-                       
-                            }
-                        } else {
-                            print("No Calls Found, Creating New Call...")
-
-                            // Call createCall only when no call details exist
-                            let newCallResponse = try await createCall(roomId: roomId, userId: userId, isAudioCall: audioCall ?? false)
-                            print("New Call Created: \(newCallResponse)")
-
-                            DispatchQueue.main.async {
-                                self.state.roomId = roomId
-                                self.state.displayName = displayName
-                                self.state.isAudioCall = audioCall ?? false
-                                self.state.url = url
-                            }
+                        // Update state on the main thread using MainActor.run
+                        await MainActor.run {
+                            self.state.roomId = roomId
+                            self.state.displayName = displayName
+                            self.state.isAudioCall = audioCall ?? false
+                            self.state.url = url
                         }
-                    } catch {
-                        print("Error fetching call details, creating new call: \(error.localizedDescription)")
-
+                        
+                        await elementCallService.setupCallSession(roomID: roomProxy.id,
+                                                                  roomDisplayName: roomProxy.infoPublisher.value.displayName ?? roomProxy.id)
+                    
+                        if notifyOtherParticipants {
+                            _ = await roomProxy.sendCallNotificationIfNeeded()
+                        }
+                        
+                        
+                    }else{
+                        //Receiver end
+                        //get call details & go to call screen
+                        print("AudioCall  ==>>\(String(describing: audioCall)), Get Call details for receiver")
                         do {
-                            let newCallResponse = try await createCall(roomId: roomId, userId: userId, isAudioCall: audioCall ?? false)
-                            print("New Call Created: \(newCallResponse)")
-
-                            DispatchQueue.main.async {
-                                self.state.roomId = roomId
-                                self.state.displayName = displayName
-                                self.state.isAudioCall = audioCall ?? false
-                                self.state.url = url
-                       
+                             // Fetch call details and wait for the response
+                             let callDetails = try await getCallDetails(userId: userId, roomId: roomId)
+                            print("callDetails: \(callDetails)")
+                             
+                             // Extract call type safely
+                             let callType = (callDetails["calls"] as? [[String: Any]])?.first?["call_type"] as? String ?? "N/A"
+                        
+                             // Update state on the main thread
+                             await MainActor.run {
+                                 self.state.roomId = roomId
+                                 self.state.displayName = displayName
+                                 self.state.isAudioCall = (callType == "audio")
+                                 self.state.url = url
+                             }
+                            
+                            await elementCallService.setupCallSession(roomID: roomProxy.id,
+                                                                      roomDisplayName: roomProxy.infoPublisher.value.displayName ?? roomProxy.id)
+                        
+                            if notifyOtherParticipants {
+                                _ = await roomProxy.sendCallNotificationIfNeeded()
                             }
-                        } catch {
-                            print("Error creating call: \(error.localizedDescription)")
-                        }
+                            
+                             
+                             print("Call Type: \(callType)")
+                         } catch {
+                             print("Error fetching call details: \(error.localizedDescription)")
+                             // Optionally handle error case, e.g., create a new call
+                         }
+                        
                     }
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-////                    print("Room ID: \(roomId ?? "N/A")")
-////                    print("Display Name: \(displayName ?? "N/A")")
-////                    print("User ID: \(userId ?? "N/A")")
-////                    print("AudioCall: \(audioCall)")
-//
-//                    getCallDetails(userId: userId, roomId: roomId) { [weak self] result in
-//                        guard let self = self else { return }
-//                        
-//                        // Prepare state update values outside of the closure
-//                          let stateUrl = url
-//                          let stateRoomId = roomId
-//                          let stateDisplayName = displayName
-//                          let stateIsAudioCall = audioCall ?? false
-//                        
-//                        switch result {
-//                        case .success(let callDetails):
-//                            print("Call Details Successfully Retrieved:")
-//                            // Pretty print the JSON
-//                            if let prettyData = try? JSONSerialization.data(withJSONObject: callDetails, options: .prettyPrinted),
-//                               let prettyString = String(data: prettyData, encoding: .utf8) {
-//                                print(prettyString)
-//                            }
-//                            
-//                            // Extract calls array
-//                            if let calls = callDetails["calls"] as? [[String: Any]], let firstCall = calls.first {
-//                                // Extract specific details
-//                                let callType = firstCall["call_type"] as? String ?? "N/A"
-//                                let callState = firstCall["state"] as? String ?? "N/A"
-//                                
-//                                print("Call Type: \(callType)")
-//                                print("Call State: \(callState)")
-//                                
-//                                // Update state on main thread
-//                                         DispatchQueue.main.async {
-//                                             self.state.url = stateUrl
-//                                             self.state.roomId = stateRoomId
-//                                             self.state.displayName = stateDisplayName
-//                                             self.state.isAudioCall = (callType == "audio")
-//                                         }
-//                            } else {
-//                                print("No Calls Found:")
-//                                // No calls found, create a new call
-//                                self.createCall(roomId: roomId, userId: userId, isAudioCall: audioCall ?? false)
-//                                
-//                                // Update state on main thread with default values
-//                                        DispatchQueue.main.async {
-//                                            self.state.url = stateUrl
-//                                            self.state.roomId = stateRoomId
-//                                            self.state.displayName = stateDisplayName
-//                                            self.state.isAudioCall = stateIsAudioCall
-//                                        }
-//                            }
-//                        
-//                        case .failure(let error):
-//                            print("Error fetching call details creating new call: \(error.localizedDescription)")
-//                            
-//                            // Create a new call on failure
-//                            self.createCall(roomId: roomId, userId: userId, isAudioCall: audioCall ?? false)
-//                            
-//                            // Update state on main thread with default values
-//                                    DispatchQueue.main.async {
-//                                        self.state.url = stateUrl
-//                                        self.state.roomId = stateRoomId
-//                                        self.state.displayName = stateDisplayName
-//                                        self.state.isAudioCall = stateIsAudioCall
-//                                    }
-//                        }
-//                    }
-//                   
-                    
-                 
-                    
+               
                     
                 case .failure(let error):
                     MXLog.error("Failed starting ElementCall Widget Driver with error: \(error)")
@@ -576,13 +377,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                     return
                 }
                 
-                await elementCallService.setupCallSession(roomID: roomProxy.id,
-                                                          roomDisplayName: roomProxy.infoPublisher.value.displayName ?? roomProxy.id)
-            
-                if notifyOtherParticipants {
-                    _ = await roomProxy.sendCallNotificationIfNeeded()
-                }
-                
+             
     
            
             }

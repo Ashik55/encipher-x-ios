@@ -601,7 +601,7 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
             switch action {
             case .presentCallScreen(let callRoomProxy):
                 // Here we assume that the app is running and the call state is already up to date
-                presentCallScreen(roomProxy: callRoomProxy.roomProxy, notifyOtherParticipants: !callRoomProxy.roomProxy.infoPublisher.value.hasRoomCall, isAudioCall: callRoomProxy.audioCall ?? false)
+                presentCallScreen(roomProxy: callRoomProxy.roomProxy, notifyOtherParticipants: !callRoomProxy.roomProxy.infoPublisher.value.hasRoomCall, isAudioCall: callRoomProxy.audioCall)
                 
                 
                 
@@ -687,10 +687,10 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
             return
         }
         
-        presentCallScreen(roomProxy: roomProxy, notifyOtherParticipants: notifyOtherParticipants)
+        presentCallScreen(roomProxy: roomProxy, notifyOtherParticipants: notifyOtherParticipants, isAudioCall: nil)
     }
     
-    private func presentCallScreen(roomProxy: JoinedRoomProxyProtocol, notifyOtherParticipants: Bool, isAudioCall: Bool = false) {
+    private func presentCallScreen(roomProxy: JoinedRoomProxyProtocol, notifyOtherParticipants: Bool, isAudioCall: Bool?) {
         let colorScheme: ColorScheme = appMediator.windowManager.mainWindow.traitCollection.userInterfaceStyle == .light ? .light : .dark
         presentCallScreen(configuration: .init(roomProxy: roomProxy,
                                                clientProxy: userSession.clientProxy,
@@ -718,21 +718,19 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
         }
         
         
-        // Extract isAudioCall and other necessary properties from the configuration
-        var isAudioCall: Bool? = false
-        switch configuration.kind {
-        case .genericCallLink:
-            isAudioCall = false // Default for generic calls
-        case .roomCall(_, _, _, _, _, _, _, let audioCall):
-            isAudioCall = audioCall ?? false
-        }
+//      
+//        switch configuration.kind {
+//        case .genericCallLink:
+//        case .roomCall(_, _, _, _, _, _, _, let audioCall):
+//            print("User Session Flow isAudioCall==> \(audioCall)")
+//        }
 
-        print("isAudioCall==> \(isAudioCall)")
+      
         
         let callScreenCoordinator = CallScreenCoordinator(parameters: .init(elementCallService: elementCallService,
                                                                             configuration: configuration,
                                                                             allowPictureInPicture: true,
-//                                                                            allowPictureInPicture: !isAudioCall,
+//                                                                            
                                                                             appHooks: appHooks))
         
         callScreenCoordinator.actions

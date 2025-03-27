@@ -269,6 +269,7 @@ struct RoomScreen: View {
                            .frame(width: 22, height: 17) // Adjust size as needed
                    }
                    .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
+           
                }
                .padding() // Optional padding for spacing around the buttons
         }

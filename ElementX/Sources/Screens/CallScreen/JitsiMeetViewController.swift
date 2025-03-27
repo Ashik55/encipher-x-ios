@@ -136,7 +136,7 @@ import JitsiMeetSDK
 struct JitsiMeetViewController: UIViewRepresentable {
     var roomName: String?
     var displayName: String?
-    var isAudioCall: Bool? = nil
+    var isAudioCall: Bool?
     var onCallEnded: (() -> Void)?
 
     func makeCoordinator() -> Coordinator {
@@ -155,7 +155,7 @@ struct JitsiMeetViewController: UIViewRepresentable {
         let defaultOptions = JitsiMeetConferenceOptions.fromBuilder { (builder) in
             builder.serverURL = URL(string: meetUrl)
             builder.userInfo = userInfo
-            builder.setAudioOnly(isAudioCall ?? false)
+            builder.setAudioOnly(isAudioCall ?? true)
             builder.setFeatureFlag("welcomepage.enabled", withValue: false)
             builder.setFeatureFlag("prejoinpage.enabled", withValue: false)
             builder.setFeatureFlag("toolbox.alwaysVisible", withValue: false)

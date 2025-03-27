@@ -874,7 +874,7 @@ class RoomFlowCoordinator: FlowCoordinatorProtocol {
             case .presentRolesAndPermissionsScreen:
                 stateMachine.tryEvent(.presentRolesAndPermissionsScreen)
             case .presentCall:
-                let callRoomProxy = CallRoomProxy(roomProxy: roomProxy, audioCall: false) // Or use `nil` if no audio call is needed
+                let callRoomProxy = CallRoomProxy(roomProxy: roomProxy, audioCall: nil) // Or use `nil` if no audio call is needed
                 actionsSubject.send(.presentCallScreen(callRoomProxy: callRoomProxy))
 //                actionsSubject.send(.presentCallScreen(roomProxy: roomProxy))
             case .presentPinnedEventsTimeline:
