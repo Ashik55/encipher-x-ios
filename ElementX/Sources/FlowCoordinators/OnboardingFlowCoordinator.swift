@@ -236,8 +236,8 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                 presentAnalyticsPromptScreen()
             case (_, _, .notificationPermissions):
                 presentNotificationPermissionsScreen()
-            case (_, _, .generateEncryptionKey):
-                presentRecoveryKeyScreen()
+//            case (_, _, .generateEncryptionKey):
+//                presentRecoveryKeyScreen()
             case (_, _, .finished):
                 rootNavigationStackCoordinator.setFullScreenCoverCoordinator(nil)
             default:
@@ -409,8 +409,8 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                 switch action {
                 case .done:
                     appSettings.hasRunNotificationPermissionsOnboarding = true
-//                    stateMachine.tryEvent(.next)
-                    presentRecoveryKeyScreen()
+                    stateMachine.tryEvent(.next)
+//                    presentRecoveryKeyScreen()
                 }
             }
             .store(in: &cancellables)

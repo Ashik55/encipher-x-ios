@@ -48,9 +48,7 @@ struct SecureBackupRecoveryKeyScreen: View {
                 header
             }
         }
-        .onAppear {
-            context.send(viewAction: .generateKey) // 👈 Called initially
-        }
+       
     }
     
     private var header: some View {
@@ -185,6 +183,8 @@ struct SecureBackupRecoveryKeyScreen: View {
 //                    .font(.compound.bodySM)
 //                    .padding(.leading, 16)
 //            }
+        } .onAppear {
+            context.send(viewAction: .generateKey) // 👈 Called initially
         }
     }
     
@@ -211,27 +211,27 @@ struct SecureBackupRecoveryKeyScreen: View {
                       context.send(viewAction: .confirmKey)
                   }
             
-            
-            SecureField(L10n.screenRecoveryKeyConfirmKeyPlaceholder, text: $context.confirmationRecoveryKey)
-                          .tint(.compound.iconAccentTertiary)
-                          .frame(maxWidth: .infinity)
-                          .padding()
-                          .background(Color.compound.bgSubtleSecondaryLevel0)
-                          .clipShape(RoundedRectangle(cornerRadius: 8))
-                          .id(textFieldIdentifier)
-                          .focused($focused)
-                          .submitLabel(.done)
-                          .onSubmit {
-                              context.send(viewAction: .confirmKey)
-                          }
-                          .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.recoveryKeyField)
-                      
-            
-            if let subtitle = context.viewState.recoveryKeySubtitle {
-                Text(subtitle)
-                    .foregroundColor(.compound.textSecondary)
-                    .font(.compound.bodySM)
-            }
+//            
+//            SecureField(L10n.screenRecoveryKeyConfirmKeyPlaceholder, text: $context.confirmationRecoveryKey)
+//                          .tint(.compound.iconAccentTertiary)
+//                          .frame(maxWidth: .infinity)
+//                          .padding()
+//                          .background(Color.compound.bgSubtleSecondaryLevel0)
+//                          .clipShape(RoundedRectangle(cornerRadius: 8))
+//                          .id(textFieldIdentifier)
+//                          .focused($focused)
+//                          .submitLabel(.done)
+//                          .onSubmit {
+//                              context.send(viewAction: .confirmKey)
+//                          }
+//                          .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.recoveryKeyField)
+//                      
+//            
+//            if let subtitle = context.viewState.recoveryKeySubtitle {
+//                Text(subtitle)
+//                    .foregroundColor(.compound.textSecondary)
+//                    .font(.compound.bodySM)
+//            }
         }
     }
 }

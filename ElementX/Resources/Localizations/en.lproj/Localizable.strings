@@ -1153,7 +1153,7 @@
 "screen_notification_settings_mentions_section_title" = "Mentions";
 "screen_qr_code_login_invalid_scan_state_retry_button" = "Try again";
 "screen_recovery_key_change_generate_key_description" = "Keep this to yourself!";
-"screen_recovery_key_confirm_title" = "Enter your recovery key";
+"screen_recovery_key_confirm_title" = "Enter Secure Vault Password";
 "screen_report_content_block_user" = "Block user";
 "screen_reset_encryption_password_placeholder" = "Enter…";
 "screen_room_attachment_source_camera_photo" = "Take photo";

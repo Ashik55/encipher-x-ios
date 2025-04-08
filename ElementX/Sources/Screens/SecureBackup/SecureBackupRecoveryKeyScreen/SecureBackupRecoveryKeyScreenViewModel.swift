@@ -68,7 +68,7 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
                 
                 print("getPasskeyResponse ==>: \(getPasskeyResponse)")
                 
-                switch await secureBackupController.confirmRecoveryKey(state.bindings.confirmationRecoveryKey) {
+                switch await secureBackupController.confirmRecoveryKey(getPasskeyResponse.passkey) {
                 case .success:
                     actionsSubject.send(.done(mode: context.viewState.mode))
                 case .failure(let error):
@@ -86,12 +86,13 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
             
             Task {
                   do {
-                      print("userId  ==>>\(userID)")
-//                      print("Server RecoveryKey  ==>>\(state.bindings.confirmationRecoveryKey)")
-                      print("Server RecoveryKey  ==>>\(String(describing: state.recoveryKey))")
-                      print("password  ==>>\(state.bindings.password)")
+//                      print("userId  ==>>\(userID)")
+////                      print("Server RecoveryKey  ==>>\(state.bindings.confirmationRecoveryKey)")
+//                      print("Server RecoveryKey  ==>>\(String(describing: state.recoveryKey))")
+//                      print("password  ==>>\(state.bindings.password)")
+                      
                       let passkeyResponse = try await savePasskey(userId: userID, recoveryKey: state.recoveryKey, password: state.bindings.password)
-                      print("passkeyResponse ==>: \(passkeyResponse)")
+//                      print("passkeyResponse ==>: \(passkeyResponse)")
                       
                       if(passkeyResponse.encryptedPasskey != nil){
                           state.bindings.alertInfo =
@@ -163,6 +164,7 @@ func getPaaskey(userId: String, password: String?) async throws -> GetPasskeyRes
         throw APIError.custom(message: "Password is required")
     }
 
+    print("getPaaskey called  ==>>\(password)")
     return try await APIClient.request(
         path: "auth/passkey/\(userId)?passphrase=\(password)"
     )
