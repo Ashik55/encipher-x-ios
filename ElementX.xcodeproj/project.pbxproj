@@ -2558,6 +2558,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		6B3F749F2DA584ED0035F280 /* RecoveryKeyEncryption */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = RecoveryKeyEncryption; sourceTree = "<group>"; };
 		6BD7FE492DA4FE1500D98A8A /* Api */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Api; sourceTree = "<group>"; };
 		6BD7FE4D2DA4FF8D00D98A8A /* ApiResponses */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ApiResponses; sourceTree = "<group>"; };
 		6BD7FE512DA5082300D98A8A /* ApiResponses */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ApiResponses; sourceTree = "<group>"; };
@@ -3013,6 +3014,7 @@
 		2565414373E6F68005966B8E /* SecureBackup */ = {
 			isa = PBXGroup;
 			children = (
+				6B3F749F2DA584ED0035F280 /* RecoveryKeyEncryption */,
 				6BD7FE512DA5082300D98A8A /* ApiResponses */,
 				B1FD4FD6CEB987AE274AEEE5 /* SecureBackupKeyBackupScreen */,
 				63E514D74481A3D9556DFFC3 /* SecureBackupLogoutConfirmationScreen */,
@@ -6192,6 +6194,7 @@
 				58C473A5DEA945AACFEA8E9F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				6B3F749F2DA584ED0035F280 /* RecoveryKeyEncryption */,
 				6BD7FE492DA4FE1500D98A8A /* Api */,
 				6BD7FE4D2DA4FF8D00D98A8A /* ApiResponses */,
 				6BD7FE512DA5082300D98A8A /* ApiResponses */,

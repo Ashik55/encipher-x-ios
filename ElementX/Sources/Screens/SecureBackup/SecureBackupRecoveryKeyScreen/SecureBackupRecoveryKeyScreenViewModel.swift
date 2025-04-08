@@ -68,7 +68,11 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
                 
                 print("getPasskeyResponse ==>: \(getPasskeyResponse)")
                 
-                switch await secureBackupController.confirmRecoveryKey(getPasskeyResponse.passkey) {
+                let decryptedRecoveryKey = try PasskeyEncryption.decrypt(encryptedPasskey: getPasskeyResponse.passkey, passphrase: state.bindings.password)
+                
+                print("decryptedRecoveryKey ==>: \(decryptedRecoveryKey)")
+                
+                switch await secureBackupController.confirmRecoveryKey(decryptedRecoveryKey) {
                 case .success:
                     actionsSubject.send(.done(mode: context.viewState.mode))
                 case .failure(let error):
@@ -143,13 +147,20 @@ func savePasskey( userId: String, recoveryKey: String?, password: String) async 
     guard let recoveryKey = recoveryKey else {
         throw APIError.custom(message: "Recovery key is missing")
     }
+    
+    print("plain recoveryKey==>>\(recoveryKey)")
+    
+    let encryptedPassKey = try PasskeyEncryption.encrypt(passkey: recoveryKey, passphrase: password)
+    
+    print("encryptedPassKey==>>\(encryptedPassKey)")
+    
     let body: [String: String] = [
-        "passkey": recoveryKey,
+        "passkey": encryptedPassKey,
         "passphrase": password
     ]
     
    
-        print("savePasskey body  ==>>\(body)")
+    print("savePasskey body  ==>>\(body)")
 
     return try await APIClient.request(
         path: "auth/passkey/\(userId)",
