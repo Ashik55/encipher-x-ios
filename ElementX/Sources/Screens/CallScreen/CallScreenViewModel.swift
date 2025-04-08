@@ -219,66 +219,100 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
     }
   
 
-    // Create Call Function (Async/Await)
-    func createCall(roomId: String?, userId: String?, isAudioCall: Bool) async throws -> [String: Any] {
+    func createCall(roomId: String?, userId: String?, isAudioCall: Bool) async throws -> CreateCallResponse {
         guard let userId = userId else {
-            throw NSError(domain: "UserError", code: 0, userInfo: [NSLocalizedDescriptionKey: "User ID is missing"])
+            throw APIError.custom(message: "User ID is missing")
         }
 
-        let baseURL = "https://dev.enciph-er.com/_matrix/client/v3/call/\(userId)"
-        guard let url = URL(string: baseURL) else {
-            throw NSError(domain: "URLError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
-        }
-
-        let requestBody: [String: Any] = [
+        let body: [String: String] = [
             "room_id": roomId ?? "",
             "call_type": isAudioCall ? "audio" : "video"
         ]
 
-        print("Create Call RequestBody ==>> \(requestBody)")
-
-        let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-            throw NSError(domain: "HTTPError", code: (response as? HTTPURLResponse)?.statusCode ?? 500, userInfo: [NSLocalizedDescriptionKey: "HTTP error"])
-        }
-
-        let jsonResult = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-        print("Create Call Response JSON==>: \(jsonResult)")
-        
-        return jsonResult
+        return try await APIClient.request(
+            path: "call/\(userId)",
+            method: .POST,
+            body: body
+        )
     }
 
-    // Get Call Details Function (Async/Await)
-    func getCallDetails(userId: String?, roomId: String?) async throws -> [String: Any] {
-        guard let userId = userId, let roomId = roomId,
-              let url = URL(string: "https://dev.enciph-er.com/_matrix/client/v3/call/\(userId)?room_id=\(roomId)") else {
-            throw NSError(domain: "URLError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+    
+//    // Create Call Function (Async/Await)
+//    func createCall(roomId: String?, userId: String?, isAudioCall: Bool) async throws -> [String: Any] {
+//        guard let userId = userId else {
+//            throw NSError(domain: "UserError", code: 0, userInfo: [NSLocalizedDescriptionKey: "User ID is missing"])
+//        }
+//
+//        let baseURL = "https://dev.enciph-er.com/_matrix/client/v3/call/\(userId)"
+//        guard let url = URL(string: baseURL) else {
+//            throw NSError(domain: "URLError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+//        }
+//
+//        let requestBody: [String: Any] = [
+//            "room_id": roomId ?? "",
+//            "call_type": isAudioCall ? "audio" : "video"
+//        ]
+//
+//        print("Create Call RequestBody ==>> \(requestBody)")
+//
+//        let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
+//
+//        var request = URLRequest(url: url)
+//        request.httpMethod = "POST"
+//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//        request.httpBody = jsonData
+//
+//        let (data, response) = try await URLSession.shared.data(for: request)
+//
+//        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+//            throw NSError(domain: "HTTPError", code: (response as? HTTPURLResponse)?.statusCode ?? 500, userInfo: [NSLocalizedDescriptionKey: "HTTP error"])
+//        }
+//
+//        let jsonResult = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
+//        print("Create Call Response JSON==>: \(jsonResult)")
+//        
+//        return jsonResult
+//    }
+    
+
+    
+    func getCallDetails(userId: String?, roomId: String?) async throws -> [Call] {
+        guard let userId = userId, let roomId = roomId else {
+            throw APIError.custom(message: "Missing userId or roomId")
         }
 
-        
-        print("RoomID==>\(roomId)")
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        let response: CallDetailsResponse = try await APIClient.request(
+            path: "call/\(userId)?room_id=\(roomId)"
+        )
 
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-            throw NSError(domain: "HTTPError", code: (response as? HTTPURLResponse)?.statusCode ?? 500, userInfo: [NSLocalizedDescriptionKey: "HTTP error"])
-        }
-
-        let jsonResult = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-        print("Get Call Details Response JSON ==>: \(jsonResult)")
-        
-        return jsonResult
+        return response.calls
     }
+    
+    
+//
+//    // Get Call Details Function (Async/Await)
+//    func getCallDetails(userId: String?, roomId: String?) async throws -> [String: Any] {
+//        guard let userId = userId, let roomId = roomId,
+//              let url = URL(string: "https://dev.enciph-er.com/_matrix/client/v3/call/\(userId)?room_id=\(roomId)") else {
+//            throw NSError(domain: "URLError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+//        }
+//
+//        
+//        print("RoomID==>\(roomId)")
+//        var request = URLRequest(url: url)
+//        request.httpMethod = "GET"
+//
+//        let (data, response) = try await URLSession.shared.data(for: request)
+//
+//        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+//            throw NSError(domain: "HTTPError", code: (response as? HTTPURLResponse)?.statusCode ?? 500, userInfo: [NSLocalizedDescriptionKey: "HTTP error"])
+//        }
+//
+//        let jsonResult = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
+//        print("Get Call Details Response JSON ==>: \(jsonResult)")
+//        
+//        return jsonResult
+//    }
    
     // MARK: - Private
     
@@ -312,7 +346,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                         // Call createCall only when no call details exist
                         print("AudioCall  ==>>\(String(describing: audioCall)), Creating new Call for primary User")
                         let newCallResponse = try await createCall(roomId: roomId, userId: userId, isAudioCall: audioCall!)
-                        print("New Call Created: \(newCallResponse)")
+                        print("New Call Created==>: \(newCallResponse)")
 
                         // Update state on the main thread using MainActor.run
                         await MainActor.run {
@@ -336,12 +370,16 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                         print("AudioCall  ==>>\(String(describing: audioCall)), Get Call details for receiver")
                         do {
                              // Fetch call details and wait for the response
-                             let callDetails = try await getCallDetails(userId: userId, roomId: roomId)
-                            print("callDetails: \(callDetails)")
+                             let callList = try await getCallDetails(userId: userId, roomId: roomId)
+                            print("callList==>>: \(callList)")
                              
                              // Extract call type safely
-                             let callType = (callDetails["calls"] as? [[String: Any]])?.first?["call_type"] as? String ?? "N/A"
+//                             let callType = (callDetails["calls"] as? [[String: Any]])?.first?["call_type"] as? String ?? "N/A"
                         
+                            let callType = callList.first?.callType ?? "N/A"
+                            print("callType==>>: \(callType)")
+                             
+                            
                              // Update state on the main thread
                              await MainActor.run {
                                  self.state.roomId = roomId

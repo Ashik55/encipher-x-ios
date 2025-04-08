@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -2557,6 +2557,11 @@
 		FFECCE59967018204876D0A5 /* LocationMarkerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationMarkerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		6BD7FE492DA4FE1500D98A8A /* Api */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Api; sourceTree = "<group>"; };
+		6BD7FE4D2DA4FF8D00D98A8A /* ApiResponses */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ApiResponses; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		60823A8E409E27661824D510 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -2756,6 +2761,7 @@
 		0787F81684E503024BD0C051 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				6BD7FE492DA4FE1500D98A8A /* Api */,
 				4BF8D11D9ED15CFC373D0119 /* Analytics */,
 				7803E03F759061C948D66B7E /* AppLock */,
 				FCE7249621F507F34A8122FB /* Audio */,
@@ -2862,6 +2868,7 @@
 		1185EECDD07495D65AC84AFC /* CallScreen */ = {
 			isa = PBXGroup;
 			children = (
+				6BD7FE4D2DA4FF8D00D98A8A /* ApiResponses */,
 				F37FA1A5D55633E1942B153B /* CallScreenCoordinator.swift */,
 				28146817C61423CACCF942F5 /* CallScreenModels.swift */,
 				37A63A59BFDDC494B1C20119 /* CallScreenViewModel.swift */,
@@ -6181,6 +6188,10 @@
 			dependencies = (
 				2C29670603B37E38705D5FF1 /* PBXTargetDependency */,
 				58C473A5DEA945AACFEA8E9F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				6BD7FE492DA4FE1500D98A8A /* Api */,
+				6BD7FE4D2DA4FF8D00D98A8A /* ApiResponses */,
 			);
 			name = ElementX;
 			packageProductDependencies = (
