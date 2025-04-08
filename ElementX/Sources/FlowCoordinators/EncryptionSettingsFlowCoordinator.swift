@@ -157,7 +157,7 @@ class EncryptionSettingsFlowCoordinator: FlowCoordinatorProtocol {
         let sheetNavigationStackCoordinator = NavigationStackCoordinator()
         let coordinator = SecureBackupRecoveryKeyScreenCoordinator(parameters: .init(secureBackupController: userSession.clientProxy.secureBackupController,
                                                                                      userIndicatorController: userIndicatorController,
-                                                                                     isModallyPresented: true))
+                                                                                     isModallyPresented: true, userID: userSession.clientProxy.userID))
         
         coordinator.actions.sink { [weak self] action in
             guard let self else { return }

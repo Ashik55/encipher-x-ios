@@ -74,6 +74,8 @@ struct SecureBackupRecoveryKeyScreenViewState: BindableState {
 struct SecureBackupRecoveryKeyScreenViewBindings {
     var confirmationRecoveryKey = ""
     var alertInfo: AlertInfo<UUID>?
+    var password: String = "" 
+    var recoveryKey: String = ""
 }
 
 enum SecureBackupRecoveryKeyScreenViewAction {

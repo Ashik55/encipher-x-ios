@@ -784,7 +784,7 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
         let sheetNavigationStackCoordinator = NavigationStackCoordinator()
         let parameters = SecureBackupRecoveryKeyScreenCoordinatorParameters(secureBackupController: userSession.clientProxy.secureBackupController,
                                                                             userIndicatorController: ServiceLocator.shared.userIndicatorController,
-                                                                            isModallyPresented: true)
+                                                                            isModallyPresented: true, userID: userSession.clientProxy.userID)
         
         let coordinator = SecureBackupRecoveryKeyScreenCoordinator(parameters: parameters)
         coordinator.actions.sink { [weak self] action in

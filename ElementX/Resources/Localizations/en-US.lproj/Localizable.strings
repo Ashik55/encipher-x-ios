@@ -762,7 +762,7 @@
 "screen_recovery_key_save_action" = "Save recovery key";
 "screen_recovery_key_save_description" = "Write down this recovery key somewhere safe, like a password manager, encrypted note, or a physical safe.";
 "screen_recovery_key_save_key_description" = "Tap to copy recovery key";
-"screen_recovery_key_save_title" = "Save your recovery key somewhere safe";
+"screen_recovery_key_save_title" = "Encrypt your recovery key to Secure Vault";
 "screen_recovery_key_setup_confirmation_description" = "You will not be able to access your new recovery key after this step.";
 "screen_recovery_key_setup_confirmation_title" = "Have you saved your recovery key?";
 "screen_recovery_key_setup_description" = "Your key storage is protected by a recovery key. If you need a new recovery key after setup, you can recreate it by selecting ‘Change recovery key’.";

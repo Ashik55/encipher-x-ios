@@ -13,6 +13,8 @@ typealias SecureBackupRecoveryKeyScreenViewModelType = StateStoreViewModel<Secur
 class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewModelType, SecureBackupRecoveryKeyScreenViewModelProtocol {
     private let secureBackupController: SecureBackupControllerProtocol
     private let userIndicatorController: UserIndicatorControllerProtocol
+    let userID: String
+ 
     
     private var actionsSubject: PassthroughSubject<SecureBackupRecoveryKeyScreenViewModelAction, Never> = .init()
     var actions: AnyPublisher<SecureBackupRecoveryKeyScreenViewModelAction, Never> {
@@ -21,9 +23,11 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
 
     init(secureBackupController: SecureBackupControllerProtocol,
          userIndicatorController: UserIndicatorControllerProtocol,
-         isModallyPresented: Bool) {
+         isModallyPresented: Bool, userID: String) {
         self.secureBackupController = secureBackupController
         self.userIndicatorController = userIndicatorController
+        self.userID = userID
+     
         
         super.init(initialViewState: .init(isModallyPresented: isModallyPresented,
                                            mode: secureBackupController.recoveryState.value.viewMode,
@@ -60,6 +64,10 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
             Task {
                 showLoadingIndicator()
                 
+                let getPasskeyResponse = try await getPaaskey(userId: userID, password: state.bindings.password)
+                
+                print("getPasskeyResponse ==>: \(getPasskeyResponse)")
+                
                 switch await secureBackupController.confirmRecoveryKey(state.bindings.confirmationRecoveryKey) {
                 case .success:
                     actionsSubject.send(.done(mode: context.viewState.mode))
@@ -75,14 +83,42 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
         case .cancel:
             actionsSubject.send(.cancel)
         case .done:
-            state.bindings.alertInfo = .init(id: .init(),
-                                             title: L10n.screenRecoveryKeySetupConfirmationTitle,
-                                             message: L10n.screenRecoveryKeySetupConfirmationDescription,
-                                             primaryButton: .init(title: L10n.actionContinue) { [weak self] in
-                                                 guard let self else { return }
-                                                 actionsSubject.send(.done(mode: context.viewState.mode))
-                                             },
-                                             secondaryButton: .init(title: L10n.actionCancel, role: .cancel, action: nil))
+            
+            Task {
+                  do {
+                      print("userId  ==>>\(userID)")
+//                      print("Server RecoveryKey  ==>>\(state.bindings.confirmationRecoveryKey)")
+                      print("Server RecoveryKey  ==>>\(String(describing: state.recoveryKey))")
+                      print("password  ==>>\(state.bindings.password)")
+                      let passkeyResponse = try await savePasskey(userId: userID, recoveryKey: state.recoveryKey, password: state.bindings.password)
+                      print("passkeyResponse ==>: \(passkeyResponse)")
+                      
+                      if(passkeyResponse.encryptedPasskey != nil){
+                          state.bindings.alertInfo =
+                              .init(id: .init(),
+                            title: "Recovery Key Saved",
+                            message: "You Recovery key succesfylly saved in Encipher's Secure Vault, remember the password to decrypt your data next time",
+                            primaryButton: .init(title: L10n.actionContinue) {
+                                  [weak self] in
+                                  guard let self else { return }
+                                  actionsSubject.send(.done(mode: context.viewState.mode))
+                                  
+                              },
+                            secondaryButton: .init(title: L10n.actionCancel, role: .cancel, action: nil))
+                            
+                      }
+                      // If you need to perform actions after the async operation
+//                      actionsSubject.send(.done(mode: context.viewState.mode))
+                  } catch {
+                      MXLog.error("Failed saving passkey with error: \(error)")
+                      state.bindings.alertInfo = .init(id: .init(),
+                                                      title: "Passkey Error",
+                                                      message: "Failed to save recovery key: \(error.localizedDescription)")
+                  }
+              }
+            
+     
+            
         }
     }
     
@@ -98,6 +134,38 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
     private func hideLoadingIndicator() {
         userIndicatorController.retractIndicatorWithId(Self.loadingIndicatorIdentifier)
     }
+}
+
+
+
+func savePasskey( userId: String, recoveryKey: String?, password: String) async throws -> CreatePasskeyResponse {
+    guard let recoveryKey = recoveryKey else {
+        throw APIError.custom(message: "Recovery key is missing")
+    }
+    let body: [String: String] = [
+        "passkey": recoveryKey,
+        "passphrase": password
+    ]
+    
+   
+        print("savePasskey body  ==>>\(body)")
+
+    return try await APIClient.request(
+        path: "auth/passkey/\(userId)",
+        method: .POST,
+        body: body
+    )
+}
+
+
+func getPaaskey(userId: String, password: String?) async throws -> GetPasskeyResponse {
+    guard let password = password else {
+        throw APIError.custom(message: "Password is required")
+    }
+
+    return try await APIClient.request(
+        path: "auth/passkey/\(userId)?passphrase=\(password)"
+    )
 }
 
 extension SecureBackupRecoveryState {

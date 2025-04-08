@@ -48,6 +48,9 @@ struct SecureBackupRecoveryKeyScreen: View {
                 header
             }
         }
+        .onAppear {
+            context.send(viewAction: .generateKey) // 👈 Called initially
+        }
     }
     
     private var header: some View {
@@ -88,22 +91,22 @@ struct SecureBackupRecoveryKeyScreen: View {
                 Text(L10n.actionConfirm)
             }
             .buttonStyle(.compound(.primary))
-            .disabled(context.confirmationRecoveryKey.isEmpty)
+            .disabled(context.password.isEmpty)
             .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.confirm)
         }
     }
     
     private var recoveryCreatedActionButtons: some View {
         VStack(spacing: 16) {
-            if let recoveryKey = context.viewState.recoveryKey {
-                ShareLink(item: recoveryKey) {
-                    Label(L10n.screenRecoveryKeySaveAction, icon: \.download)
-                }
-                .buttonStyle(.compound(.secondary))
-                .simultaneousGesture(TapGesture().onEnded { _ in
-                    context.send(viewAction: .keySaved)
-                })
-            }
+//            if let recoveryKey = context.viewState.recoveryKey {
+//                ShareLink(item: recoveryKey) {
+//                    Label(L10n.screenRecoveryKeySaveAction, icon: \.download)
+//                }
+//                .buttonStyle(.compound(.secondary))
+//                .simultaneousGesture(TapGesture().onEnded { _ in
+//                    context.send(viewAction: .keySaved)
+//                })
+//            }
             
             Button {
                 context.send(viewAction: .done)
@@ -111,7 +114,7 @@ struct SecureBackupRecoveryKeyScreen: View {
                 Text(L10n.actionDone)
             }
             .buttonStyle(.compound(.primary))
-            .disabled(context.viewState.recoveryKey == nil || context.viewState.doneButtonEnabled == false)
+            .disabled(context.viewState.recoveryKey == nil || context.password.isEmpty)
             .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.done)
         }
     }
@@ -129,47 +132,59 @@ struct SecureBackupRecoveryKeyScreen: View {
     
     private var generateRecoveryKeySection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(L10n.commonRecoveryKey)
+            Text("Set Password for Secure Vault")
                 .foregroundColor(.compound.textPrimary)
                 .font(.compound.bodySMSemibold)
-                .padding(.leading, 16)
+                .padding(.horizontal)  // Apply horizontal padding only
+
+            TextField("Enter Vault password . . .", text: $context.password)
+                .padding() // Inner padding inside the text field
+                  .frame(height: 50) // Set your desired height
+                  .background(Color(UIColor.systemGray6)) // Light gray background
+                  .cornerRadius(8)
+                  .padding(.horizontal) // Outer horizontal padding
+                  .submitLabel(.done)
+                  .onSubmit {
+                      context.send(viewAction: .confirmKey)
+                  }
             
-            ZStack {
-                RecoveryKeyView(recoveryKey: "", isInvisibleForLayout: true) { }
-                
-                if context.viewState.recoveryKey == nil {
-                    if !context.viewState.isGeneratingKey {
-                        Button(generateButtonTitle) {
-                            context.send(viewAction: .generateKey)
-                        }
-                        .font(.compound.bodyLGSemibold)
-                        .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.generateRecoveryKey)
-                    } else {
-                        HStack(spacing: 8) {
-                            ProgressView()
-                            Text(L10n.screenRecoveryKeyGeneratingKey)
-                        }
-                        .font(.compound.bodyLGSemibold)
-                        .foregroundStyle(.compound.textPrimary)
-                    }
-                } else {
-                    RecoveryKeyView(recoveryKey: context.viewState.recoveryKey ?? "") {
-                        context.send(viewAction: .copyKey)
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .padding(.horizontal, 16)
-            .background(Color.compound.bgSubtleSecondaryLevel0)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
             
-            if let subtitle = context.viewState.recoveryKeySubtitle {
-                Text(subtitle)
-                    .foregroundColor(.compound.textSecondary)
-                    .font(.compound.bodySM)
-                    .padding(.leading, 16)
-            }
+//            ZStack {
+//                RecoveryKeyView(recoveryKey: "", isInvisibleForLayout: true) { }
+//                
+//                if context.viewState.recoveryKey == nil {
+//                    if !context.viewState.isGeneratingKey {
+//                        Button(generateButtonTitle) {
+//                            context.send(viewAction: .generateKey)
+//                        }
+//                        .font(.compound.bodyLGSemibold)
+//                        .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.generateRecoveryKey)
+//                    } else {
+//                        HStack(spacing: 8) {
+//                            ProgressView()
+//                            Text(L10n.screenRecoveryKeyGeneratingKey)
+//                        }
+//                        .font(.compound.bodyLGSemibold)
+//                        .foregroundStyle(.compound.textPrimary)
+//                    }
+//                } else {
+//                    RecoveryKeyView(recoveryKey: context.viewState.recoveryKey ?? "") {
+//                        context.send(viewAction: .copyKey)
+//                    }
+//                }
+//            }
+//            .frame(maxWidth: .infinity)
+//            .padding(.vertical, 14)
+//            .padding(.horizontal, 16)
+//            .background(Color.compound.bgSubtleSecondaryLevel0)
+//            .clipShape(RoundedRectangle(cornerRadius: 14))
+//            
+//            if let subtitle = context.viewState.recoveryKeySubtitle {
+//                Text(subtitle)
+//                    .foregroundColor(.compound.textSecondary)
+//                    .font(.compound.bodySM)
+//                    .padding(.leading, 16)
+//            }
         }
     }
     
@@ -180,23 +195,37 @@ struct SecureBackupRecoveryKeyScreen: View {
     @ViewBuilder
     private var confirmRecoveryKeySection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(L10n.commonRecoveryKey)
+            Text("Enter Secure Vault Password")
                 .foregroundColor(.compound.textPrimary)
                 .font(.compound.bodySMSemibold)
+                .padding(.horizontal)  // Apply horizontal padding only
+
+            TextField("Enter Vault Password . . .", text: $context.password)
+                .padding() // Inner padding inside the text field
+                  .frame(height: 50) // Set your desired height
+                  .background(Color(UIColor.systemGray6)) // Light gray background
+                  .cornerRadius(8)
+                  .padding(.horizontal) // Outer horizontal padding
+                  .submitLabel(.done)
+                  .onSubmit {
+                      context.send(viewAction: .confirmKey)
+                  }
+            
             
             SecureField(L10n.screenRecoveryKeyConfirmKeyPlaceholder, text: $context.confirmationRecoveryKey)
-                .tint(.compound.iconAccentTertiary)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.compound.bgSubtleSecondaryLevel0)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .id(textFieldIdentifier)
-                .focused($focused)
-                .submitLabel(.done)
-                .onSubmit {
-                    context.send(viewAction: .confirmKey)
-                }
-                .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.recoveryKeyField)
+                          .tint(.compound.iconAccentTertiary)
+                          .frame(maxWidth: .infinity)
+                          .padding()
+                          .background(Color.compound.bgSubtleSecondaryLevel0)
+                          .clipShape(RoundedRectangle(cornerRadius: 8))
+                          .id(textFieldIdentifier)
+                          .focused($focused)
+                          .submitLabel(.done)
+                          .onSubmit {
+                              context.send(viewAction: .confirmKey)
+                          }
+                          .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.recoveryKeyField)
+                      
             
             if let subtitle = context.viewState.recoveryKeySubtitle {
                 Text(subtitle)
@@ -236,67 +265,67 @@ private struct RecoveryKeyView: View {
     }
 }
 
-// MARK: - Previews
-
-struct SecureBackupRecoveryKeyScreen_Previews: PreviewProvider, TestablePreview {
-    static let key = "EsTM njec uHYA yHmh dQdW Nj4o bNRU 9jMN XGMc KUNM UFr5 R8GY"
-    static let notSetUpViewModel = viewModel(recoveryState: .disabled)
-    static let generatingViewModel = viewModel(recoveryState: .disabled, generateKey: true, key: key)
-    static let setupViewModel = viewModel(recoveryState: .enabled, generateKey: true, key: key)
-    static let incompleteViewModel = viewModel(recoveryState: .incomplete)
-    static let unknownViewModel = viewModel(recoveryState: .unknown)
-    
-    static var previews: some View {
-        NavigationStack {
-            SecureBackupRecoveryKeyScreen(context: notSetUpViewModel.context)
-        }
-        .previewDisplayName("Not set up")
-        
-        NavigationStack {
-            SecureBackupRecoveryKeyScreen(context: generatingViewModel.context)
-        }
-        .previewDisplayName("Generating")
-        
-        NavigationStack {
-            SecureBackupRecoveryKeyScreen(context: setupViewModel.context)
-        }
-        .snapshotPreferences(expect: setupViewModel.context.$viewState.map { state in
-            state.recoveryKey != nil
-        })
-        .previewDisplayName("Set up")
-        
-        NavigationStack {
-            SecureBackupRecoveryKeyScreen(context: incompleteViewModel.context)
-        }
-        .previewDisplayName("Incomplete")
-        
-        NavigationStack {
-            SecureBackupRecoveryKeyScreen(context: unknownViewModel.context)
-        }
-        .previewDisplayName("Unknown")
-    }
-    
-    static func viewModel(recoveryState: SecureBackupRecoveryState, generateKey: Bool = false, key: String? = nil) -> SecureBackupRecoveryKeyScreenViewModelType {
-        let backupController = SecureBackupControllerMock()
-        backupController.underlyingRecoveryState = CurrentValueSubject<SecureBackupRecoveryState, Never>(recoveryState).asCurrentValuePublisher()
-        
-        if let key {
-            backupController.generateRecoveryKeyReturnValue = .success(key)
-        } else {
-            backupController.generateRecoveryKeyClosure = {
-                try? await Task.sleep(for: .seconds(1000))
-                return .success("youshouldntseeme")
-            }
-        }
-        
-        let viewModel = SecureBackupRecoveryKeyScreenViewModel(secureBackupController: backupController,
-                                                               userIndicatorController: UserIndicatorControllerMock(),
-                                                               isModallyPresented: true)
-        
-        if generateKey {
-            viewModel.context.send(viewAction: .generateKey)
-        }
-        
-        return viewModel
-    }
-}
+//// MARK: - Previews
+//
+//struct SecureBackupRecoveryKeyScreen_Previews: PreviewProvider, TestablePreview {
+//    static let key = "EsTM njec uHYA yHmh dQdW Nj4o bNRU 9jMN XGMc KUNM UFr5 R8GY"
+//    static let notSetUpViewModel = viewModel(recoveryState: .disabled)
+//    static let generatingViewModel = viewModel(recoveryState: .disabled, generateKey: true, key: key)
+//    static let setupViewModel = viewModel(recoveryState: .enabled, generateKey: true, key: key)
+//    static let incompleteViewModel = viewModel(recoveryState: .incomplete)
+//    static let unknownViewModel = viewModel(recoveryState: .unknown)
+//    
+//    static var previews: some View {
+//        NavigationStack {
+//            SecureBackupRecoveryKeyScreen(context: notSetUpViewModel.context)
+//        }
+//        .previewDisplayName("Not set up")
+//        
+//        NavigationStack {
+//            SecureBackupRecoveryKeyScreen(context: generatingViewModel.context)
+//        }
+//        .previewDisplayName("Generating")
+//        
+//        NavigationStack {
+//            SecureBackupRecoveryKeyScreen(context: setupViewModel.context)
+//        }
+//        .snapshotPreferences(expect: setupViewModel.context.$viewState.map { state in
+//            state.recoveryKey != nil
+//        })
+//        .previewDisplayName("Set up")
+//        
+//        NavigationStack {
+//            SecureBackupRecoveryKeyScreen(context: incompleteViewModel.context)
+//        }
+//        .previewDisplayName("Incomplete")
+//        
+//        NavigationStack {
+//            SecureBackupRecoveryKeyScreen(context: unknownViewModel.context)
+//        }
+//        .previewDisplayName("Unknown")
+//    }
+//    
+//    static func viewModel(recoveryState: SecureBackupRecoveryState, generateKey: Bool = false, key: String? = nil) -> SecureBackupRecoveryKeyScreenViewModelType {
+//        let backupController = SecureBackupControllerMock()
+//        backupController.underlyingRecoveryState = CurrentValueSubject<SecureBackupRecoveryState, Never>(recoveryState).asCurrentValuePublisher()
+//        
+//        if let key {
+//            backupController.generateRecoveryKeyReturnValue = .success(key)
+//        } else {
+//            backupController.generateRecoveryKeyClosure = {
+//                try? await Task.sleep(for: .seconds(1000))
+//                return .success("youshouldntseeme")
+//            }
+//        }
+//        
+//        let viewModel = SecureBackupRecoveryKeyScreenViewModel(secureBackupController: backupController,
+//                                                               userIndicatorController: UserIndicatorControllerMock(),
+//                                                               isModallyPresented: true, userSessionStore:  UserSession)
+//        
+//        if generateKey {
+//            viewModel.context.send(viewAction: .generateKey)
+//        }
+//        
+//        return viewModel
+//    }
+//}

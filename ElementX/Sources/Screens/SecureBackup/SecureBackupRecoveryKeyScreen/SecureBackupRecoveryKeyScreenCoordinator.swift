@@ -12,6 +12,7 @@ struct SecureBackupRecoveryKeyScreenCoordinatorParameters {
     let secureBackupController: SecureBackupControllerProtocol
     let userIndicatorController: UserIndicatorControllerProtocol
     let isModallyPresented: Bool
+    let userID: String
 }
 
 enum SecureBackupRecoveryKeyScreenCoordinatorAction {
@@ -33,7 +34,7 @@ final class SecureBackupRecoveryKeyScreenCoordinator: CoordinatorProtocol {
         self.parameters = parameters
         viewModel = SecureBackupRecoveryKeyScreenViewModel(secureBackupController: parameters.secureBackupController,
                                                            userIndicatorController: parameters.userIndicatorController,
-                                                           isModallyPresented: parameters.isModallyPresented)
+                                                           isModallyPresented: parameters.isModallyPresented, userID: parameters.userID)
     }
     
     func start() {
