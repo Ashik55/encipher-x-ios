@@ -144,7 +144,7 @@ struct JitsiMeetViewController: UIViewRepresentable {
     }
     
     func makeUIView(context: Context) -> JitsiMeetView {
-        let meetUrl = "https://meet.enciph-er.com"
+        let meetUrl = "https://meet.prod.enciph-er.com"
         
         print("JitsiMeetViewController running==>>")
         

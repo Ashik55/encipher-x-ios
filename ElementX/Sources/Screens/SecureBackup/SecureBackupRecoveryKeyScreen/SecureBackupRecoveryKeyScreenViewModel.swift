@@ -108,8 +108,8 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
                                   guard let self else { return }
                                   actionsSubject.send(.done(mode: context.viewState.mode))
                                   
-                              },
-                            secondaryButton: .init(title: L10n.actionCancel, role: .cancel, action: nil))
+                                }
+                              )
                             
                       }
                       // If you need to perform actions after the async operation

@@ -142,9 +142,9 @@ struct SecureBackupRecoveryKeyScreen: View {
                   .cornerRadius(8)
                   .padding(.horizontal) // Outer horizontal padding
                   .submitLabel(.done)
-                  .onSubmit {
-                      context.send(viewAction: .confirmKey)
-                  }
+//                  .onSubmit {
+//                      context.send(viewAction: .confirmKey)
+//                  }
             
             
 //            ZStack {

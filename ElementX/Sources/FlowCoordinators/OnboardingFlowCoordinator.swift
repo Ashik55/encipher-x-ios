@@ -13,6 +13,16 @@ enum OnboardingFlowCoordinatorAction {
     case logout
 }
 
+struct HasPassKeyResponse: Codable {
+    let userId: String?
+    let hasPasskey: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case userId = "user_id"
+        case hasPasskey = "has_passkey"
+    }
+}
+
 class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
     private let userSession: UserSessionProtocol
     private let appLockService: AppLockServiceProtocol
@@ -135,8 +145,16 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
     }
     
     
-    private var shouldGenerateEncryptionKey: Bool {
-        !requiresVerification // since verification is false means we can generate key
+    
+    
+  
+    
+    
+    private var requireForceEncryptionKey: Bool {
+        print(" requireForceEncryptionKey appSettings.hasRunIdentityConfirmationOnboarding ==> \(appSettings.hasRunIdentityConfirmationOnboarding)")
+        print("requireForceEncryptionKey userSession.verificationState ==> \(userSession.sessionSecurityStatePublisher.value.verificationState)")
+        
+        return !requiresVerification
     }
     
     private var requiresAppLockSetup: Bool {
@@ -151,195 +169,98 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
         !appSettings.hasRunNotificationPermissionsOnboarding
     }
     
+    func checkHasPasskey(userId: String) async throws -> Bool {
+        let response: HasPassKeyResponse = try await APIClient.request(
+            path: "auth/check_passkey/\(userId)"
+        )
+        print("checkHasPasskey ==>\(response)")
+        return response.hasPasskey ?? true
+    }
+    
+    
+    
     private func configureStateMachine() {
+     
         stateMachine.addRouteMapping { [weak self] event, fromState, _ in
             guard let self else {
                 return nil
             }
             
-//            print("Route Mapping==>>: Event: \(event), FromState: \(fromState), Conditions: (requiresVerification: \(requiresVerification), requiresAppLockSetup: \(requiresAppLockSetup), requiresAnalyticsSetup: \(requiresAnalyticsSetup), requiresNotificationsSetup: \(requiresNotificationsSetup))")
-//              
-//            
-//            switch (fromState, requiresVerification, requiresAppLockSetup, requiresAnalyticsSetup, requiresNotificationsSetup) {
-//                
-//            case (.initial, true, _, _, _):
-//                return .identityConfirmation
-//     
-//            case (.initial, false, true, _, _):
-//                return .appLockSetup
-//            case (.initial, false, false, true, _):
-//                return .analyticsPrompt
-//            case (.initial, false, false, false, true):
-//                return .notificationPermissions
-//            case (.initial, false, false, false, false):
-//                return .finished
-//                
-//                
-//              
-//                
-//            case (.identityConfirmation, _, _, _, _):
-//                if event == .nextSkippingIdentityConfimed {
-//                    // Used when the verification state has updated to verified
-//                    // after starting the onboarding flow
-//                    switch (requiresAppLockSetup, requiresAnalyticsSetup, requiresNotificationsSetup) {
-//                    case (true, _, _):
-//                        return .appLockSetup
-//                    case (false, true, _):
-//                        return .analyticsPrompt
-//                    case (false, false, true):
-//                        return .notificationPermissions
-//                    case (false, false, false):
-//                        return .finished
-//
-//                    }
-//                } else {
-//                    return .identityConfirmed
-//                }
-//                
-//           
-//            case (.identityConfirmed, _, true, _, _):
-//                return .appLockSetup
-//            case (.identityConfirmed, _, false, true, _):
-//                return .analyticsPrompt
-//            case (.identityConfirmed, _, false, false, true):
-//                return .notificationPermissions
-//            case (.identityConfirmed, _, false, false, false):
-//                return .finished
-//                
-//            case (.appLockSetup, _, _, true, _):
-//                return .analyticsPrompt
-//            case (.appLockSetup, _, _, false, true):
-//                return .notificationPermissions
-//            case (.appLockSetup, _, _, false, false):
-//                return .finished
-//                
-//            case (.analyticsPrompt, _, _, _, true):
-//                return .notificationPermissions
-//            case (.analyticsPrompt, _, _, _, false):
-//                return .finished
-//                
-//            case (.notificationPermissions, _, _, _, _):
-//                return .finished
-//            
-//            default:
-//                return nil
-//            }
-//        }
+            print("""
+            🔀 StateMachine Route Mapping
+            Event: \(event)
+            From State: \(fromState)
+            Conditions:
+              - Requires Verification: \(requiresVerification)
+              - Requires Force Encryption Key: \(requireForceEncryptionKey)
+              - Requires App Lock Setup: \(requiresAppLockSetup)
+              - Requires Analytics Setup: \(requiresAnalyticsSetup)
+              - Requires Notifications Setup: \(requiresNotificationsSetup)
+            """)
+              
         
+            switch (fromState, requiresVerification, requiresAppLockSetup, requiresAnalyticsSetup, requiresNotificationsSetup) {
+                
+            case (.initial, true, _, _, _):
+                return .identityConfirmation
+     
+            case (.initial, false, true, _, _):
+                return .appLockSetup
+            case (.initial, false, false, true, _):
+                return .analyticsPrompt
+            case (.initial, false, false, false, true):
+                return .notificationPermissions
+            case (.initial, false, false, false, false):
+                return .finished
+                
+            case (.identityConfirmation, _, _, _, _):
+                if event == .nextSkippingIdentityConfimed {
+                    // Used when the verification state has updated to verified
+                    // after starting the onboarding flow
+                    switch (requiresAppLockSetup, requiresAnalyticsSetup, requiresNotificationsSetup) {
+                    case (true, _, _):
+                        return .appLockSetup
+                    case (false, true, _):
+                        return .analyticsPrompt
+                    case (false, false, true):
+                        return .notificationPermissions
+                    case (false, false, false):
+                        return .finished
+
+                    }
+                } else {
+                    return .identityConfirmed
+                }
+                
+           
+            case (.identityConfirmed, _, true, _, _):
+                return .appLockSetup
+            case (.identityConfirmed, _, false, true, _):
+                return .analyticsPrompt
+            case (.identityConfirmed, _, false, false, true):
+                return .notificationPermissions
+            case (.identityConfirmed, _, false, false, false):
+                return .finished
+                
+            case (.appLockSetup, _, _, true, _):
+                return .analyticsPrompt
+            case (.appLockSetup, _, _, false, true):
+                return .notificationPermissions
+            case (.appLockSetup, _, _, false, false):
+                return .finished
+                
+            case (.analyticsPrompt, _, _, _, true):
+                return .notificationPermissions
+            case (.analyticsPrompt, _, _, _, false):
+                return .finished
+                
+            case (.notificationPermissions, _, _, _, _):
+                return .finished
             
-        //force encryption key
-            print("Route Mapping==>>: Event: \(event), FromState: \(fromState), Conditions: (requiresVerification: \(requiresVerification), shouldGenerateEncryptionKey: \(shouldGenerateEncryptionKey), requiresAppLockSetup: \(requiresAppLockSetup), requiresAnalyticsSetup: \(requiresAnalyticsSetup), requiresNotificationsSetup: \(requiresNotificationsSetup))")
-
-                   switch (
-                       fromState,
-                       requiresVerification,
-                       shouldGenerateEncryptionKey,
-                       requiresAppLockSetup,
-                       requiresAnalyticsSetup,
-                       requiresNotificationsSetup
-                   ) {
-
-                   // ─── INITIAL ─────────────────────────────────────────────
-
-                   case (.initial, true, _, _, _, _):
-                       return .identityConfirmation
-
-                   case (.initial, false, true, _, _, _):
-                       return .generateEncryptionKey
-
-                   case (.initial, false, false, true, _, _):
-                       return .appLockSetup
-
-                   case (.initial, false, false, false, true, _):
-                       return .analyticsPrompt
-
-                   case (.initial, false, false, false, false, true):
-                       return .notificationPermissions
-
-                   case (.initial, false, false, false, false, false):
-                       return .finished
-
-                   // ─── AFTER GENERATE ENCRYPTION KEY ──────────────────────
-
-                   case (.generateEncryptionKey, _, _, true, _, _):
-                       return .appLockSetup
-
-                   case (.generateEncryptionKey, _, _, false, true, _):
-                       return .analyticsPrompt
-
-                   case (.generateEncryptionKey, _, _, false, false, true):
-                       return .notificationPermissions
-
-                   case (.generateEncryptionKey, _, _, false, false, false):
-                       return .finished
-
-                   // ─── AFTER IDENTITY CONFIRMATION ────────────────────────
-
-                   case (.identityConfirmation, _, _, _, _, _):
-                       if event == .nextSkippingIdentityConfimed {
-                           switch (requiresAppLockSetup, requiresAnalyticsSetup, requiresNotificationsSetup, shouldGenerateEncryptionKey) {
-                           case (_, _, _,true):
-                               return .generateEncryptionKey
-                           case (true, _, _,_):
-                               return .appLockSetup
-                           case (false, true, _,_):
-                               return .analyticsPrompt
-                           case (false, false, true,_):
-                               return .notificationPermissions
-                           case (false, false, false,_):
-                               return .finished
-                         
-                           }
-                       } else {
-                           return .identityConfirmed
-                       }
-
-                   // ─── AFTER IDENTITY CONFIRMED ───────────────────────────
-
-                   case (.identityConfirmed, _, _, true, _, _):
-                       return .appLockSetup
-
-                   case (.identityConfirmed, _, _, false, true, _):
-                       return .analyticsPrompt
-
-                   case (.identityConfirmed, _, _, false, false, true):
-                       return .notificationPermissions
-
-                   case (.identityConfirmed, _, _, false, false, false):
-                       return .finished
-
-                   // ─── AFTER APP LOCK ─────────────────────────────────────
-
-                   case (.appLockSetup, _, _, _, true, _):
-                       return .analyticsPrompt
-
-                   case (.appLockSetup, _, _, _, false, true):
-                       return .notificationPermissions
-
-                   case (.appLockSetup, _, _, _, false, false):
-                       return .finished
-
-                   // ─── AFTER ANALYTICS ────────────────────────────────────
-
-                   case (.analyticsPrompt, _, _, _, _, true):
-                       return .notificationPermissions
-
-                   case (.analyticsPrompt, _, _, _, _, false):
-                       return .finished
-
-                   // ─── AFTER NOTIFICATIONS ────────────────────────────────
-
-                   case (.notificationPermissions, _, _, _, _, _):
-                       return .finished
-
-                   // ─── FALLBACK ───────────────────────────────────────────
-
-                   default:
-                       return nil
-                   }
-               }
-            
-            
+            default:
+                return nil
+            }
+        }
             
         stateMachine.addAnyHandler(.any => .any) { [weak self] context in
             guard let self else { return }
@@ -370,7 +291,8 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
         
         stateMachine.addErrorHandler { context in
             fatalError("Unexpected transition: \(context)")
-        }
+            }
+        
     }
     
     private func presentIdentityConfirmationScreen() {
@@ -515,6 +437,7 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                 guard let self else { return }
                 switch action {
                 case .done:
+                    
                     stateMachine.tryEvent(.next)
                 }
             }
