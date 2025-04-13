@@ -16,14 +16,61 @@ struct HomeScreenInviteCell: View {
     let room: HomeScreenRoom
     let context: HomeScreenViewModel.Context
     
+    
+    
+    // Create a computed property that returns the appropriate avatar
+    private var displayAvatar: RoomAvatar {
+        // Check the room avatar type
+        if case .room(let id, let name, let avatarURL, let isDirect) = room.avatar, avatarURL == nil {
+            // For debugging, print information about the missing avatar
+            print("Missing avatar URL for room: \(id), using fallback")
+            
+            // If inviter has an avatar, try to use that for direct chats
+            if room.isDirect, let inviterAvatarURL = room.inviter?.avatarURL {
+                return .room(id: id, name: name, avatarURL: inviterAvatarURL, isDirect: isDirect)
+            }
+            
+        }
+        
+        // If everything is fine or for other cases, use the original avatar
+        return room.avatar
+    }
+    
+    
+//    private var displayAvatar: RoomAvatar {
+//        if case .room(let id, let name, let avatarURL, let isDirect) = room.avatar,
+//              avatarURL == nil {
+//            print("Missing avatar URL for room: \(id), using fallback")
+//            let inviterAvatarURL = room.inviter?.avatarURL
+//            
+//            if inviterAvatarURL == nil {
+//                print("Inviter avatar URL is also nil, using default fallback")
+//            }
+//            
+//            return .room(id: id, name: name, avatarURL: inviterAvatarURL, isDirect: isDirect)
+//        } else {
+//            print("DisplayAvatar fallback not used, using: \(room.avatar)")
+//            return room.avatar
+//        }
+//    }
+    
     var body: some View {
+        let avatar = displayAvatar // <-- This forces evaluation
+          // print("DisplayAvatar ==>>\(avatar)") // <-- Will now print
+        
         HStack(alignment: .top, spacing: 16) {
             if dynamicTypeSize < .accessibility3 {
-                RoomAvatarImage(avatar: room.avatar,
+                RoomAvatarImage(
+                    avatar: avatar,
+//                    avatar: room.avatar,
                                 avatarSize: .custom(52),
                                 mediaProvider: context.mediaProvider)
                     .dynamicTypeSize(dynamicTypeSize < .accessibility1 ? dynamicTypeSize : .accessibility1)
                     .accessibilityHidden(true)
+                    .onAppear {
+                        MXLog.info("Room Avatar==>>: \(avatar)")
+                        MXLog.info("Room==>>: \(room)")
+                    }
             }
             
             mainContent
@@ -66,7 +113,8 @@ struct HomeScreenInviteCell: View {
                 .padding(.trailing, 22)
         }
         .onAppear {
-            print("Invite Room==>>>> \(room)")
+            MXLog.info("Invite Room==>>: \(room)")
+            print("Invite Room avatar==>>>> \(room.avatar)")
         }
     }
 

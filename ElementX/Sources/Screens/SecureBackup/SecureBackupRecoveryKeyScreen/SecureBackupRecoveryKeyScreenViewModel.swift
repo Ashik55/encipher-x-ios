@@ -29,6 +29,8 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
         self.userID = userID
      
         
+        print("State isModallyPresented INIT==>: \(isModallyPresented)")
+        
         super.init(initialViewState: .init(isModallyPresented: isModallyPresented,
                                            mode: secureBackupController.recoveryState.value.viewMode,
                                            bindings: .init()))
@@ -38,6 +40,8 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
     
     override func process(viewAction: SecureBackupRecoveryKeyScreenViewAction) {
         MXLog.info("View model: received view action: \(viewAction)")
+        
+        print("State isModallyPresented==>: \(state.isModallyPresented)")
         
         switch viewAction {
         case .generateKey:
@@ -86,43 +90,56 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
             }
         case .cancel:
             actionsSubject.send(.cancel)
+            
         case .done:
+            state.isGeneratingKey = true
             
             Task {
-                  do {
-//                      print("userId  ==>>\(userID)")
-////                      print("Server RecoveryKey  ==>>\(state.bindings.confirmationRecoveryKey)")
-//                      print("Server RecoveryKey  ==>>\(String(describing: state.recoveryKey))")
-//                      print("password  ==>>\(state.bindings.password)")
-                      
-                      let passkeyResponse = try await savePasskey(userId: userID, recoveryKey: state.recoveryKey, password: state.bindings.password)
-//                      print("passkeyResponse ==>: \(passkeyResponse)")
-                      
-                      if(passkeyResponse.encryptedPasskey != nil){
-                          state.bindings.alertInfo =
-                              .init(id: .init(),
-                            title: "Recovery Key Saved",
-                            message: "You Recovery key succesfylly saved in Encipher's Secure Vault, remember the password to decrypt your data next time",
-                            primaryButton: .init(title: L10n.actionContinue) {
-                                  [weak self] in
-                                  guard let self else { return }
-                                  actionsSubject.send(.done(mode: context.viewState.mode))
-                                  
+                do {
+                    // First task: Generate recovery key
+                    let generationResult = await secureBackupController.generateRecoveryKey()
+                    
+                    switch generationResult {
+                    case .success(let key):
+                        state.recoveryKey = key
+                        
+                        // Second task: Save passkey with the generated recovery key
+                        let passkeyResponse = try await savePasskey(userId: userID, recoveryKey: key, password: state.bindings.password)
+                        
+                        if passkeyResponse.encryptedPasskey != nil {
+                            state.bindings.alertInfo = .init(
+                                id: .init(),
+                                title: "Recovery Key Saved",
+                                message: "Your Recovery key successfully saved in Encipher's Secure Vault, remember the password to decrypt your data next time",
+                                primaryButton: .init(title: L10n.actionContinue) { [weak self] in
+                                    guard let self else { return }
+                                    actionsSubject.send(.done(mode: context.viewState.mode))
                                 }
-                              )
-                            
-                      }
-                      // If you need to perform actions after the async operation
-//                      actionsSubject.send(.done(mode: context.viewState.mode))
-                  } catch {
-                      MXLog.error("Failed saving passkey with error: \(error)")
-                      state.bindings.alertInfo = .init(id: .init(),
-                                                      title: "Passkey Error",
-                                                      message: "Failed to save recovery key: \(error.localizedDescription)")
-                  }
-              }
+                            )
+                        }
+                        
+                    case .failure(let error):
+                        state.isGeneratingKey = false
+                        MXLog.error("Failed generating recovery key with error: \(error)")
+                        state.bindings.alertInfo = .init(id: .init(),
+                                                        title: "Passkey Error",
+                                                        message: "Failed to Generate recovery key: \(error.localizedDescription)")
+                        
+                    }
+                    
+                } catch {
+                    state.isGeneratingKey = false
+                    
+                    MXLog.error("Failed saving passkey with error: \(error)")
+                    state.bindings.alertInfo = .init(
+                        id: .init(),
+                        title: "Passkey Error",
+                        message: "Failed to save recovery key: \(error.localizedDescription)"
+                    )
+                }
+                
             
-     
+            }
             
         }
     }

@@ -30,7 +30,7 @@ struct SecureBackupRecoveryKeyScreen: View {
         .toolbar(.visible, for: .navigationBar)
         .background()
         .backgroundStyle(.compound.bgCanvasDefault)
-        .interactiveDismissDisabled()
+//        .interactiveDismissDisabled()
         .alert(item: $context.alertInfo)
     }
     
@@ -112,7 +112,8 @@ struct SecureBackupRecoveryKeyScreen: View {
                 Text(L10n.actionDone)
             }
             .buttonStyle(.compound(.primary))
-            .disabled(context.viewState.recoveryKey == nil || context.password.isEmpty)
+            .disabled(context.password.isEmpty)
+//            .disabled(context.viewState.recoveryKey == nil || context.password.isEmpty)
             .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.done)
         }
     }
@@ -145,7 +146,6 @@ struct SecureBackupRecoveryKeyScreen: View {
 //                  .onSubmit {
 //                      context.send(viewAction: .confirmKey)
 //                  }
-            
             
 //            ZStack {
 //                RecoveryKeyView(recoveryKey: "", isInvisibleForLayout: true) { }
@@ -183,9 +183,11 @@ struct SecureBackupRecoveryKeyScreen: View {
 //                    .font(.compound.bodySM)
 //                    .padding(.leading, 16)
 //            }
-        } .onAppear {
-            context.send(viewAction: .generateKey) // 👈 Called initially
         }
+        
+//        .onAppear {
+//            context.send(viewAction: .generateKey) // 👈 Called initially
+//        }
     }
     
     private var generateButtonTitle: String {
