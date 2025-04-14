@@ -646,7 +646,7 @@
 "screen_key_backup_disable_description_point_2" = "You will lose access to your encrypted messages if you are signed out of %1$@ everywhere";
 "screen_key_backup_disable_title" = "Are you sure you want to turn off key storage and delete it?";
 "screen_login_error_deactivated_account" = "This account has been deactivated.";
-"screen_login_error_invalid_credentials" = "Incorrect username and/or password";
+"screen_login_error_invalid_credentials" = "Incorrect username or password";
 "screen_login_error_invalid_user_id" = "This is not a valid user identifier. Expected format: ‘@user:homeserver.org’";
 "screen_login_error_refresh_tokens" = "This server is configured to use refresh tokens. These aren't supported when using password based login.";
 "screen_login_error_unsupported_authentication" = "The selected homeserver doesn't support password or OIDC login. Please contact your admin or choose another homeserver.";

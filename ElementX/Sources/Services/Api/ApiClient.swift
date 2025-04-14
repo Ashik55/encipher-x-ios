@@ -68,7 +68,11 @@ struct APIClient {
         }
 
         guard (200...299).contains(httpResponse.statusCode) else {
-            throw APIError.serverError(statusCode: httpResponse.statusCode)
+            if let matrixError = try? JSONDecoder().decode(ApiErrorResponse.self, from: data) {
+                throw APIError.custom(message: matrixError.error)
+            } else {
+                throw APIError.serverError(statusCode: httpResponse.statusCode)
+            }
         }
 
         do {

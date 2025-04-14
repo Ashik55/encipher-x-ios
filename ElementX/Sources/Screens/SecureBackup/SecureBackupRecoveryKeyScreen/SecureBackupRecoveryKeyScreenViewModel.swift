@@ -67,24 +67,46 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
         case .confirmKey:
             Task {
                 showLoadingIndicator()
-                
-                let getPasskeyResponse = try await getPaaskey(userId: userID, password: state.bindings.password)
-                
-                print("getPasskeyResponse ==>: \(getPasskeyResponse)")
-                
-                let decryptedRecoveryKey = try PasskeyEncryption.decrypt(encryptedPasskey: getPasskeyResponse.passkey, passphrase: state.bindings.password)
-                
-                print("decryptedRecoveryKey ==>: \(decryptedRecoveryKey)")
-                
-                switch await secureBackupController.confirmRecoveryKey(decryptedRecoveryKey) {
-                case .success:
-                    actionsSubject.send(.done(mode: context.viewState.mode))
-                case .failure(let error):
-                    MXLog.error("Failed confirming recovery key with error: \(error)")
-                    state.bindings.alertInfo = .init(id: .init(),
-                                                     title: L10n.screenRecoveryKeyConfirmErrorTitle,
-                                                     message: L10n.screenRecoveryKeyConfirmErrorContent)
-                }
+                do {
+                    let getPasskeyResponse = try await getPaaskey(userId: userID, password: state.bindings.password)
+                    print("getPasskeyResponse ==>: \(getPasskeyResponse)")
+                    let decryptedRecoveryKey = try PasskeyEncryption.decrypt(encryptedPasskey: getPasskeyResponse.passkey, passphrase: state.bindings.password)
+                    print("decryptedRecoveryKey ==>: \(decryptedRecoveryKey)")
+                    switch await secureBackupController.confirmRecoveryKey(decryptedRecoveryKey) {
+                        case .success:
+                              actionsSubject.send(.done(mode: context.viewState.mode))
+                        case .failure(let error):
+                              MXLog.error("Failed confirming recovery key with error: \(error)")
+                              state.bindings.alertInfo = .init(id: .init(),
+                                                               title: L10n.screenRecoveryKeyConfirmErrorTitle,
+                                                               message: L10n.screenRecoveryKeyConfirmErrorContent)
+                          }
+                      }catch let error as APIError {
+                          // Handle known API errors
+                          var message: String
+                          switch error {
+                          case .invalidURL:
+                              message = "Invalid URL."
+                          case .invalidResponse:
+                              message = "Invalid response from server."
+                          case .serverError(let statusCode):
+                              message = "Server error with status code: \(statusCode)"
+                          case .decodingError:
+                              message = "Failed to decode response."
+                          case .custom(let msg):
+                              message = msg
+                          }
+
+                          state.bindings.alertInfo = .init(id: .init(),
+                                                           title: "Sorry Something went wrong",
+                                                           message: message)
+
+                      } catch {
+                          // Handle unexpected errors
+                          state.bindings.alertInfo = .init(id: .init(),
+                                                           title: "Unexpected Error",
+                                                           message: error.localizedDescription)
+                      }
                 
                 hideLoadingIndicator()
             }
