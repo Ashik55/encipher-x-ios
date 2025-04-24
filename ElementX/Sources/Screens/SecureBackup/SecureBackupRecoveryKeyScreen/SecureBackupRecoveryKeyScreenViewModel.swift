@@ -64,6 +64,44 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
             state.doneButtonEnabled = true
         case .keySaved:
             state.doneButtonEnabled = true
+            
+        case .checkPassKey:
+            Task {
+                showLoadingIndicator()
+                do {
+                    let hasPassKeyResp = try await checkPaaskeyAvailable(userId: userID)
+                    print("hasPassKeyResp ==>: \(hasPassKeyResp)")
+                    state.twoFactorValidationEnabled = hasPassKeyResp.has_passkey ?? false
+                 
+                    }catch let error as APIError {
+                          // Handle known API errors
+                          var message: String
+                          switch error {
+                          case .invalidURL:
+                              message = "Invalid URL."
+                          case .invalidResponse:
+                              message = "Invalid response from server."
+                          case .serverError(let statusCode):
+                              message = "Server error with status code: \(statusCode)"
+                          case .decodingError:
+                              message = "Failed to decode response."
+                          case .custom(let msg):
+                              message = msg
+                          }
+
+                          state.bindings.alertInfo = .init(id: .init(),
+                                                           title: "Sorry Passkey is not available",
+                                                           message: message)
+
+                      } catch {
+                          // Handle unexpected errors
+                          state.bindings.alertInfo = .init(id: .init(),
+                                                           title: "Unexpected Error",
+                                                           message: error.localizedDescription)
+                      }
+                
+                hideLoadingIndicator()
+            }
         case .confirmKey:
             Task {
                 showLoadingIndicator()
@@ -163,6 +201,50 @@ class SecureBackupRecoveryKeyScreenViewModel: SecureBackupRecoveryKeyScreenViewM
             
             }
             
+        case .validatePassKey:
+            Task {
+                showLoadingIndicator()
+                do {
+                    
+                    let getPasskeyResponse = try await getPaaskey(userId: userID, password: state.bindings.oldPassword)
+                    print("getPasskeyResponse ==>: \(getPasskeyResponse)")
+                    state.twoFactorValidationEnabled = false
+                    state.bindings.alertInfo = .init(id: .init(),
+                                                     title: "Success",
+                                                     message: "Vault key verified successfully. You may now set a new key. Remember it carefully if forgotten, your encrypted messages cannot be recovered.")
+                 
+                    }catch let error as APIError {
+                          // Handle known API errors
+                          var message: String
+                          switch error {
+                          case .invalidURL:
+                              message = "Invalid URL."
+                          case .invalidResponse:
+                              message = "Invalid response from server."
+                          case .serverError(let statusCode):
+                              message = "Server error with status code: \(statusCode)"
+                          case .decodingError:
+                              message = "Failed to decode response."
+                          case .custom(let msg):
+                              message = msg
+                          }
+
+                        
+                        
+                        state.bindings.alertInfo = .init(id: .init(),
+                                                        title: "Vault Key Verification Failed",
+                                                        message: "The vault key you entered doesn't match our records. Please try again with the correct key")
+
+                      } catch {
+                          // Handle unexpected errors
+                          state.bindings.alertInfo = .init(id: .init(),
+                                                           title: "Unexpected Error",
+                                                           message: error.localizedDescription)
+                      }
+                
+                hideLoadingIndicator()
+            }
+            
         }
     }
     
@@ -186,21 +268,14 @@ func savePasskey( userId: String, recoveryKey: String?, password: String) async 
     guard let recoveryKey = recoveryKey else {
         throw APIError.custom(message: "Recovery key is missing")
     }
-    
     print("plain recoveryKey==>>\(recoveryKey)")
-    
     let encryptedPassKey = try PasskeyEncryption.encrypt(passkey: recoveryKey, passphrase: password)
-    
     print("encryptedPassKey==>>\(encryptedPassKey)")
-    
     let body: [String: String] = [
         "passkey": encryptedPassKey,
         "passphrase": password
     ]
-    
-   
     print("savePasskey body  ==>>\(body)")
-
     return try await APIClient.request(
         path: "auth/passkey/\(userId)",
         method: .POST,
@@ -213,12 +288,19 @@ func getPaaskey(userId: String, password: String?) async throws -> GetPasskeyRes
     guard let password = password else {
         throw APIError.custom(message: "Password is required")
     }
-
     print("getPaaskey called  ==>>\(password)")
     return try await APIClient.request(
         path: "auth/passkey/\(userId)?passphrase=\(password)"
     )
 }
+
+func checkPaaskeyAvailable(userId: String) async throws -> checkPassKeyResponse {
+    print("checkPaaskeyAvailable called  ==>>\(userId)")
+    return try await APIClient.request(
+        path: "auth/check_passkey/\(userId)"
+    )
+}
+
 
 extension SecureBackupRecoveryState {
     var viewMode: SecureBackupRecoveryKeyScreenViewMode {

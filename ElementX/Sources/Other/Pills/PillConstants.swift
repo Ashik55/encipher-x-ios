@@ -9,6 +9,7 @@ import Foundation
 
 enum PillConstants {
     static let atRoom = "@room"
+//    static let atRoom = "@everyone"
     static var everyone: String {
         L10n.commonEveryone
     }

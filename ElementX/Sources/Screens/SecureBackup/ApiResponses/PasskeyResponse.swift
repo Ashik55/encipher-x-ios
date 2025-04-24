@@ -24,3 +24,9 @@ struct CreatePasskeyResponse: Codable {
 struct GetPasskeyResponse: Codable {
     let passkey: String
 }
+
+struct checkPassKeyResponse: Codable {
+    let user_id: String?
+    let has_passkey: Bool?
+}
+

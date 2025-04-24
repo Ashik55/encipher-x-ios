@@ -12,7 +12,10 @@ struct TextRoomTimelineView: View, TextBasedRoomTimelineViewProtocol {
     let timelineItem: TextRoomTimelineItem
     
     var body: some View {
-        TimelineStyler(timelineItem: timelineItem) {
+        print("Text timelineItem.content.formattedBod y===>\(timelineItem.content.formattedBody)")
+        print("Text timelineItem.body ===>\(timelineItem.body)")
+        
+        return TimelineStyler(timelineItem: timelineItem) {
             if let attributedString = timelineItem.content.formattedBody {
                 FormattedBodyText(attributedString: attributedString,
                                   additionalWhitespacesCount: timelineItem.additionalWhitespaces(),

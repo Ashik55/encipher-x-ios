@@ -141,7 +141,7 @@ struct TimelineItemMenuActionProvider {
     }
     
     private func makeEncryptedItemActions(_ encryptedItem: EncryptedRoomTimelineItem) -> TimelineItemMenuActions? {
-        var actions: [TimelineItemMenuAction] = [.copyPermalink]
+        var actions: [TimelineItemMenuAction] = []
 
         if isViewSourceEnabled {
             actions.append(.viewSource)

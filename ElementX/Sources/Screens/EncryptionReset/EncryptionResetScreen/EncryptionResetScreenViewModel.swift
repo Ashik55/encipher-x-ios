@@ -53,6 +53,14 @@ class EncryptionResetScreenViewModel: EncryptionResetScreenViewModelType, Encryp
         }
     }
     
+    
+    func resetPassKey(userId: String) async throws -> String {
+        return try await APIClient.request(
+            path: "auth/passkey/\(userId)"
+        )
+    }
+    
+    
     // MARK: - Private
     
     private func startResetFlow() async {
@@ -66,6 +74,13 @@ class EncryptionResetScreenViewModel: EncryptionResetScreenViewModelType, Encryp
         case .success(let handle):
             // If the handle is missing then interactive authentication wasn't
             // necessary and the reset proceeded as normal
+            
+            do {
+                let resetPasskeyResp = try await resetPassKey(userId: clientProxy.userID)
+            } catch {
+                    MXLog.debug("Failed resetting passkey")
+                }
+            
             guard let handle else {
                 actionsSubject.send(.resetFinished)
                 return

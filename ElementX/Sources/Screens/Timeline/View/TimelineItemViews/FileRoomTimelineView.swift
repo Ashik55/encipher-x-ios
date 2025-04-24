@@ -7,6 +7,8 @@
 
 import Compound
 import SwiftUI
+import Combine
+import Foundation
 
 struct FileRoomTimelineView: View {
     @Environment(\.timelineContext) private var context
@@ -43,7 +45,15 @@ struct MediaFileRoomTimelineContent: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        MXLog.debug("MediaFileRoomTimelineContent filename: \(filename)")
+             MXLog.debug("MediaFileRoomTimelineContent fileSize: \(String(describing: fileSize))")
+             MXLog.debug("MediaFileRoomTimelineContent caption: \(String(describing: caption))")
+             MXLog.debug("MediaFileRoomTimelineContent formattedCaption: \(String(describing: formattedCaption))")
+             MXLog.debug("MediaFileRoomTimelineContent additionalWhitespaces: \(additionalWhitespaces)")
+             MXLog.debug("MediaFileRoomTimelineContent isAudioFile: \(isAudioFile)")
+             
+        
+       return VStack(alignment: .leading, spacing: 8) {
             if let onMediaTap {
                 filePreview
                     .onTapGesture {

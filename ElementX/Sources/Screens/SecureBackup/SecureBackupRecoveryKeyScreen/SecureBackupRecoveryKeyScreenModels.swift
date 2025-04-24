@@ -29,6 +29,8 @@ struct SecureBackupRecoveryKeyScreenViewState: BindableState {
     var isGeneratingKey = false
     var doneButtonEnabled = false
     
+    var twoFactorValidationEnabled = false
+    
     var bindings: SecureBackupRecoveryKeyScreenViewBindings
     
     var title: String {
@@ -75,6 +77,7 @@ struct SecureBackupRecoveryKeyScreenViewBindings {
     var confirmationRecoveryKey = ""
     var alertInfo: AlertInfo<UUID>?
     var password: String = "" 
+    var oldPassword: String = ""
     var recoveryKey: String = ""
 }
 
@@ -85,4 +88,6 @@ enum SecureBackupRecoveryKeyScreenViewAction {
     case confirmKey
     case done
     case cancel
+    case checkPassKey
+    case validatePassKey
 }

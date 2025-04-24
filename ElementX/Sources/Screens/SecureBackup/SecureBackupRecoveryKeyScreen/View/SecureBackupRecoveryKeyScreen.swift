@@ -47,6 +47,8 @@ struct SecureBackupRecoveryKeyScreen: View {
             case .unknown:
                 header
             }
+        }.onAppear{
+            context.send(viewAction: .checkPassKey)
         }
        
     }
@@ -106,15 +108,32 @@ struct SecureBackupRecoveryKeyScreen: View {
 //                })
 //            }
             
-            Button {
-                context.send(viewAction: .done)
-            } label: {
-                Text(L10n.actionDone)
+            
+            
+            if context.viewState.twoFactorValidationEnabled{
+                Button {
+                    context.send(viewAction: .validatePassKey)
+                } label: {
+                    Text("Validate vault key")
+                }
+                .buttonStyle(.compound(.primary))
+                .disabled(context.oldPassword.isEmpty)
+                .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.done)
+                
             }
-            .buttonStyle(.compound(.primary))
-            .disabled(context.password.isEmpty)
-//            .disabled(context.viewState.recoveryKey == nil || context.password.isEmpty)
-            .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.done)
+            else {
+                Button {
+                    context.send(viewAction: .done)
+                } label: {
+                    Text(L10n.actionDone)
+                }
+                .buttonStyle(.compound(.primary))
+                .disabled(context.password.isEmpty)
+    //            .disabled(context.viewState.recoveryKey == nil || context.password.isEmpty)
+                .accessibilityIdentifier(A11yIdentifiers.secureBackupRecoveryKeyScreen.done)
+            }
+            
+        
         }
     }
     
@@ -131,18 +150,40 @@ struct SecureBackupRecoveryKeyScreen: View {
     
     private var generateRecoveryKeySection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Set Password for Secure Vault")
-                .foregroundColor(.compound.textPrimary)
-                .font(.compound.bodySMSemibold)
-                .padding(.horizontal)  // Apply horizontal padding only
+            
+            if context.viewState.twoFactorValidationEnabled{
+                Text("Enter current vault password")
+                    .foregroundColor(.compound.textPrimary)
+                    .font(.compound.bodySMSemibold)
+                    .padding(.horizontal)  // Apply horizontal padding only
 
-            TextField("Enter Vault password . . .", text: $context.password)
-                .padding() // Inner padding inside the text field
-                  .frame(height: 50) // Set your desired height
-                  .background(Color(UIColor.systemGray6)) // Light gray background
-                  .cornerRadius(8)
-                  .padding(.horizontal) // Outer horizontal padding
-                  .submitLabel(.done)
+                TextField("Enter current vault password", text: $context.oldPassword)
+                    .padding() // Inner padding inside the text field
+                      .frame(height: 50) // Set your desired height
+                      .background(Color(UIColor.systemGray6)) // Light gray background
+                      .cornerRadius(8)
+                      .padding(.horizontal) // Outer horizontal padding
+                      .submitLabel(.done)
+                
+            }else {
+                Text("Set Password for Secure Vault")
+                    .foregroundColor(.compound.textPrimary)
+                    .font(.compound.bodySMSemibold)
+                    .padding(.horizontal)  // Apply horizontal padding only
+
+                TextField("Enter Vault password . . .", text: $context.password)
+                    .padding() // Inner padding inside the text field
+                      .frame(height: 50) // Set your desired height
+                      .background(Color(UIColor.systemGray6)) // Light gray background
+                      .cornerRadius(8)
+                      .padding(.horizontal) // Outer horizontal padding
+                      .submitLabel(.done)
+                
+            }
+            
+       
+            
+            
 //                  .onSubmit {
 //                      context.send(viewAction: .confirmKey)
 //                  }
