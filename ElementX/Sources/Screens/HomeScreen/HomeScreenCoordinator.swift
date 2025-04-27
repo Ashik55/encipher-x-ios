@@ -29,6 +29,8 @@ enum HomeScreenCoordinatorAction {
     case presentRoomDirectorySearch
     case logoutWithoutConfirmation
     case logout
+    case presentAudioCallScreen(roomID: String)
+    case presentVideoCallScreen(roomID: String)
 }
 
 final class HomeScreenCoordinator: CoordinatorProtocol {
@@ -92,6 +94,10 @@ final class HomeScreenCoordinator: CoordinatorProtocol {
                     actionsSubject.send(.logoutWithoutConfirmation)
                 case .logout:
                     actionsSubject.send(.logout)
+                case .presentAudioCallScreen(let roomID):
+                    actionsSubject.send(.presentAudioCallScreen(roomID: roomID))
+                case .presentVidioCallScreen(let roomID):
+                    actionsSubject.send(.presentVideoCallScreen(roomID: roomID))
                 }
             }
             .store(in: &cancellables)

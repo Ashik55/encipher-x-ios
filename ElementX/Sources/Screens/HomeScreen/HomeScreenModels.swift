@@ -23,6 +23,8 @@ enum HomeScreenViewModelAction {
     case presentRoomDirectorySearch
     case logoutWithoutConfirmation
     case logout
+    case presentAudioCallScreen(roomID: String)
+    case presentVidioCallScreen(roomID: String)
 }
 
 enum HomeScreenViewAction {
@@ -47,6 +49,8 @@ enum HomeScreenViewAction {
     
     case acceptInvite(roomIdentifier: String)
     case declineInvite(roomIdentifier: String)
+    case makeAudioCallScreen(roomID: String)
+    case makeVideoCallScreen(roomID: String)
 }
 
 enum HomeScreenRoomListMode: CustomStringConvertible {

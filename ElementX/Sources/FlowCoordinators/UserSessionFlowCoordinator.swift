@@ -485,6 +485,8 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
              let coordinator = HomeScreenCoordinator(parameters: parameters)
         
         
+         
+         ////TODO:: HOME SCREEN LOG
          coordinator.actions
              .sink { [weak self] action in
                  guard let self else { return }
@@ -519,6 +521,11 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
                      self.actionsSubject.send(.logout)
                  case .logout:
                      Task { await self.runLogoutFlow() }
+                 case .presentAudioCallScreen(let roomID):
+                     Task { await self.presentCallScreen(roomID: roomID, isAudioCall: true) }
+                     
+                 case .presentVideoCallScreen(let roomID):
+                     Task { await self.presentCallScreen(roomID: roomID, isAudioCall: false) }
                  }
              }
              .store(in: &cancellables)
@@ -681,6 +688,15 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
     private func presentCallScreen(genericCallLink url: URL) {
         presentCallScreen(configuration: .init(genericCallLink: url))
     }
+    
+    
+    private func presentCallScreen(roomID: String,  isAudioCall: Bool?) async {
+        guard case let .joined(roomProxy) = await userSession.clientProxy.roomForIdentifier(roomID) else {
+            return
+        }
+        presentCallScreen(roomProxy: roomProxy, notifyOtherParticipants: true, isAudioCall: isAudioCall)
+    }
+    
     
     private func presentCallScreen(roomID: String, notifyOtherParticipants: Bool) async {
         guard case let .joined(roomProxy) = await userSession.clientProxy.roomForIdentifier(roomID) else {

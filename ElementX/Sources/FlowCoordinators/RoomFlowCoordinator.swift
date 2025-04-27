@@ -223,16 +223,13 @@ class RoomFlowCoordinator: FlowCoordinatorProtocol {
     }
     
     private func presentCallScreen(roomID: String) async {
-        
         print("presentCallScreen func invoked, Room ID==>> \(roomID)")
-        
         guard case let .joined(roomProxy) = await userSession.clientProxy.roomForIdentifier(roomID) else {
             return
         }
-        
         let callRoomProxy = CallRoomProxy(roomProxy: roomProxy, audioCall: nil)
-         actionsSubject.send(.presentCallScreen(callRoomProxy: callRoomProxy))
-//        actionsSubject.send(.presentCallScreen(roomProxy: roomProxy))
+        actionsSubject.send(.presentCallScreen(callRoomProxy: callRoomProxy))
+        
     }
     
     private func handleRoomRoute(roomID: String, via: [String], presentationAction: PresentationAction? = nil, animated: Bool) async {

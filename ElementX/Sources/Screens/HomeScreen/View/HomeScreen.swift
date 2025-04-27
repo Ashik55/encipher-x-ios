@@ -10,14 +10,7 @@ import Compound
 import SwiftUI
 import SwiftUIIntrospect
 
-struct SettingsView: View {
-    var body: some View {
-        List {
-            Text("Settings Content")
-        }
-        .navigationTitle("Settings")
-    }
-}
+
 
 struct HomeScreen: View {
     @ObservedObject var context: HomeScreenViewModel.Context
@@ -33,78 +26,12 @@ struct HomeScreen: View {
     @State private var hairlineView: UIView?
     
     @State private var selectedTab = 0
+    // Store the previous tab
+    @State private var previousTab: Int = 0
     
     @State private var navigationTitle = "Chat" // Default title for Home tab
     @State private var isKeyboardVisible = false
 
-    
-    
-    var body: some View {
-        VStack {
-            HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
-                .alert(item: $context.alertInfo)
-                .alert(item: $context.leaveRoomAlertItem,
-                       actions: leaveRoomAlertActions,
-                       message: leaveRoomAlertMessage)
-                .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
-                .toolbar { toolbar }
-//                .background(Color.gray)
-           
-                .track(screen: .Home)
-                .sentryTrace("\(Self.self)")
-                .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
-                              isKeyboardVisible = true
-                          }
-                          .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
-                              isKeyboardVisible = false
-                          }
-
-   
-                if !isKeyboardVisible { // Hide when keyboard is visible
-                            HStack {
-                                Spacer()
-                                
-                                Button(action: {
-                                    print("Chat button tapped")
-                                }) {
-                                    VStack {
-                                        Image(systemName: "message.fill")
-                                            .font(.title2)
-                                        Text("Chat")
-                                            .font(.caption)
-                                    }
-                                }
-                                Spacer()
-                                Spacer()
-
-                                Button(action: {
-                                    context.send(viewAction: .showSettings)
-                                }) {
-                                    VStack {
-                                        Image(systemName: "gearshape")
-                                            .font(.title2)
-                                        Text("Settings")
-                                            .font(.caption)
-                                    }
-                                }
-
-                                Spacer()
-                            }
-                            .padding()
-//
-                            .background(Color.gray.opacity(0.1))
-                            .transition(.move(edge: .bottom)) // Optional animation
-                    }
-            
-            
-        }     .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
-        
-            }
-
-    private func handleSettingsTapped() {
-        // Your function logic here
-        print("Settings button tapped")
-    }
     
     
 //    var body: some View {
@@ -119,7 +46,141 @@ struct HomeScreen: View {
 //                  .track(screen: .Home)
 //                  .sentryTrace("\(Self.self)")
 //    }
+//
     
+       var body: some View {
+           TabView(selection: $selectedTab) {
+               // Home Tab
+                      NavigationView {
+                          HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
+                              .alert(item: $context.alertInfo)
+                              .alert(item: $context.leaveRoomAlertItem,
+                                     actions: leaveRoomAlertActions,
+                                     message: leaveRoomAlertMessage)
+                              .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
+//                              .toolbar {
+//                                                 ToolbarItem(placement: .navigationBarTrailing) {
+//                                                     Button(action: {
+//                                                         // Action for the button
+//                                                         print("Toolbar button tapped")
+//                                                     }) {
+//                                                         Image(systemName: "plus")
+//                                                     }
+//                                                 }
+//                                                 // You can add more ToolbarItems here as needed
+//                                             }
+                          
+                              .toolbar { toolbar }
+                              .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+                              .track(screen: .Home)
+                              .sentryTrace("\(Self.self)")
+                      }
+                      .tabItem {
+                          Image(systemName: "house.fill")
+                          Text("Home")
+                      }
+                      .tag(0)
+                      
+               // Call Log Tab
+               CallLogScreen(userID: context.viewState.userID, context:context)
+                   .tabItem {
+                       Image(systemName: "phone.fill")
+                       Text("Call Log")
+                   }
+                   .tag(1)
+               
+               // Settings "Tab" - just a placeholder that triggers a function
+                   Color.clear // Empty placeholder view
+                       .tabItem {
+                           Image(systemName: "gear")
+                           Text("Settings")
+                       }
+                       .tag(2)
+
+           }
+           .onChange(of: selectedTab) { newValue in
+                 if newValue == 2 {
+                     // Execute your settings function here
+                     context.send(viewAction: .showSettings)
+                     // Reset back to previous tab to avoid staying on a blank screen
+                     selectedTab = previousTab
+                     
+                 } else {
+                     previousTab = newValue
+                 }
+             }
+       }
+    
+    
+    ////current solution
+//    var body: some View {
+//        VStack {
+//            HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
+//                .alert(item: $context.alertInfo)
+//                .alert(item: $context.leaveRoomAlertItem,
+//                       actions: leaveRoomAlertActions,
+//                       message: leaveRoomAlertMessage)
+//                .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
+//                .toolbar { toolbar }
+////                .background(Color.gray)
+//           
+//                .track(screen: .Home)
+//                .sentryTrace("\(Self.self)")
+//                .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+//                              isKeyboardVisible = true
+//                          }
+//                          .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+//                              isKeyboardVisible = false
+//                          }
+//
+//   
+//                if !isKeyboardVisible { // Hide when keyboard is visible
+//                            HStack {
+//                                Spacer()
+//                                
+//                                Button(action: {
+//                                    print("Chat button tapped")
+//                                }) {
+//                                    VStack {
+//                                        Image(systemName: "message.fill")
+//                                            .font(.title2)
+//                                        Text("Chat")
+//                                            .font(.caption)
+//                                    }
+//                                }
+//                                Spacer()
+//                                Spacer()
+//
+//                                Button(action: {
+//                                    context.send(viewAction: .showSettings)
+//                                }) {
+//                                    VStack {
+//                                        Image(systemName: "gearshape")
+//                                            .font(.title2)
+//                                        Text("Settings")
+//                                            .font(.caption)
+//                                    }
+//                                }
+//
+//                                Spacer()
+//                            }
+//                            .padding()
+////
+//                            .background(Color.gray.opacity(0.1))
+//                            .transition(.move(edge: .bottom)) // Optional animation
+//                    }
+//            
+//            
+//        }     .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+//        
+//            }
+//
+//    private func handleSettingsTapped() {
+//        // Your function logic here
+//        print("Settings button tapped")
+//    }
+    
+
     
     
     
@@ -170,7 +231,7 @@ struct HomeScreen: View {
 //     
 //
 //    }
-    
+//    
     
     // Configure Tab Bar Appearance
     private func configureTabBarAppearance() {
@@ -306,6 +367,34 @@ struct HomeScreen: View {
         Text(item.subtitle)
     }
 }
+
+//// Create placeholder screens for Call Log and Settings
+//struct CallLogScreen: View {
+//    var body: some View {
+//        NavigationView {
+//            VStack {
+//                Text("Call Log Screen")
+//                    .font(.title)
+//            }
+//            .navigationTitle("Call Log")
+//            .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+//        }
+//    }
+//}
+
+struct CustomSettingsScreen: View {
+    var body: some View {
+        NavigationView {
+            VStack {
+                Text("Settings Screen")
+                    .font(.title)
+            }
+            .navigationTitle("Settings")
+            .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+        }
+    }
+}
+
 
 //// MARK: - Previews
 //

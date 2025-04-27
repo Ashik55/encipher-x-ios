@@ -200,6 +200,10 @@ class HomeScreenViewModel: HomeScreenViewModelType, HomeScreenViewModelProtocol 
             }
         case .declineInvite(let roomIdentifier):
             showDeclineInviteConfirmationAlert(roomID: roomIdentifier)
+        case .makeAudioCallScreen(roomID: let roomID):
+            actionsSubject.send(.presentAudioCallScreen(roomID: roomID))
+        case .makeVideoCallScreen(roomID: let roomID):
+            actionsSubject.send(.presentVidioCallScreen(roomID: roomID))
         }
     }
     
