@@ -129,7 +129,9 @@ struct HomeScreenContent: View {
             
                 if context.viewState.slidingSyncMigrationBannerMode == .show {
                     HomeScreenSlidingSyncMigrationBanner(context: context)
-                } else if case let .show(state) = context.viewState.securityBannerMode {
+                }
+                else if case let .show(state) = context.viewState.securityBannerMode,
+                        !context.viewState.shouldShowEmptyFilterState {
                     HomeScreenRecoveryKeyConfirmationBanner(state: state, context: context)
                 }
             }

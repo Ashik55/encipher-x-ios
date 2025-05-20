@@ -23,7 +23,7 @@ enum APIError: Error {
 }
 
 enum API {
-    static let baseURL = "https://dev.enciph-er.com/_matrix/client/v3/"
+    static let baseURL = "https://prod.enciph-er.com/_matrix/client/v3/"
 }
 
 struct AnyEncodable: Encodable {

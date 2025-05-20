@@ -68,7 +68,8 @@ struct RoomDetailsScreen: View {
 //              for: .navigationBar
 //          )
 //        .toolbarBackground(.visible, for: .navigationBar)
-        .navigationTitle(L10n.screenRoomDetailsTitle)
+//        .navigationTitle(L10n.screenRoomDetailsTitle)
+        .navigationTitle(context.viewState.isDirect ? "Chat Info" : "Group Info")
         .navigationBarTitleDisplayMode(.inline)
         .track(screen: .RoomDetails)
         .interactiveQuickLook(item: $context.mediaPreviewItem, allowEditing: false)
@@ -109,11 +110,11 @@ struct RoomDetailsScreen: View {
                 switch shortcut {
                 case .mute:
                     toggleMuteButton
-                case .share(let permalink):
-                    ShareLink(item: permalink) {
-                        CompoundIcon(\.shareIos)
-                    }
-                    .buttonStyle(FormActionButtonStyle(title: L10n.actionShare))
+//                case .share(let permalink):
+//                    ShareLink(item: permalink) {
+//                        CompoundIcon(\.shareIos)
+//                    }
+//                    .buttonStyle(FormActionButtonStyle(title: L10n.actionShare))
                 case .call:
                     Button {
                         context.send(viewAction: .processTapCall)

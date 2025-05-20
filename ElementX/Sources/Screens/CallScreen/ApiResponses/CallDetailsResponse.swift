@@ -43,3 +43,17 @@ struct CallDetailsResponse: Codable {
 
 // MARK: - Create Call Response (Alias)
 typealias CreateCallResponse = Call
+
+
+struct CallEndResponse: Codable, Identifiable {
+    let id = UUID() // You can replace this with a real unique identifier if available
+    let endedTs: String
+    let roomId: String
+    let callType: String
+
+    enum CodingKeys: String, CodingKey {
+        case endedTs = "ended_ts"
+        case roomId = "room_id"
+        case callType = "call_type"
+    }
+}

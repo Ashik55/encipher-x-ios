@@ -84,9 +84,7 @@ struct TimelineItemMenuActionProvider {
 //            actions.append(.copyPermalink)
         }
         
-        if canCurrentUserPin, let eventID = item.id.eventID {
-            actions.append(pinnedEventIDs.contains(eventID) ? .unpin : .pin)
-        }
+      
 
         if item.isCopyable {
             actions.append(.copy)

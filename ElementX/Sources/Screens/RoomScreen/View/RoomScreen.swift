@@ -59,11 +59,16 @@ struct RoomScreen: View {
                         .environment(\.shouldAutomaticallyLoadImages, !timelineContext.viewState.hideTimelineMedia)
                 }
             }
+            
+            // Ensures back button appears
             .navigationTitle(L10n.screenRoomTitle) // Hidden but used for back button text.
+            .navigationBarBackButtonHidden(false)
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarHidden(isNavigationBarHidden)
             .toolbar { toolbar }
             .toolbarBackground(.visible, for: .navigationBar)
+        
+        
             .overlay { loadingIndicator }
             .alert(item: $timelineContext.alertInfo)
             .sheet(item: $timelineContext.debugInfo) { TimelineItemDebugView(info: $0) }
@@ -237,20 +242,6 @@ struct RoomScreen: View {
             .buttonStyle(ElementCallButtonStyle())
             .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
         } else {
-            
-//            
-//            Button {
-//                roomContext.send(viewAction: .displayCall)
-//            } label: {
-//                Image(systemName: "phone") // Using Apple's video call icon name = video
-//                    .resizable() // Ensures the image is resizable
-//                    .frame(width: 23, height: 18) // Adjust size as needed
-//            }
-//            .padding()
-//            .accessibilityIdentifier(A11yIdentifiers.roomScreen.joinCall)
-//            
-//            
-            
             HStack(spacing: 22) { // Adjust spacing as needed
                    Button {
                        roomContext.send(viewAction: .displayAudioCall)

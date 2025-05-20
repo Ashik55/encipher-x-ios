@@ -31,10 +31,20 @@ struct CallLogScreen: View {
                 }
                 .sheet(item: $viewModel.selectedCallInfo) { callInfo in
                     CallDetailsSheet(
-                        callInfo: callInfo,
+                        call: callInfo,
                         roomCallHistory: viewModel.viewState.roomCallHistory,
                         isLoading : viewModel.viewState.isRoomCallHistoryLoading,
-                        context: context)
+                        context: context,
+                        onAudioCallTapped: {
+                            context.send(viewAction: .makeAudioCallScreen(roomID: callInfo.roomId))
+                        },
+                        onVideoCallTapped: {
+                            context.send(viewAction: .makeVideoCallScreen(roomID: callInfo.roomId))
+                        },
+                        onMessageTapped: {
+                            context.send(viewAction: .selectRoom(roomIdentifier: callInfo.roomId))
+                        }
+                    )
                 }
                 
         }
@@ -85,8 +95,6 @@ struct CallLogScreen: View {
         List {
             callsSection
                 .listRowSeparator(.hidden, edges: .top)  // Hides the divider at the top of first item
-
-
             if viewModel.viewState.isLoading && !viewModel.viewState.callLogs.isEmpty {
                 loadingIndicator
             }

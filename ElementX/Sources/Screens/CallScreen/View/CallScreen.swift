@@ -49,7 +49,7 @@ struct CallScreen: View {
                 isAudioCall: context.viewState.isAudioCall,
                 onCallEnded: {
                     print("onCallEnded===>>>>")
-                    context.send(viewAction: .navigateBack)
+                    context.send(viewAction: .endCall)
                 }
             )
             

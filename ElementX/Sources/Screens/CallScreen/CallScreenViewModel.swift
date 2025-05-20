@@ -94,10 +94,6 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
             .receive(on: DispatchQueue.main)
             .sink { [weak self] receivedMessage in
                 guard let self else { return }
-                
-                
-//                print("widgetDriver.messagePublisher==>\(receivedMessage)")
-                
                 Task {
                     await self.postJSONToWidget(receivedMessage)
                 }
@@ -131,10 +127,21 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
             MXLog.info("pictureInPictureIsAvailable==>")
             actionsSubject.send(.pictureInPictureIsAvailable(controller))
         case .navigateBack:
-            Task { await handleBackwardsNavigation() }
+            elementCallService.tearDownCallSession()
+            Task {
+                let callEndResponse =  try await endCall(userId: state.urlUserId, callId: state.callId)
+                print("callEndResponse==>\(callEndResponse)")
+            }
+            print("actionsSubject dismiss called==>>")
+            actionsSubject.send(.dismiss)
         case .pictureInPictureWillStop:
             actionsSubject.send(.pictureInPictureStopped)
         case .endCall:
+            print("Process EndCall block running==>")
+            Task {
+                let callEndResponse =  try await endCall(userId: state.urlUserId, callId: state.callId)
+                print("callEndResponse==>\(callEndResponse)")
+            }
             actionsSubject.send(.dismiss)
         }
     }
@@ -218,6 +225,26 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
         return queryItems.first(where: { $0.name == "roomId" })?.value
     }
   
+    
+    
+    func endCall(userId: String?, callId: Int?) async throws -> CallEndResponse {
+        
+        guard let userId = userId else {
+            throw APIError.custom(message: "User ID is missing")
+        }
+
+        let body: [String: Int?] = [
+            "call_id": callId,
+        ]
+
+        print(" endCall body==>\(body) ")
+        return try await APIClient.request(
+            path: "call/\(userId)",
+            method: .PUT,
+            body: body
+        )
+    }
+    
 
     func createCall(roomId: String?, userId: String?, isAudioCall: Bool) async throws -> CreateCallResponse {
         guard let userId = userId else {
@@ -236,44 +263,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
         )
     }
 
-    
-//    // Create Call Function (Async/Await)
-//    func createCall(roomId: String?, userId: String?, isAudioCall: Bool) async throws -> [String: Any] {
-//        guard let userId = userId else {
-//            throw NSError(domain: "UserError", code: 0, userInfo: [NSLocalizedDescriptionKey: "User ID is missing"])
-//        }
-//
-//        let baseURL = "https://dev.enciph-er.com/_matrix/client/v3/call/\(userId)"
-//        guard let url = URL(string: baseURL) else {
-//            throw NSError(domain: "URLError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
-//        }
-//
-//        let requestBody: [String: Any] = [
-//            "room_id": roomId ?? "",
-//            "call_type": isAudioCall ? "audio" : "video"
-//        ]
-//
-//        print("Create Call RequestBody ==>> \(requestBody)")
-//
-//        let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
-//
-//        var request = URLRequest(url: url)
-//        request.httpMethod = "POST"
-//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//        request.httpBody = jsonData
-//
-//        let (data, response) = try await URLSession.shared.data(for: request)
-//
-//        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-//            throw NSError(domain: "HTTPError", code: (response as? HTTPURLResponse)?.statusCode ?? 500, userInfo: [NSLocalizedDescriptionKey: "HTTP error"])
-//        }
-//
-//        let jsonResult = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-//        print("Create Call Response JSON==>: \(jsonResult)")
-//        
-//        return jsonResult
-//    }
-    
+
 
     
     func getCallDetails(userId: String?, roomId: String?) async throws -> [Call] {
@@ -288,37 +278,10 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
         return response.calls
     }
     
-    
-//
-//    // Get Call Details Function (Async/Await)
-//    func getCallDetails(userId: String?, roomId: String?) async throws -> [String: Any] {
-//        guard let userId = userId, let roomId = roomId,
-//              let url = URL(string: "https://dev.enciph-er.com/_matrix/client/v3/call/\(userId)?room_id=\(roomId)") else {
-//            throw NSError(domain: "URLError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
-//        }
-//
-//        
-//        print("RoomID==>\(roomId)")
-//        var request = URLRequest(url: url)
-//        request.httpMethod = "GET"
-//
-//        let (data, response) = try await URLSession.shared.data(for: request)
-//
-//        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-//            throw NSError(domain: "HTTPError", code: (response as? HTTPURLResponse)?.statusCode ?? 500, userInfo: [NSLocalizedDescriptionKey: "HTTP error"])
-//        }
-//
-//        let jsonResult = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-//        print("Get Call Details Response JSON ==>: \(jsonResult)")
-//        
-//        return jsonResult
-//    }
    
     // MARK: - Private
-    
     private func setupCall() {
-        
-//        print("setupCall Running==>")
+        //print("setupCall Running==>")
         switch configuration.kind {
         case .genericCallLink(let url):
             state.url = url
@@ -340,16 +303,15 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                 case .success(let url):
                     print("Call URL ==>> \(url)")
                     let (roomId, displayName, userId) = extractRoomDetails(from: url)
+                    state.urlUserId = userId
                     
                     if(audioCall != nil){
                         //primary User Call generator, Create Call
-                        // Call createCall only when no call details exist
-                        print("AudioCall  ==>>\(String(describing: audioCall)), Creating new Call for primary User")
                         let newCallResponse = try await createCall(roomId: roomId, userId: userId, isAudioCall: audioCall!)
                         print("New Call Created==>: \(newCallResponse)")
-
                         // Update state on the main thread using MainActor.run
                         await MainActor.run {
+                            self.state.callId = newCallResponse.callId
                             self.state.roomId = roomId
                             self.state.displayName = displayName
                             self.state.isAudioCall = audioCall ?? false
@@ -366,22 +328,18 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                         
                     }else{
                         //Receiver end
-                        //get call details & go to call screen
-                        print("AudioCall  ==>>\(String(describing: audioCall)), Get Call details for receiver")
                         do {
                              // Fetch call details and wait for the response
                              let callList = try await getCallDetails(userId: userId, roomId: roomId)
                             print("callList==>>: \(callList)")
-                             
-                             // Extract call type safely
-//                             let callType = (callDetails["calls"] as? [[String: Any]])?.first?["call_type"] as? String ?? "N/A"
-                        
-                            let callType = callList.first?.callType ?? "N/A"
+                            
+                            let currentCall = callList.first
+                            let callType = currentCall?.callType ?? "N/A"
                             print("callType==>>: \(callType)")
-                             
                             
                              // Update state on the main thread
                              await MainActor.run {
+                                 self.state.callId = currentCall?.callId
                                  self.state.roomId = roomId
                                  self.state.displayName = displayName
                                  self.state.isAudioCall = (callType == "audio")
@@ -415,9 +373,6 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
                     return
                 }
                 
-             
-    
-           
             }
         }
     }

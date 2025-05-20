@@ -56,7 +56,7 @@ class EncryptionResetScreenViewModel: EncryptionResetScreenViewModelType, Encryp
     
     func resetPassKey(userId: String) async throws -> String {
         return try await APIClient.request(
-            path: "auth/passkey/\(userId)"
+            path: "auth/reset_passkey/\(userId)"
         )
     }
     

@@ -12,7 +12,8 @@ public class AppCustomConfig {
     
 //    public static var baseUrl: String = "prod.enciph-er.com"
     
-    public static var baseUrl: String = "dev.enciph-er.com"
+    public static var baseUrl: String = "prod.enciph-er.com"
+//    public static var baseUrl: String = "dev.enciph-er.com"
     
     public static var callBaseUrl: URL = "https://call.dev.enciph-er.com"
     

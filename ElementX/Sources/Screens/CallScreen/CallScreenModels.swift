@@ -30,9 +30,12 @@ struct CallScreenViewState: BindableState {
     var roomId: String?
     var displayName: String?
     var isAudioCall: Bool?
+    var callId: Int?
+    var urlUserId: String?
     
     
     
+  
     var userId: String?
     var theme: String?
     var language: String?

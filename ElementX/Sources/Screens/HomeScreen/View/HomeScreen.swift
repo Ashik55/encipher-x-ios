@@ -50,7 +50,6 @@ struct HomeScreen: View {
     
        var body: some View {
            TabView(selection: $selectedTab) {
-               // Home Tab
                       NavigationView {
                           HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
                               .alert(item: $context.alertInfo)
@@ -58,41 +57,31 @@ struct HomeScreen: View {
                                      actions: leaveRoomAlertActions,
                                      message: leaveRoomAlertMessage)
                               .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
-//                              .toolbar {
-//                                                 ToolbarItem(placement: .navigationBarTrailing) {
-//                                                     Button(action: {
-//                                                         // Action for the button
-//                                                         print("Toolbar button tapped")
-//                                                     }) {
-//                                                         Image(systemName: "plus")
-//                                                     }
-//                                                 }
-//                                                 // You can add more ToolbarItems here as needed
-//                                             }
-                          
                               .toolbar { toolbar }
                               .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
                               .track(screen: .Home)
                               .sentryTrace("\(Self.self)")
                       }
                       .tabItem {
-                          Image(systemName: "house.fill")
-                          Text("Home")
+                          Image("ic_message")
+                                  .renderingMode(.template) // Makes it behave like SF Symbols (uses accent color)
+                          Text("Chats")
                       }
                       .tag(0)
                       
-               // Call Log Tab
-               CallLogScreen(userID: context.viewState.userID, context:context)
-                   .tabItem {
-                       Image(systemName: "phone.fill")
-                       Text("Call Log")
-                   }
-                   .tag(1)
-               
-               // Settings "Tab" - just a placeholder that triggers a function
-                   Color.clear // Empty placeholder view
+                   CallLogScreen(userID: context.viewState.userID, context:context)
                        .tabItem {
-                           Image(systemName: "gear")
+                           Image("ic_call_log")
+                                   .renderingMode(.template) // Makes it behave like SF Symbols (uses accent color)
+                           Text("Calls")
+                       }
+                       .tag(1)
+               
+                   Color.clear
+                       .tabItem {
+                           Image("ic_settings")
+                                   .renderingMode(.template) // Makes it behave like SF Symbols (uses accent color)
+                         
                            Text("Settings")
                        }
                        .tag(2)
@@ -100,11 +89,8 @@ struct HomeScreen: View {
            }
            .onChange(of: selectedTab) { newValue in
                  if newValue == 2 {
-                     // Execute your settings function here
                      context.send(viewAction: .showSettings)
-                     // Reset back to previous tab to avoid staying on a blank screen
                      selectedTab = previousTab
-                     
                  } else {
                      previousTab = newValue
                  }

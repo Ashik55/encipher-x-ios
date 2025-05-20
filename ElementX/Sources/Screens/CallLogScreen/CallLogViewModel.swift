@@ -91,6 +91,8 @@ class CallLogViewModel: ObservableObject {
                     path: "call/\(userID)?limit=\(limit)&page=\(page)",
                     method: .GET
                 )
+                
+                print("Call Log Response==>\(response)")
                 // Update the UI on the main thread
                 await MainActor.run {
                     // Append new call logs to existing ones

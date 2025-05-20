@@ -18,80 +18,19 @@ struct CallLogEntryRow: View {
     let onVideoCallTapped: () -> Void
     let onRowTapped: () -> Void
     
-    private var callDisplayName: String {
-        if !call.roomName.isNilOrEmpty {
-            return call.roomName!
-        } else {
-            return call.isCaller == true ? call.receiverDisplayNames.values.first ?? "Unknown" : call.callerDisplayName
-        }
-    }
-    
-    private var avatarURL: URL? {
-        let urlString: String?
-        
-        if !call.roomAvatar.isNilOrEmpty {
-            urlString = call.roomAvatar
-        } else if call.isCaller == true {
-            urlString = call.receiverAvatars.values.first
-        } else {
-            urlString = call.callerAvatar
-        }
-        
-        let finalUrl = urlString != nil ? URL(string: urlString!) : nil
-        return finalUrl
-    }
-    
-    private var formattedTime: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-
-        if let date = dateFormatter.date(from: call.createdTs) {
-            let displayFormatter = DateFormatter()
-            displayFormatter.dateFormat = "d MMM yyyy, h:mm a"
-            displayFormatter.locale = Locale(identifier: "en_US_POSIX")
-            return displayFormatter.string(from: date)
-        } else {
-            print("Date Parse Failed ==> \(call.createdTs)")
-            return call.createdTs
-        }
-    }
-    
-    private var callDuration: String {
-        guard let endedTs = call.endedTs else {
-            return "Missed"
-        }
-        
-        // Parse timestamps
-        let isoFormatter = ISO8601DateFormatter()
-        isoFormatter.formatOptions = [.withInternetDateTime]
-        
-        guard let startDate = isoFormatter.date(from: call.createdTs),
-              let endDate = isoFormatter.date(from: endedTs) else {
-            return "Unknown duration"
-        }
-        
-        let duration = endDate.timeIntervalSince(startDate)
-        let minutes = Int(duration) / 60
-        let seconds = Int(duration) % 60
-        
-        return "\(minutes):\(String(format: "%02d", seconds))"
-    }
-    
     var body: some View {
           Button(action: onRowTapped) {
               HStack(spacing: 12) {
                   // Avatar
-                  LoadableAvatarImage(url: avatarURL,
-                      name: callDisplayName,
+                  LoadableAvatarImage(url: call.avatarUrl,
+                                      name: call.displayName,
                       contentID: "\(call.callId)",
                       avatarSize: .user(on: .settings),
                       mediaProvider: context.mediaProvider)
                   
                   // Call info
                   VStack(alignment: .leading, spacing: 2) {
-                      Text(callDisplayName)
+                      Text(call.displayName)
                           .font(.headline)
                           .lineLimit(1)
                       
@@ -101,9 +40,13 @@ struct CallLogEntryRow: View {
                               .font(.subheadline)
                               .foregroundColor(call.isCaller == true  ? .blue : .green)
                           
-                          Text("\(formattedTime)")
+                          Text("\(call.formattedTime)")
                               .font(.subheadline)
                               .foregroundColor(.secondary)
+
+                           Text(" • \(call.getCallDuration)")
+                               .font(.subheadline)
+                               .foregroundColor(call.endedTs == nil ? .red : .secondary)
                       }
                   }
                   

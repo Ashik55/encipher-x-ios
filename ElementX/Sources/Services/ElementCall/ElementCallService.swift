@@ -272,7 +272,7 @@ class ElementCallService: NSObject, ElementCallServiceProtocol, PKPushRegistryDe
             let transaction = CXTransaction(action: CXEndCallAction(call: ongoingCallID.callKitID))
             callController.request(transaction) { error in
                 if let error {
-                    MXLog.error("Failed transaction with error: \(error)")
+                    MXLog.error("Failed transaction with error==>: \(error)")
                 }
             }
         }
