@@ -162,7 +162,8 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
     }
     
     private var requiresAnalyticsSetup: Bool {
-        analyticsService.shouldShowAnalyticsPrompt
+//        analyticsService.shouldShowAnalyticsPrompt
+        return false
     }
     
     private var requiresNotificationsSetup: Bool {
