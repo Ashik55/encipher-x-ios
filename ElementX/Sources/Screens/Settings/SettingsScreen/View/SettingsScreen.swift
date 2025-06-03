@@ -37,7 +37,7 @@ struct SettingsScreen: View {
         }
         .padding(.top, fromTab ? 5 : 0)
         .compoundList()
-        .modifier(NavigationTitleModifier(fromTab: fromTab))  // Apply navigation title conditionally
+//        .modifier(NavigationTitleModifier(fromTab: fromTab))  // Apply navigation title conditionally
     }
     
     
@@ -62,6 +62,7 @@ struct SettingsScreen: View {
         Section {
             ListRow(kind: .custom {
                 Button {
+                    print("UserDetails button clicked")
                     context.send(viewAction: .userDetails)
                 } label: {
                     HStack(spacing: 12) {

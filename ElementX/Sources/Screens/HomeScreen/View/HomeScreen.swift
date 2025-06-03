@@ -68,6 +68,8 @@ struct HomeScreen: View {
                           Text("Chats")
                       }
                       .tag(0)
+               
+               
                       
                    CallLogScreen(userID: context.viewState.userID, context:context)
                        .tabItem {
@@ -77,6 +79,8 @@ struct HomeScreen: View {
                        }
                        .tag(1)
                
+               
+               
                    Color.clear
                        .tabItem {
                            Image("ic_settings")
@@ -85,6 +89,19 @@ struct HomeScreen: View {
                            Text("Settings")
                        }
                        .tag(2)
+               
+//               NavigationView {
+//                   SettingsScreen(context: settingsContext, fromTab: true)
+//                       .navigationTitle("Settings")
+//                       .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+//               }
+//               .tabItem {
+//                   Image("ic_settings")
+//                           .renderingMode(.template) // Makes it behave like SF Symbols (uses accent color)
+//                 
+//                   Text("Settings")
+//               }
+//               .tag(3)
 
            }
            .onChange(of: selectedTab) { newValue in

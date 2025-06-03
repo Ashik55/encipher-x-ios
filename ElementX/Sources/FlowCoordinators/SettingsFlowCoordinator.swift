@@ -92,6 +92,8 @@ class SettingsFlowCoordinator: FlowCoordinatorProtocol {
             .sink { [weak self] action in
                 guard let self else { return }
                 
+                print("settingsScreenCoordinator actions==> \(action)")
+                
                 switch action {
                 case .dismiss:
                     parameters.navigationSplitCoordinator.setSheetCoordinator(nil)
@@ -136,12 +138,22 @@ class SettingsFlowCoordinator: FlowCoordinatorProtocol {
         
         navigationStackCoordinator.setRootCoordinator(settingsScreenCoordinator, animated: animated)
         
-        parameters.navigationSplitCoordinator.setSheetCoordinator(navigationStackCoordinator) { [weak self] in
-            guard let self else { return }
-            
-            navigationStackCoordinator = nil
-            actionsSubject.send(.dismissedSettings)
-        }
+//        parameters.navigationSplitCoordinator.setSheetCoordinator(navigationStackCoordinator) { [weak self] in
+//            guard let self else { return }
+//            
+//            navigationStackCoordinator = nil
+//            actionsSubject.send(.dismissedSettings)
+//        }
+        
+        
+          // Changed from setSheetCoordinator to setFullScreenCoverCoordinator
+          parameters.navigationSplitCoordinator.setDetailCoordinator(navigationStackCoordinator) { [weak self] in
+              guard let self else { return }
+              
+              navigationStackCoordinator = nil
+              actionsSubject.send(.dismissedSettings)
+          }
+          
         
         actionsSubject.send(.presentedSettings)
     }
