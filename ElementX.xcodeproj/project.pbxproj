@@ -2568,6 +2568,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		6B2D45A32E013D52008B0D82 /* PTTScreens */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PTTScreens; sourceTree = "<group>"; };
 		6B3F749F2DA584ED0035F280 /* RecoveryKeyEncryption */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = RecoveryKeyEncryption; sourceTree = "<group>"; };
 		6BD7FE492DA4FE1500D98A8A /* Api */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Api; sourceTree = "<group>"; };
 		6BD7FE4D2DA4FF8D00D98A8A /* ApiResponses */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ApiResponses; sourceTree = "<group>"; };
@@ -5749,6 +5750,7 @@
 		E59565F441830B19DBAE567C /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				6B2D45A32E013D52008B0D82 /* PTTScreens */,
 				6B0BB5372DBA3DD60056F9E2 /* CallLogScreen */,
 				13263FFEA7749D822B51AA90 /* AppLock */,
 				E74CD7681375AD2EAA34D66B /* Authentication */,
@@ -6233,6 +6235,7 @@
 				58C473A5DEA945AACFEA8E9F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				6B2D45A32E013D52008B0D82 /* PTTScreens */,
 				6B3F749F2DA584ED0035F280 /* RecoveryKeyEncryption */,
 				6BD7FE492DA4FE1500D98A8A /* Api */,
 				6BD7FE4D2DA4FF8D00D98A8A /* ApiResponses */,

@@ -34,20 +34,6 @@ struct HomeScreen: View {
 
     
     
-//    var body: some View {
-//        HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
-//                  .alert(item: $context.alertInfo)
-//                  .alert(item: $context.leaveRoomAlertItem,
-//                         actions: leaveRoomAlertActions,
-//                         message: leaveRoomAlertMessage)
-//                  .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
-//                  .toolbar { toolbar }
-//                  .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
-//                  .track(screen: .Home)
-//                  .sentryTrace("\(Self.self)")
-//    }
-//
-    
        var body: some View {
            TabView(selection: $selectedTab) {
                       NavigationView {
@@ -80,6 +66,14 @@ struct HomeScreen: View {
                        .tag(1)
                
                
+               // PTT Screen - New Tab
+                       PTTScreen(context: context)
+                           .tabItem {
+                               Image("ic_ptt")
+                                       .renderingMode(.template) // Makes it behave like SF Symbols (uses accent color)
+                               Text("PTT")
+                           }
+                           .tag(2)
                
                    Color.clear
                        .tabItem {
@@ -88,7 +82,10 @@ struct HomeScreen: View {
                          
                            Text("Settings")
                        }
-                       .tag(2)
+                       .tag(3)
+               
+               
+                   
                
 //               NavigationView {
 //                   SettingsScreen(context: settingsContext, fromTab: true)
@@ -105,7 +102,7 @@ struct HomeScreen: View {
 
            }
            .onChange(of: selectedTab) { newValue in
-                 if newValue == 2 {
+                 if newValue == 3 {
                      context.send(viewAction: .showSettings)
                      selectedTab = previousTab
                  } else {
@@ -114,6 +111,22 @@ struct HomeScreen: View {
              }
        }
     
+    
+    
+    
+    //    var body: some View {
+    //        HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
+    //                  .alert(item: $context.alertInfo)
+    //                  .alert(item: $context.leaveRoomAlertItem,
+    //                         actions: leaveRoomAlertActions,
+    //                         message: leaveRoomAlertMessage)
+    //                  .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
+    //                  .toolbar { toolbar }
+    //                  .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+    //                  .track(screen: .Home)
+    //                  .sentryTrace("\(Self.self)")
+    //    }
+    //
     
     ////current solution
 //    var body: some View {
