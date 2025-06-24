@@ -41,6 +41,8 @@ enum AppRoute: Equatable, Hashable {
     case settings
     /// The setting screen for key backup.
     case chatBackupSettings
+    /// The setting screen for key backup.
+    case profileEdit
     /// An external share request e.g. from the ShareExtension
     case share(ShareExtensionPayload)
 }

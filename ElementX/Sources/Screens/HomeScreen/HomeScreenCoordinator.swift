@@ -20,6 +20,7 @@ enum HomeScreenCoordinatorAction {
     case presentRoomDetails(roomIdentifier: String)
     case roomLeft(roomIdentifier: String)
     case presentSettingsScreen
+    case presentProfileEditScreen
     case presentFeedbackScreen
     case presentSecureBackupSettings
     case presentRecoveryKeyScreen
@@ -78,6 +79,8 @@ final class HomeScreenCoordinator: CoordinatorProtocol {
                     actionsSubject.send(.presentFeedbackScreen)
                 case .presentSettingsScreen:
                     actionsSubject.send(.presentSettingsScreen)
+                case .presentProfileEditScreen:
+                    actionsSubject.send(.presentProfileEditScreen)
                 case .presentSecureBackupSettings:
                     actionsSubject.send(.presentSecureBackupSettings)
                 case .presentRecoveryKeyScreen:

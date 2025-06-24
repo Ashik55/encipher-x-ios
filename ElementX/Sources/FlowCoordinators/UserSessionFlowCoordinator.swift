@@ -205,7 +205,7 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
             Task { await presentCallScreen(roomID: roomID, notifyOtherParticipants: false) }
         case .genericCallLink(let url):
             presentCallScreen(genericCallLink: url)
-        case .settings, .chatBackupSettings:
+        case .settings, .chatBackupSettings,.profileEdit:
             settingsFlowCoordinator.handleAppRoute(appRoute, animated: animated)
         case .share(let payload):
             if let roomID = payload.roomID {
@@ -503,6 +503,8 @@ class UserSessionFlowCoordinator: FlowCoordinatorProtocol {
                      }
                  case .presentSettingsScreen:
                      settingsFlowCoordinator.handleAppRoute(.settings, animated: true)
+                 case .presentProfileEditScreen:
+                     settingsFlowCoordinator.handleAppRoute(.profileEdit, animated: true)
                  case .presentFeedbackScreen:
                      stateMachine.processEvent(.feedbackScreen)
                  case .presentSecureBackupSettings:

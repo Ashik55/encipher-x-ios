@@ -232,8 +232,8 @@ struct HomeScreen: View {
     private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             Button {
-                context.send(viewAction: .showSettings)
-//                selectedTab = 1
+//                context.send(viewAction: .showSettings)
+                context.send(viewAction: .showProfileEdit)
             } label: {
                 LoadableAvatarImage(url: context.viewState.userAvatarURL,
                                     name: context.viewState.userDisplayName,

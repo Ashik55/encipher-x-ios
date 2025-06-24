@@ -71,6 +71,18 @@ class SettingsFlowCoordinator: FlowCoordinatorProtocol {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                 self.startEncryptionSettingsFlow(animated: animated)
             }
+            
+        case .profileEdit:
+            if navigationStackCoordinator == nil {
+                presentSettingsScreen(animated: animated)
+            }
+            
+            // The navigation stack doesn't like it if the root and the push happen
+            // on the same loop run
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                self.presentUserDetailsEditScreen()
+            }
+            
         default:
             break
         }
@@ -170,7 +182,13 @@ class SettingsFlowCoordinator: FlowCoordinatorProtocol {
                                                                              mediaProvider: parameters.userSession.mediaProvider,
                                                                              mediaUploadingPreprocessor: MediaUploadingPreprocessor(appSettings: parameters.appSettings),
                                                                              navigationStackCoordinator: navigationStackCoordinator,
-                                                                             userIndicatorController: parameters.userIndicatorController))
+                                                                             userIndicatorController: parameters.userIndicatorController,
+                                                                             onDismissComplete: { [weak self] in
+                                                                                        // Dismiss the entire settings sheet
+                                                                                        self?.parameters.navigationSplitCoordinator.setSheetCoordinator(nil)
+                                                                                    }
+                                                                             
+                                                                            ))
         
         navigationStackCoordinator?.push(coordinator)
     }

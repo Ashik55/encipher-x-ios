@@ -15,6 +15,7 @@ struct UserDetailsEditScreenCoordinatorParameters {
     let mediaUploadingPreprocessor: MediaUploadingPreprocessor
     weak var navigationStackCoordinator: NavigationStackCoordinator?
     let userIndicatorController: UserIndicatorControllerProtocol
+    let onDismissComplete: (() -> Void)? // Add this
 }
 
 final class UserDetailsEditScreenCoordinator: CoordinatorProtocol {
@@ -41,6 +42,15 @@ final class UserDetailsEditScreenCoordinator: CoordinatorProtocol {
                     self?.displayMediaPickerWithSource(.photoLibrary)
                 case .displayFilePicker:
                     self?.displayMediaPickerWithSource(.documents)
+                case .dismissEditScreen:
+                    print("dismissEditScreen called")
+                    self?.parameters.onDismissComplete?()
+                    
+//                    self?.parameters.navigationStackCoordinator?.pop()
+                    // Call the completion after a short delay to allow navigation to complete
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//                        self?.parameters.onDismissComplete?()
+//                    }
                 }
             }
             .store(in: &cancellables)

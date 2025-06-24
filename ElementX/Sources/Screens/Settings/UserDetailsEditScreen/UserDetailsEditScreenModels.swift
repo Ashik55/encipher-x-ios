@@ -11,6 +11,7 @@ enum UserDetailsEditScreenViewModelAction {
     case displayCameraPicker
     case displayMediaPicker
     case displayFilePicker
+    case dismissEditScreen
 }
 
 struct UserDetailsEditScreenViewState: BindableState {

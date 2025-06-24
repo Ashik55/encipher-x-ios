@@ -133,6 +133,7 @@ class UserDetailsEditScreenViewModel: UserDetailsEditScreenViewModelType, UserDe
                     }
                     
                     try await group.waitForAll()
+                    actionsSubject.send(.dismissEditScreen)
                 }
             } catch {
                 userIndicatorController.alertInfo = .init(id: .init(),
