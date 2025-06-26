@@ -62,6 +62,28 @@ struct JoinRoomScreenViewState: BindableState {
     var avatar: RoomAvatar {
         roomDetails?.avatar ?? .room(id: roomID, name: title, avatarURL: nil,isDirect: nil)
     }
+    
+//    var avatar: RoomAvatar {
+//        if case let .room(_, _, avatarURL?, _) = roomDetails?.avatar {
+//            // avatarURL is non-nil in .room
+//            return roomDetails!.avatar
+//        } else if let inviter = roomDetails?.inviter {
+//            return .room(
+//                id: roomID,
+//                name: inviter.displayName,
+//                avatarURL: inviter.avatarURL,
+//                isDirect: nil
+//            )
+//        } else {
+//            return .room(
+//                id: roomID,
+//                name: title,
+//                avatarURL: nil,
+//                isDirect: nil
+//            )
+//        }
+//    }
+    
 }
 
 struct JoinRoomScreenViewStateBindings {

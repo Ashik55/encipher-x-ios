@@ -33,9 +33,9 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
     private let userIndicatorController: UserIndicatorControllerProtocol
     private let windowManager: WindowManagerProtocol
     private let isNewLogin: Bool
-    
+
     private var navigationStackCoordinator: NavigationStackCoordinator!
-    
+
     enum State: StateType {
         case initial
         case identityConfirmation
@@ -46,36 +46,39 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
         case generateEncryptionKey
         case finished
     }
-    
+
     enum Event: EventType {
         case next
         case nextSkippingIdentityConfimed
     }
-    
+
     private let stateMachine: StateMachine<State, Event>
     private var cancellables = Set<AnyCancellable>()
-    
+
     // periphery: ignore - used to store the coordinator to avoid deallocation
     private var appLockFlowCoordinator: AppLockSetupFlowCoordinator?
     // periphery: ignore - used to store the coordinator to avoid deallocation
     private var encryptionResetFlowCoordinator: EncryptionResetFlowCoordinator?
-    
-    private let actionsSubject: PassthroughSubject<OnboardingFlowCoordinatorAction, Never> = .init()
+
+    private let actionsSubject:
+        PassthroughSubject<OnboardingFlowCoordinatorAction, Never> = .init()
     var actions: AnyPublisher<OnboardingFlowCoordinatorAction, Never> {
         actionsSubject.eraseToAnyPublisher()
     }
-    
+
     private var verificationStateCancellable: AnyCancellable?
-    
-    init(userSession: UserSessionProtocol,
-         appLockService: AppLockServiceProtocol,
-         analyticsService: AnalyticsService,
-         appSettings: AppSettings,
-         notificationManager: NotificationManagerProtocol,
-         navigationStackCoordinator: NavigationStackCoordinator,
-         userIndicatorController: UserIndicatorControllerProtocol,
-         windowManager: WindowManagerProtocol,
-         isNewLogin: Bool) {
+
+    init(
+        userSession: UserSessionProtocol,
+        appLockService: AppLockServiceProtocol,
+        analyticsService: AnalyticsService,
+        appSettings: AppSettings,
+        notificationManager: NotificationManagerProtocol,
+        navigationStackCoordinator: NavigationStackCoordinator,
+        userIndicatorController: UserIndicatorControllerProtocol,
+        windowManager: WindowManagerProtocol,
+        isNewLogin: Bool
+    ) {
         self.userSession = userSession
         self.appLockService = appLockService
         self.analyticsService = analyticsService
@@ -84,12 +87,12 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
         self.userIndicatorController = userIndicatorController
         self.windowManager = windowManager
         self.isNewLogin = isNewLogin
-        
+
         rootNavigationStackCoordinator = navigationStackCoordinator
         self.navigationStackCoordinator = NavigationStackCoordinator()
-        
+
         stateMachine = .init(state: .initial)
-        
+
         // Verification can change as part of the onboarding flow by verifying with
         // another device, using a recovery key or by resetting one's crypto identity.
         // It can also happen that onboarding started before it had a chance to update,
@@ -100,76 +103,81 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
             .removeDuplicates()
             .sink { [weak self] value in
                 guard let self,
-                      value == .verified,
-                      stateMachine.state == .identityConfirmation else { return }
-                
+                    value == .verified,
+                    stateMachine.state == .identityConfirmation
+                else { return }
+
                 appSettings.hasRunIdentityConfirmationOnboarding = true
                 stateMachine.tryEvent(.nextSkippingIdentityConfimed)
                 self.verificationStateCancellable = nil
             }
     }
-    
+
     var shouldStart: Bool {
-        guard stateMachine.state == .initial, !ProcessInfo.isRunningIntegrationTests else {
+        guard stateMachine.state == .initial,
+            !ProcessInfo.isRunningIntegrationTests
+        else {
             return false
         }
-        
-        return isNewLogin || requiresVerification || requiresAppLockSetup || requiresAnalyticsSetup || requiresNotificationsSetup
+
+        return isNewLogin || requiresVerification || requiresAppLockSetup
+            || requiresAnalyticsSetup || requiresNotificationsSetup
     }
-    
+
     func start() {
         guard shouldStart else {
             fatalError("This flow coordinator shouldn't have been started")
         }
-        
+
         configureStateMachine()
-        
-        rootNavigationStackCoordinator.setFullScreenCoverCoordinator(navigationStackCoordinator, animated: !isNewLogin)
+
+        rootNavigationStackCoordinator.setFullScreenCoverCoordinator(
+            navigationStackCoordinator, animated: !isNewLogin)
 
         stateMachine.tryEvent(.next)
     }
-    
+
     func handleAppRoute(_ appRoute: AppRoute, animated: Bool) {
         fatalError()
     }
-    
+
     func clearRoute(animated: Bool) {
         fatalError()
     }
-    
+
     // MARK: - Private
-    
+
     private var requiresVerification: Bool {
         // We want to make sure onboarding finishes but also every time the user becomes unverified (e.g. account reset)
-        !appSettings.hasRunIdentityConfirmationOnboarding || userSession.sessionSecurityStatePublisher.value.verificationState == .unverified
+        !appSettings.hasRunIdentityConfirmationOnboarding
+            || userSession.sessionSecurityStatePublisher.value.verificationState
+                == .unverified
     }
-    
-    
-    
-    
-  
-    
-    
     private var requireForceEncryptionKey: Bool {
-        print(" requireForceEncryptionKey appSettings.hasRunIdentityConfirmationOnboarding ==> \(appSettings.hasRunIdentityConfirmationOnboarding)")
-        print("requireForceEncryptionKey userSession.verificationState ==> \(userSession.sessionSecurityStatePublisher.value.verificationState)")
-        
+        print(
+            " requireForceEncryptionKey appSettings.hasRunIdentityConfirmationOnboarding ==> \(appSettings.hasRunIdentityConfirmationOnboarding)"
+        )
+        print(
+            "requireForceEncryptionKey userSession.verificationState ==> \(userSession.sessionSecurityStatePublisher.value.verificationState)"
+        )
+
         return !requiresVerification
     }
-    
+
     private var requiresAppLockSetup: Bool {
         appSettings.appLockIsMandatory && !appLockService.isEnabled
     }
-    
+
     private var requiresAnalyticsSetup: Bool {
-//        analyticsService.shouldShowAnalyticsPrompt
+        //        analyticsService.shouldShowAnalyticsPrompt
         return false
     }
-    
+
     private var requiresNotificationsSetup: Bool {
         !appSettings.hasRunNotificationPermissionsOnboarding
+
     }
-    
+
     func checkHasPasskey(userId: String) async throws -> Bool {
         let response: HasPassKeyResponse = try await APIClient.request(
             path: "auth/check_passkey/\(userId)"
@@ -177,34 +185,34 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
         print("checkHasPasskey ==>\(response)")
         return response.hasPasskey ?? true
     }
-    
-    
-    
+
     private func configureStateMachine() {
-     
         stateMachine.addRouteMapping { [weak self] event, fromState, _ in
             guard let self else {
                 return nil
             }
-            
-            print("""
-            🔀 StateMachine Route Mapping
-            Event: \(event)
-            From State: \(fromState)
-            Conditions:
-              - Requires Verification: \(requiresVerification)
-              - Requires Force Encryption Key: \(requireForceEncryptionKey)
-              - Requires App Lock Setup: \(requiresAppLockSetup)
-              - Requires Analytics Setup: \(requiresAnalyticsSetup)
-              - Requires Notifications Setup: \(requiresNotificationsSetup)
-            """)
-              
-        
-            switch (fromState, requiresVerification, requiresAppLockSetup, requiresAnalyticsSetup, requiresNotificationsSetup) {
-                
+
+            print(
+                """
+                🔀 StateMachine Route Mapping
+                Event: \(event)
+                From State: \(fromState)
+                Conditions:
+                  - Requires Verification: \(requiresVerification)
+                  - Requires Force Encryption Key: \(requireForceEncryptionKey)
+                  - Requires App Lock Setup: \(requiresAppLockSetup)
+                  - Requires Analytics Setup: \(requiresAnalyticsSetup)
+                  - Requires Notifications Setup: \(requiresNotificationsSetup)
+                """)
+
+            switch (
+                fromState, requiresVerification, requiresAppLockSetup,
+                requiresAnalyticsSetup, requiresNotificationsSetup
+            ) {
+
             case (.initial, true, _, _, _):
                 return .identityConfirmation
-     
+
             case (.initial, false, true, _, _):
                 return .appLockSetup
             case (.initial, false, false, true, _):
@@ -213,12 +221,20 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                 return .notificationPermissions
             case (.initial, false, false, false, false):
                 return .finished
-                
+
             case (.identityConfirmation, _, _, _, _):
+
+                print("identityConfirmation block ")
                 if event == .nextSkippingIdentityConfimed {
                     // Used when the verification state has updated to verified
                     // after starting the onboarding flow
-                    switch (requiresAppLockSetup, requiresAnalyticsSetup, requiresNotificationsSetup) {
+                    //add force key here, for new user always these blocks running
+
+                    print("nextSkippingIdentityConfimed event running ")
+                    switch (
+                        requiresAppLockSetup, requiresAnalyticsSetup,
+                        requiresNotificationsSetup
+                    ) {
                     case (true, _, _):
                         return .appLockSetup
                     case (false, true, _):
@@ -226,14 +242,13 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                     case (false, false, true):
                         return .notificationPermissions
                     case (false, false, false):
-                        return .finished
+                        return .generateEncryptionKey
 
                     }
                 } else {
                     return .identityConfirmed
                 }
-                
-           
+
             case (.identityConfirmed, _, true, _, _):
                 return .appLockSetup
             case (.identityConfirmed, _, false, true, _):
@@ -242,35 +257,37 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                 return .notificationPermissions
             case (.identityConfirmed, _, false, false, false):
                 return .finished
-                
+
             case (.appLockSetup, _, _, true, _):
                 return .analyticsPrompt
             case (.appLockSetup, _, _, false, true):
                 return .notificationPermissions
             case (.appLockSetup, _, _, false, false):
                 return .finished
-                
+
             case (.analyticsPrompt, _, _, _, true):
                 return .notificationPermissions
             case (.analyticsPrompt, _, _, _, false):
                 return .finished
-                
+
             case (.notificationPermissions, _, _, _, _):
                 return .finished
-            
+
             default:
                 return nil
             }
         }
-            
+
         stateMachine.addAnyHandler(.any => .any) { [weak self] context in
             guard let self else { return }
-            
+
             // Log the event, fromState, and toState
-               print("Onboarding stateMachine addAnyHandler==>> Event: \(context.event), FromState: \(context.fromState), ToState: \(context.toState)")
-               
+            print(
+                "Onboarding stateMachine addAnyHandler==>> Event: \(context.event), FromState: \(context.fromState), ToState: \(context.toState)"
+            )
+
             switch (context.fromState, context.event, context.toState) {
-                
+
             case (_, _, .identityConfirmation):
                 presentIdentityConfirmationScreen()
             case (_, _, .identityConfirmed):
@@ -284,27 +301,54 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
             case (_, _, .generateEncryptionKey):
                 presentRecoveryKeyScreen()
             case (_, _, .finished):
-                rootNavigationStackCoordinator.setFullScreenCoverCoordinator(nil)
+                rootNavigationStackCoordinator.setFullScreenCoverCoordinator(
+                    nil)
             default:
                 fatalError("Unknown transition: \(context)")
             }
         }
-        
+
         stateMachine.addErrorHandler { context in
             fatalError("Unexpected transition: \(context)")
-            }
-        
+        }
+
     }
-    
+
+    private func presentRecoveryKeyScreen() {
+        Task { @MainActor in
+            do {
+                let hasPasskey = try await checkHasPasskey(
+                    userId: userSession.clientProxy.userID)
+                print("hasPasskey==>>\(hasPasskey)")
+
+                if !hasPasskey {
+                    mainRecoveryKeyScreen()
+                } else {
+                    rootNavigationStackCoordinator.setFullScreenCoverCoordinator(
+                        nil)
+                    return
+                }
+
+            } catch {
+                rootNavigationStackCoordinator.setFullScreenCoverCoordinator(
+                    nil)
+                return
+
+            }
+        }
+    }
+
     private func presentIdentityConfirmationScreen() {
-        let parameters = IdentityConfirmationScreenCoordinatorParameters(userSession: userSession,
-                                                                         appSettings: appSettings,
-                                                                         userIndicatorController: userIndicatorController)
-        
-        let coordinator = IdentityConfirmationScreenCoordinator(parameters: parameters)
+        let parameters = IdentityConfirmationScreenCoordinatorParameters(
+            userSession: userSession,
+            appSettings: appSettings,
+            userIndicatorController: userIndicatorController)
+
+        let coordinator = IdentityConfirmationScreenCoordinator(
+            parameters: parameters)
         coordinator.actionsPublisher.sink { [weak self] action in
             guard let self else { return }
-            
+
             switch action {
             case .otherDevice:
                 presentSessionVerificationScreen()
@@ -320,59 +364,97 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
             }
         }
         .store(in: &cancellables)
-        
+
         presentCoordinator(coordinator)
     }
-    
+
     private func presentSessionVerificationScreen() {
-        guard let sessionVerificationController = userSession.clientProxy.sessionVerificationController else {
-            fatalError("The sessionVerificationController should aways be valid at this point")
+        guard
+            let sessionVerificationController = userSession.clientProxy
+                .sessionVerificationController
+        else {
+            fatalError(
+                "The sessionVerificationController should aways be valid at this point"
+            )
         }
-        
-        let parameters = SessionVerificationScreenCoordinatorParameters(sessionVerificationControllerProxy: sessionVerificationController,
-                                                                        flow: .initiator)
-        
-        let coordinator = SessionVerificationScreenCoordinator(parameters: parameters)
-        
+
+        let parameters = SessionVerificationScreenCoordinatorParameters(
+            sessionVerificationControllerProxy: sessionVerificationController,
+            flow: .initiator)
+
+        let coordinator = SessionVerificationScreenCoordinator(
+            parameters: parameters)
+
         coordinator.actions
             .sink { action in
                 switch action {
                 case .done:
-                    break // Moving to next state is handled by the global session verification listener
+                    break  // Moving to next state is handled by the global session verification listener
                 }
             }
             .store(in: &cancellables)
-        
+
         presentCoordinator(coordinator)
     }
-    
-    private func presentRecoveryKeyScreen() {
-        let parameters = SecureBackupRecoveryKeyScreenCoordinatorParameters(secureBackupController: userSession.clientProxy.secureBackupController,
-                                                                            userIndicatorController: ServiceLocator.shared.userIndicatorController,
-                                                                            isModallyPresented: false, userID: userSession.clientProxy.userID)
-        
-        let coordinator = SecureBackupRecoveryKeyScreenCoordinator(parameters: parameters)
-        
+
+    private func mainRecoveryKeyScreen() {
+        let parameters = SecureBackupRecoveryKeyScreenCoordinatorParameters(
+            secureBackupController: userSession.clientProxy
+                .secureBackupController,
+            userIndicatorController: ServiceLocator.shared
+                .userIndicatorController,
+            isModallyPresented: false, userID: userSession.clientProxy.userID)
+
+        let coordinator = SecureBackupRecoveryKeyScreenCoordinator(
+            parameters: parameters)
+
         coordinator.actions
-            .sink { [self] action in
+            .sink {  [self] action in
                 switch action {
                 case .complete:
-//                    break  //Moving to next state is Handled by the global session verification listener
+                    //break
                     stateMachine.tryEvent(.next)
                 }
             }
             .store(in: &cancellables)
-        
+
         presentCoordinator(coordinator)
+
     }
-    
+
+    //    private func presentRecoveryKeyScreen() {
+    //        let parameters = SecureBackupRecoveryKeyScreenCoordinatorParameters(
+    //            secureBackupController: userSession.clientProxy
+    //                .secureBackupController,
+    //            userIndicatorController: ServiceLocator.shared
+    //                .userIndicatorController,
+    //            isModallyPresented: false, userID: userSession.clientProxy.userID)
+    //
+    //        let coordinator = SecureBackupRecoveryKeyScreenCoordinator(
+    //            parameters: parameters)
+    //
+    //        coordinator.actions
+    //            .sink { [self] action in
+    //                switch action {
+    //                case .complete:
+    //                    //                    break  //Moving to next state is Handled by the global session verification listener
+    //                    stateMachine.tryEvent(.next)
+    //                }
+    //            }
+    //            .store(in: &cancellables)
+    //
+    //        presentCoordinator(coordinator)
+    //    }
+
     private func startEncryptionResetFlow() {
         let resetNavigationStackCoordinator = NavigationStackCoordinator()
-        let coordinator = EncryptionResetFlowCoordinator(parameters: .init(userSession: userSession,
-                                                                           userIndicatorController: userIndicatorController,
-                                                                           navigationStackCoordinator: resetNavigationStackCoordinator,
-                                                                           windowManger: windowManager))
-        
+        let coordinator = EncryptionResetFlowCoordinator(
+            parameters: .init(
+                userSession: userSession,
+                userIndicatorController: userIndicatorController,
+                navigationStackCoordinator: resetNavigationStackCoordinator,
+                windowManger: windowManager))
+
         coordinator.actionsPublisher.sink { [weak self] action in
             guard let self else { return }
             switch action {
@@ -385,35 +467,39 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
             }
         }
         .store(in: &cancellables)
-        
+
         encryptionResetFlowCoordinator = coordinator
         coordinator.start()
-        
-        navigationStackCoordinator.setSheetCoordinator(resetNavigationStackCoordinator) { [weak self] in
+
+        navigationStackCoordinator.setSheetCoordinator(
+            resetNavigationStackCoordinator
+        ) { [weak self] in
             self?.encryptionResetFlowCoordinator = nil
         }
     }
-    
+
     private func presentIdentityConfirmedScreen() {
-        let coordinator = IdentityConfirmedScreenCoordinator(parameters: .init())
+        let coordinator = IdentityConfirmedScreenCoordinator(
+            parameters: .init())
         coordinator.actionsPublisher
             .sink { [weak self] action in
                 guard let self else { return }
-                
+
                 switch action {
                 case .done:
                     stateMachine.tryEvent(.next)
                 }
             }
             .store(in: &cancellables)
-        
+
         presentCoordinator(coordinator)
     }
-    
+
     private func presentAppLockSetupFlow() {
-        let coordinator = AppLockSetupFlowCoordinator(presentingFlow: .onboarding,
-                                                      appLockService: appLockService,
-                                                      navigationStackCoordinator: navigationStackCoordinator)
+        let coordinator = AppLockSetupFlowCoordinator(
+            presentingFlow: .onboarding,
+            appLockService: appLockService,
+            navigationStackCoordinator: navigationStackCoordinator)
         coordinator.actions.sink { [weak self] action in
             guard let self else { return }
             switch action {
@@ -425,51 +511,79 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
             }
         }
         .store(in: &cancellables)
-        
+
         appLockFlowCoordinator = coordinator
         coordinator.start()
     }
 
     private func presentAnalyticsPromptScreen() {
-        let coordinator = AnalyticsPromptScreenCoordinator(analytics: analyticsService, termsURL: appSettings.analyticsConfiguration.termsURL)
-        
+        let coordinator = AnalyticsPromptScreenCoordinator(
+            analytics: analyticsService,
+            termsURL: appSettings.analyticsConfiguration.termsURL)
+
         coordinator.actions
             .sink { [weak self] action in
                 guard let self else { return }
                 switch action {
                 case .done:
-                    
+
                     stateMachine.tryEvent(.next)
                 }
             }
             .store(in: &cancellables)
-        
+
         presentCoordinator(coordinator)
     }
-    
+
     private func presentNotificationPermissionsScreen() {
-        let coordinator = NotificationPermissionsScreenCoordinator(parameters: .init(notificationManager: notificationManager))
-        
+        let coordinator = NotificationPermissionsScreenCoordinator(
+            parameters: .init(notificationManager: notificationManager))
+
         coordinator.actions
             .sink { [weak self] action in
                 guard let self else { return }
                 switch action {
                 case .done:
                     appSettings.hasRunNotificationPermissionsOnboarding = true
-                    stateMachine.tryEvent(.next)
-//                    presentRecoveryKeyScreen()
+                    // Check passkey status after notification permissions
+                    Task { @MainActor in
+                        do {
+                            let hasPasskey = try await self.checkHasPasskey(
+                                userId: self.userSession.clientProxy.userID)
+                            print("hasPasskey==>>\(hasPasskey)")
+
+                            if hasPasskey {
+                                // Present recovery key screen if user has passkey
+                                // Continue with normal flow if no passkey
+                                self.stateMachine.tryEvent(.next)
+                            } else {
+
+                                self.presentRecoveryKeyScreen()
+                            }
+                        } catch {
+                            print("Error checking passkey status: \(error)")
+                            // In case of error, continue with normal flow
+                            self.stateMachine.tryEvent(.next)
+                        }
+                    }
+
                 }
             }
             .store(in: &cancellables)
-        
+
         presentCoordinator(coordinator)
     }
-    
-    private func presentCoordinator(_ coordinator: CoordinatorProtocol, dismissalCallback: (() -> Void)? = nil) {
+
+    private func presentCoordinator(
+        _ coordinator: CoordinatorProtocol,
+        dismissalCallback: (() -> Void)? = nil
+    ) {
         if navigationStackCoordinator.rootCoordinator == nil {
-            navigationStackCoordinator.setRootCoordinator(coordinator, dismissalCallback: dismissalCallback)
+            navigationStackCoordinator.setRootCoordinator(
+                coordinator, dismissalCallback: dismissalCallback)
         } else {
-            navigationStackCoordinator.push(coordinator, dismissalCallback: dismissalCallback)
+            navigationStackCoordinator.push(
+                coordinator, dismissalCallback: dismissalCallback)
         }
     }
 }

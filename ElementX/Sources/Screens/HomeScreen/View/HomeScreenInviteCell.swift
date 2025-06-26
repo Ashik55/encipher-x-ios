@@ -12,67 +12,75 @@ import SwiftUI
 @MainActor
 struct HomeScreenInviteCell: View {
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
-    
+
     let room: HomeScreenRoom
     let context: HomeScreenViewModel.Context
-    
-    
-    
+
     // Create a computed property that returns the appropriate avatar
     private var displayAvatar: RoomAvatar {
+
         // Check the room avatar type
-        if case .room(let id, let name, let avatarURL, let isDirect) = room.avatar, avatarURL == nil {
+        if case .room(let id, let name, let avatarURL, let isDirect) = room
+            .avatar, avatarURL == nil
+        {
             // For debugging, print information about the missing avatar
             print("Missing avatar URL for room: \(id), using fallback")
-            
+
+            print("displayAvatar==>> \(room)")
+            print("displayAvatar==>> \(room.isDirect)")
+
             // If inviter has an avatar, try to use that for direct chats
             if room.isDirect, let inviterAvatarURL = room.inviter?.avatarURL {
-                return .room(id: id, name: name, avatarURL: inviterAvatarURL, isDirect: isDirect)
+                return .room(
+                    id: id, name: name, avatarURL: inviterAvatarURL,
+                    isDirect: isDirect)
             }
-            
+
         }
-        
+
         // If everything is fine or for other cases, use the original avatar
         return room.avatar
     }
-    
-    
-//    private var displayAvatar: RoomAvatar {
-//        if case .room(let id, let name, let avatarURL, let isDirect) = room.avatar,
-//              avatarURL == nil {
-//            print("Missing avatar URL for room: \(id), using fallback")
-//            let inviterAvatarURL = room.inviter?.avatarURL
-//            
-//            if inviterAvatarURL == nil {
-//                print("Inviter avatar URL is also nil, using default fallback")
-//            }
-//            
-//            return .room(id: id, name: name, avatarURL: inviterAvatarURL, isDirect: isDirect)
-//        } else {
-//            print("DisplayAvatar fallback not used, using: \(room.avatar)")
-//            return room.avatar
-//        }
-//    }
-    
+
+    //    private var displayAvatar: RoomAvatar {
+    //        if case .room(let id, let name, let avatarURL, let isDirect) = room.avatar,
+    //              avatarURL == nil {
+    //            print("Missing avatar URL for room: \(id), using fallback")
+    //            let inviterAvatarURL = room.inviter?.avatarURL
+    //
+    //            if inviterAvatarURL == nil {
+    //                print("Inviter avatar URL is also nil, using default fallback")
+    //            }
+    //
+    //            return .room(id: id, name: name, avatarURL: inviterAvatarURL, isDirect: isDirect)
+    //        } else {
+    //            print("DisplayAvatar fallback not used, using: \(room.avatar)")
+    //            return room.avatar
+    //        }
+    //    }
+
     var body: some View {
-        let avatar = displayAvatar // <-- This forces evaluation
-          // print("DisplayAvatar ==>>\(avatar)") // <-- Will now print
-        
+        let avatar = displayAvatar  // <-- This forces evaluation
+        // print("DisplayAvatar ==>>\(avatar)") // <-- Will now print
+
         HStack(alignment: .top, spacing: 16) {
             if dynamicTypeSize < .accessibility3 {
                 RoomAvatarImage(
                     avatar: avatar,
-//                    avatar: room.avatar,
-                                avatarSize: .custom(52),
-                                mediaProvider: context.mediaProvider)
-                    .dynamicTypeSize(dynamicTypeSize < .accessibility1 ? dynamicTypeSize : .accessibility1)
-                    .accessibilityHidden(true)
-                    .onAppear {
-                        MXLog.info("Room Avatar==>>: \(avatar)")
-                        MXLog.info("Room==>>: \(room)")
-                    }
+                    avatarSize: .custom(52),
+                    mediaProvider: context.mediaProvider
+                )
+                .dynamicTypeSize(
+                    dynamicTypeSize < .accessibility1
+                        ? dynamicTypeSize : .accessibility1
+                )
+                .accessibilityHidden(true)
+                .onAppear {
+                    //                        MXLog.info("Room Avatar==>>: \(avatar)")
+                    //                        MXLog.info("Room==>>: \(room)")
+                }
             }
-            
+
             mainContent
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 16)
@@ -90,7 +98,7 @@ struct HomeScreenInviteCell: View {
             }
         }
     }
-    
+
     // MARK: - Private
 
     private var mainContent: some View {
@@ -100,14 +108,14 @@ struct HomeScreenInviteCell: View {
                     textualContent
                     badge
                 }
-                
+
                 inviterView
                     .padding(.top, 6)
                     .padding(.trailing, 16)
             }
             .fixedSize(horizontal: false, vertical: true)
             .accessibilityElement(children: .combine)
-            
+
             buttons
                 .padding(.top, 14)
                 .padding(.trailing, 22)
@@ -121,13 +129,16 @@ struct HomeScreenInviteCell: View {
     @ViewBuilder
     private var inviterView: some View {
         if let inviter = room.inviter,
-           !room.isDirect {
-            RoomInviterLabel(inviter: inviter, mediaProvider: context.mediaProvider)
-                .font(.compound.bodyMD)
-                .foregroundStyle(.compound.textSecondary)
+            !room.isDirect
+        {
+            RoomInviterLabel(
+                inviter: inviter, mediaProvider: context.mediaProvider
+            )
+            .font(.compound.bodyMD)
+            .foregroundStyle(.compound.textSecondary)
         }
     }
-    
+
     @ViewBuilder
     private var textualContent: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -135,7 +146,7 @@ struct HomeScreenInviteCell: View {
                 .font(.compound.bodyLGSemibold)
                 .foregroundColor(.compound.textPrimary)
                 .lineLimit(2)
-            
+
             if let subtitle {
                 Text(subtitle)
                     .font(.compound.bodyMD)
@@ -144,27 +155,28 @@ struct HomeScreenInviteCell: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
-    
+
     private var buttons: some View {
         HStack(spacing: 12) {
             Button(L10n.actionDecline) {
-                context.send(viewAction: .declineInvite(roomIdentifier: room.id))
+                context.send(
+                    viewAction: .declineInvite(roomIdentifier: room.id))
             }
             .buttonStyle(.compound(.secondary, size: .medium))
-            
+
             Button(L10n.actionAccept) {
                 context.send(viewAction: .acceptInvite(roomIdentifier: room.id))
             }
             .buttonStyle(.compound(.primary, size: .medium))
         }
     }
-    
+
     private var separator: some View {
         Rectangle()
             .fill(Color.compound.borderDisabled)
             .frame(height: 1 / UIScreen.main.scale)
     }
-        
+
     private var title: String {
         print("Room ==> ")
         print(room)
@@ -175,11 +187,11 @@ struct HomeScreenInviteCell: View {
 
         return room.name
     }
-    
+
     private var subtitle: String? {
         room.isDirect ? room.inviter?.id : room.canonicalAlias
     }
-    
+
     private var badge: some View {
         Circle()
             .scaledFrame(size: 12)
@@ -191,94 +203,110 @@ struct HomeScreenInviteCell_Previews: PreviewProvider, TestablePreview {
     static var previews: some View {
         ScrollView {
             VStack(spacing: 0) {
-                HomeScreenInviteCell(room: .dmInvite,
-                                     context: viewModel().context)
-                
-                HomeScreenInviteCell(room: .dmInvite,
-                                     context: viewModel().context)
-                
-                HomeScreenInviteCell(room: .roomInvite(),
-                                     context: viewModel().context)
-                
-                HomeScreenInviteCell(room: .roomInvite(),
-                                     context: viewModel().context)
-                
-                HomeScreenInviteCell(room: .roomInvite(alias: "#footest:somewhere.org", avatarURL: .mockMXCAvatar),
-                                     context: viewModel().context)
-                
-                HomeScreenInviteCell(room: .roomInvite(alias: "#footest:somewhere.org"),
-                                     context: viewModel().context)
-                    .dynamicTypeSize(.accessibility1)
-                    .previewDisplayName("Aliased room (AX1)")
+                HomeScreenInviteCell(
+                    room: .dmInvite,
+                    context: viewModel().context)
+
+                HomeScreenInviteCell(
+                    room: .dmInvite,
+                    context: viewModel().context)
+
+                HomeScreenInviteCell(
+                    room: .roomInvite(),
+                    context: viewModel().context)
+
+                HomeScreenInviteCell(
+                    room: .roomInvite(),
+                    context: viewModel().context)
+
+                HomeScreenInviteCell(
+                    room: .roomInvite(
+                        alias: "#footest:somewhere.org",
+                        avatarURL: .mockMXCAvatar),
+                    context: viewModel().context)
+
+                HomeScreenInviteCell(
+                    room: .roomInvite(alias: "#footest:somewhere.org"),
+                    context: viewModel().context
+                )
+                .dynamicTypeSize(.accessibility1)
+                .previewDisplayName("Aliased room (AX1)")
             }
         }
     }
-    
+
     static func viewModel() -> HomeScreenViewModel {
         let clientProxy = ClientProxyMock(.init())
-        
+
         let userSession = UserSessionMock(.init(clientProxy: clientProxy))
-        
-        return HomeScreenViewModel(userSession: userSession,
-                                   analyticsService: ServiceLocator.shared.analytics,
-                                   appSettings: ServiceLocator.shared.settings,
-                                   selectedRoomPublisher: CurrentValueSubject<String?, Never>(nil).asCurrentValuePublisher(),
-                                   userIndicatorController: ServiceLocator.shared.userIndicatorController)
+
+        return HomeScreenViewModel(
+            userSession: userSession,
+            analyticsService: ServiceLocator.shared.analytics,
+            appSettings: ServiceLocator.shared.settings,
+            selectedRoomPublisher: CurrentValueSubject<String?, Never>(nil)
+                .asCurrentValuePublisher(),
+            userIndicatorController: ServiceLocator.shared
+                .userIndicatorController)
     }
 }
 
 @MainActor
-private extension HomeScreenRoom {
-    static var dmInvite: HomeScreenRoom {
+extension HomeScreenRoom {
+    fileprivate static var dmInvite: HomeScreenRoom {
         let inviter = RoomMemberProxyMock()
         inviter.displayName = "Jack"
         inviter.userID = "@jack:somewhere.com"
-        
-        let summary = RoomSummary(roomListItem: RoomListItemSDKMock(),
-                                  id: "@someone:somewhere.com",
-                                  knockRequestType: .invite(inviter: inviter),
-                                  name: "Some Guy",
-                                  isDirect: true,
-                                  avatarURL: nil,
-                                  heroes: [.init(userID: "@someone:somewhere.com")],
-                                  lastMessage: nil,
-                                  lastMessageFormattedTimestamp: nil,
-                                  unreadMessagesCount: 0,
-                                  unreadMentionsCount: 0,
-                                  unreadNotificationsCount: 0,
-                                  notificationMode: nil,
-                                  canonicalAlias: "#footest:somewhere.org",
-                                  hasOngoingCall: false,
-                                  isMarkedUnread: false,
-                                  isFavourite: false)
-        
+
+        let summary = RoomSummary(
+            roomListItem: RoomListItemSDKMock(),
+            id: "@someone:somewhere.com",
+            knockRequestType: .invite(inviter: inviter),
+            name: "Some Guy",
+            isDirect: true,
+            avatarURL: nil,
+            heroes: [.init(userID: "@someone:somewhere.com")],
+            lastMessage: nil,
+            lastMessageFormattedTimestamp: nil,
+            unreadMessagesCount: 0,
+            unreadMentionsCount: 0,
+            unreadNotificationsCount: 0,
+            notificationMode: nil,
+            canonicalAlias: "#footest:somewhere.org",
+            hasOngoingCall: false,
+            isMarkedUnread: false,
+            isFavourite: false)
+
         return .init(summary: summary, hideUnreadMessagesBadge: false)
     }
-    
-    static func roomInvite(alias: String? = nil, avatarURL: URL? = nil) -> HomeScreenRoom {
+
+    fileprivate static func roomInvite(
+        alias: String? = nil, avatarURL: URL? = nil
+    ) -> HomeScreenRoom {
         let inviter = RoomMemberProxyMock()
         inviter.displayName = "Luca"
         inviter.userID = "@jack:somewhi.nl"
         inviter.avatarURL = avatarURL.map { _ in .mockMXCUserAvatar }
-        
-        let summary = RoomSummary(roomListItem: RoomListItemSDKMock(),
-                                  id: "@someone:somewhere.com",
-                                  knockRequestType: .invite(inviter: inviter),
-                                  name: "Awesome Room",
-                                  isDirect: false,
-                                  avatarURL: avatarURL,
-                                  heroes: [.init(userID: "@someone:somewhere.com")],
-                                  lastMessage: nil,
-                                  lastMessageFormattedTimestamp: nil,
-                                  unreadMessagesCount: 0,
-                                  unreadMentionsCount: 0,
-                                  unreadNotificationsCount: 0,
-                                  notificationMode: nil,
-                                  canonicalAlias: alias,
-                                  hasOngoingCall: false,
-                                  isMarkedUnread: false,
-                                  isFavourite: false)
-        
+
+        let summary = RoomSummary(
+            roomListItem: RoomListItemSDKMock(),
+            id: "@someone:somewhere.com",
+            knockRequestType: .invite(inviter: inviter),
+            name: "Awesome Room",
+            isDirect: false,
+            avatarURL: avatarURL,
+            heroes: [.init(userID: "@someone:somewhere.com")],
+            lastMessage: nil,
+            lastMessageFormattedTimestamp: nil,
+            unreadMessagesCount: 0,
+            unreadMentionsCount: 0,
+            unreadNotificationsCount: 0,
+            notificationMode: nil,
+            canonicalAlias: alias,
+            hasOngoingCall: false,
+            isMarkedUnread: false,
+            isFavourite: false)
+
         return .init(summary: summary, hideUnreadMessagesBadge: false)
     }
 }

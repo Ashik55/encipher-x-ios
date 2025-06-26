@@ -97,128 +97,6 @@ struct HomeScreen: View {
              }
        }
     
-    
-    ////current solution
-//    var body: some View {
-//        VStack {
-//            HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
-//                .alert(item: $context.alertInfo)
-//                .alert(item: $context.leaveRoomAlertItem,
-//                       actions: leaveRoomAlertActions,
-//                       message: leaveRoomAlertMessage)
-//                .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
-//                .toolbar { toolbar }
-////                .background(Color.gray)
-//           
-//                .track(screen: .Home)
-//                .sentryTrace("\(Self.self)")
-//                .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
-//                              isKeyboardVisible = true
-//                          }
-//                          .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
-//                              isKeyboardVisible = false
-//                          }
-//
-//   
-//                if !isKeyboardVisible { // Hide when keyboard is visible
-//                            HStack {
-//                                Spacer()
-//                                
-//                                Button(action: {
-//                                    print("Chat button tapped")
-//                                }) {
-//                                    VStack {
-//                                        Image(systemName: "message.fill")
-//                                            .font(.title2)
-//                                        Text("Chat")
-//                                            .font(.caption)
-//                                    }
-//                                }
-//                                Spacer()
-//                                Spacer()
-//
-//                                Button(action: {
-//                                    context.send(viewAction: .showSettings)
-//                                }) {
-//                                    VStack {
-//                                        Image(systemName: "gearshape")
-//                                            .font(.title2)
-//                                        Text("Settings")
-//                                            .font(.caption)
-//                                    }
-//                                }
-//
-//                                Spacer()
-//                            }
-//                            .padding()
-////
-//                            .background(Color.gray.opacity(0.1))
-//                            .transition(.move(edge: .bottom)) // Optional animation
-//                    }
-//            
-//            
-//        }     .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
-//        
-//            }
-//
-//    private func handleSettingsTapped() {
-//        // Your function logic here
-//        print("Settings button tapped")
-//    }
-    
-
-    
-    
-    
-//    var body: some View {
-//    
-//            TabView(selection: $selectedTab) {
-//                HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
-//                    .onAppear {
-//                        navigationTitle = "Chat" // Set title for Home tab
-//                    }
-//                    .alert(item: $context.alertInfo)
-//                    .alert(item: $context.leaveRoomAlertItem,
-//                           actions: leaveRoomAlertActions,
-//                           message: leaveRoomAlertMessage)
-//                    .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
-//                    .track(screen: .Home)
-//                 
-//                    .sentryTrace("\(Self.self)")
-//                    .tabItem {
-//                        Image(systemName: "message.fill")
-//                        Text("Chat")
-//                    }
-//                    .tag(0)
-//                
-//           
-//                
-//                // Settings tab
-//                SettingsScreen(context: settingsContext, fromTab: true)
-//                    .onAppear {
-//                        navigationTitle = "Settings" // Set title for Settings tab
-//                    }
-//                    .tabItem {
-//                        Image(systemName: "gear")
-//                        Text("Settings")
-//                    }
-//                    .tag(1)
-//            }
-//            .onAppear {
-//                configureTabBarAppearance()
-//                  }
-//            .navigationTitle(navigationTitle) // Use the bound navigation title
-//            .toolbar {
-//                toolbar
-//            }
-//            .toolbarBackground(Color.compound.bgCanvasDefault, for: .navigationBar) // Match tab bar background
-//            .toolbarBackground(.visible, for: .navigationBar)
-//          
-//     
-//
-//    }
-//    
-    
     // Configure Tab Bar Appearance
     private func configureTabBarAppearance() {
         let tabBarAppearance = UITabBarAppearance()
@@ -232,7 +110,6 @@ struct HomeScreen: View {
     private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             Button {
-//                context.send(viewAction: .showSettings)
                 context.send(viewAction: .showProfileEdit)
             } label: {
                 LoadableAvatarImage(url: context.viewState.userAvatarURL,
