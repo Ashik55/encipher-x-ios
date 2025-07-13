@@ -34,9 +34,21 @@ class IdentityConfirmationScreenViewModel: IdentityConfirmationScreenViewModelTy
             }
             .store(in: &cancellables)
         
-        Task {
-            await updateWithSessionSecurityState(userSession.sessionSecurityStatePublisher.value)
-        }
+//        Task {
+//            await updateWithSessionSecurityState(userSession.sessionSecurityStatePublisher.value)
+//        }
+        
+        
+        // Show loading initially and add a small delay for sync
+          showLoadingIndicator()
+          
+          Task {
+              // Give the backend time to sync
+              try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
+              await updateWithSessionSecurityState(userSession.sessionSecurityStatePublisher.value)
+          }
+        
+        
     }
     
     // MARK: - Public

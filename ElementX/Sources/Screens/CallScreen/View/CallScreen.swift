@@ -50,6 +50,7 @@ struct CallScreen: View {
                 onCallEnded: {
                     print("onCallEnded===>>>>")
                     context.send(viewAction: .endCall)
+                   
                 }
             )
             

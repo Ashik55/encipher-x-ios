@@ -253,9 +253,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d room change</string>
+			<string>%1$d group change</string>
 			<key>other</key>
-			<string>%1$d room changes</string>
+			<string>%1$d group changes</string>
 		</dict>
 	</dict>
 	<key>screen_room_typing_many_members</key>

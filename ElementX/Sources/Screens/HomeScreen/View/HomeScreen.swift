@@ -10,145 +10,144 @@ import Compound
 import SwiftUI
 import SwiftUIIntrospect
 
-
-
 struct HomeScreen: View {
     @ObservedObject var context: HomeScreenViewModel.Context
     @ObservedObject var settingsContext: SettingsScreenViewModel.Context
-    
+
     @State private var scrollViewAdapter = ScrollViewAdapter()
-    
+
     // Bloom components
     @State private var bloomView: UIView?
     @State private var leftBarButtonView: UIView?
     @State private var gradientView: UIView?
     @State private var navigationBarContainer: UIView?
     @State private var hairlineView: UIView?
-    
+
     @State private var selectedTab = 0
     // Store the previous tab
     @State private var previousTab: Int = 0
-    
-    @State private var navigationTitle = "Chat" // Default title for Home tab
+
+    @State private var navigationTitle = "Chat"  // Default title for Home tab
     @State private var isKeyboardVisible = false
 
-    
-    
-//    var body: some View {
-//        HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
-//                  .alert(item: $context.alertInfo)
-//                  .alert(item: $context.leaveRoomAlertItem,
-//                         actions: leaveRoomAlertActions,
-//                         message: leaveRoomAlertMessage)
-//                  .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
-//                  .toolbar { toolbar }
-//                  .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
-//                  .track(screen: .Home)
-//                  .sentryTrace("\(Self.self)")
-//    }
-//
-    
-       var body: some View {
-           TabView(selection: $selectedTab) {
-                      NavigationView {
-                          HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
-                              .alert(item: $context.alertInfo)
-                              .alert(item: $context.leaveRoomAlertItem,
-                                     actions: leaveRoomAlertActions,
-                                     message: leaveRoomAlertMessage)
-                              .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
-                              .toolbar { toolbar }
-                              .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
-                              .track(screen: .Home)
-                              .sentryTrace("\(Self.self)")
-                      }
-                      .tabItem {
-                          Image("ic_message")
-                                  .renderingMode(.template) // Makes it behave like SF Symbols (uses accent color)
-                          Text("Chats")
-                      }
-                      .tag(0)
-                      
-                   CallLogScreen(userID: context.viewState.userID, context:context)
-                       .tabItem {
-                           Image("ic_call_log")
-                                   .renderingMode(.template) // Makes it behave like SF Symbols (uses accent color)
-                           Text("Calls")
-                       }
-                       .tag(1)
-               
-                   Color.clear
-                       .tabItem {
-                           Image("ic_settings")
-                                   .renderingMode(.template) // Makes it behave like SF Symbols (uses accent color)
-                         
-                           Text("Settings")
-                       }
-                       .tag(2)
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            NavigationView {
+                HomeScreenContent(
+                    context: context, scrollViewAdapter: scrollViewAdapter
+                )
+                .alert(item: $context.alertInfo)
+                .alert(
+                    item: $context.leaveRoomAlertItem,
+                    actions: leaveRoomAlertActions,
+                    message: leaveRoomAlertMessage
+                )
+                .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
+                .toolbar { toolbar }
+                .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+                .track(screen: .Home)
+                .sentryTrace("\(Self.self)")
+            }
+            .tabItem {
+                Image("ic_message")
+                    .renderingMode(.template)  // Makes it behave like SF Symbols (uses accent color)
+                Text("Chats")
+            }
+            .tag(0)
 
-           }
-           .onChange(of: selectedTab) { newValue in
-                 if newValue == 2 {
-                     context.send(viewAction: .showSettings)
-                     selectedTab = previousTab
-                 } else {
-                     previousTab = newValue
-                 }
-             }
-       }
-    
+            CallLogScreen(userID: context.viewState.userID, context: context)
+                .tabItem {
+                    Image("ic_call_log")
+                        .renderingMode(.template)  // Makes it behave like SF Symbols (uses accent color)
+                    Text("Calls")
+                }
+                .tag(1)
+
+            Color.clear
+                .tabItem {
+                    Image("ic_settings")
+                        .renderingMode(.template)  // Makes it behave like SF Symbols
+                    Text("Settings")
+                }
+                .tag(2)
+
+        }
+        .onChange(of: selectedTab) { newValue in
+            if newValue == 2 {
+                context.send(viewAction: .showSettings)
+                selectedTab = previousTab
+            } else {
+                previousTab = newValue
+            }
+        }
+    }
+
     // Configure Tab Bar Appearance
     private func configureTabBarAppearance() {
         let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.backgroundColor = UIColor(Color.compound.bgCanvasDefault)
+        tabBarAppearance.backgroundColor = UIColor(
+            Color.compound.bgCanvasDefault)
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         UITabBar.appearance().standardAppearance = tabBarAppearance
     }
-    
-    
+
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             Button {
                 context.send(viewAction: .showProfileEdit)
             } label: {
-                LoadableAvatarImage(url: context.viewState.userAvatarURL,
-                                    name: context.viewState.userDisplayName,
-                                    contentID: context.viewState.userID,
-                                 
-                                    avatarSize: .user(on: .home),
-                                    mediaProvider: context.mediaProvider)
-                    .accessibilityIdentifier(A11yIdentifiers.homeScreen.userAvatar)
-                    .overlayBadge(10, isBadged: context.viewState.requiresExtraAccountSetup)
-                    .compositingGroup()
+                LoadableAvatarImage(
+                    url: context.viewState.userAvatarURL,
+                    name: context.viewState.userDisplayName,
+                    contentID: context.viewState.userID,
+
+                    avatarSize: .user(on: .home),
+                    mediaProvider: context.mediaProvider
+                )
+                .accessibilityIdentifier(A11yIdentifiers.homeScreen.userAvatar)
+                .overlayBadge(
+                    10, isBadged: context.viewState.requiresExtraAccountSetup
+                )
+                .compositingGroup()
             }
             .accessibilityLabel(L10n.commonSettings)
         }
-        
+
         ToolbarItem(placement: .primaryAction) {
             newRoomButton
         }
     }
-    
-    
+
     // MARK: - Private
-    
+
     private var bloomGradient: some View {
-        LinearGradient(colors: [.clear, .compound.bgCanvasDefault], startPoint: .top, endPoint: .bottom)
-            .mask {
-                LinearGradient(stops: [.init(color: .white, location: 0.75), .init(color: .clear, location: 1.0)],
-                               startPoint: .leading,
-                               endPoint: .trailing)
-            }
-            .ignoresSafeArea(edges: .all)
+        LinearGradient(
+            colors: [.clear, .compound.bgCanvasDefault], startPoint: .top,
+            endPoint: .bottom
+        )
+        .mask {
+            LinearGradient(
+                stops: [
+                    .init(color: .white, location: 0.75),
+                    .init(color: .clear, location: 1.0),
+                ],
+                startPoint: .leading,
+                endPoint: .trailing)
+        }
+        .ignoresSafeArea(edges: .all)
     }
-            
+
     private func makeBloomView(controller: UIViewController) {
-        guard let navigationBarContainer = controller.navigationController?.navigationBar.subviews.first,
-              let leftBarButtonView = controller.navigationItem.leadingItemGroups.first?.barButtonItems.first?.customView else {
+        guard
+            let navigationBarContainer = controller.navigationController?
+                .navigationBar.subviews.first,
+            let leftBarButtonView = controller.navigationItem.leadingItemGroups
+                .first?.barButtonItems.first?.customView
+        else {
             return
         }
-        
+
         let bloomController = UIHostingController(rootView: bloom)
         bloomController.view.translatesAutoresizingMaskIntoConstraints = true
         bloomController.view.backgroundColor = .clear
@@ -157,45 +156,61 @@ struct HomeScreen: View {
         bloomView = bloomController.view
         self.navigationBarContainer = navigationBarContainer
         updateBloomCenter()
-        
+
         let gradientController = UIHostingController(rootView: bloomGradient)
         gradientController.view.backgroundColor = .clear
-        gradientController.view.translatesAutoresizingMaskIntoConstraints = false
-        navigationBarContainer.insertSubview(gradientController.view, aboveSubview: bloomController.view)
-        
-        let constraints = [gradientController.view.bottomAnchor.constraint(equalTo: navigationBarContainer.bottomAnchor),
-                           gradientController.view.trailingAnchor.constraint(equalTo: navigationBarContainer.trailingAnchor),
-                           gradientController.view.leadingAnchor.constraint(equalTo: navigationBarContainer.leadingAnchor),
-                           gradientController.view.heightAnchor.constraint(equalToConstant: 40)]
+        gradientController.view.translatesAutoresizingMaskIntoConstraints =
+            false
+        navigationBarContainer.insertSubview(
+            gradientController.view, aboveSubview: bloomController.view)
+
+        let constraints = [
+            gradientController.view.bottomAnchor.constraint(
+                equalTo: navigationBarContainer.bottomAnchor),
+            gradientController.view.trailingAnchor.constraint(
+                equalTo: navigationBarContainer.trailingAnchor),
+            gradientController.view.leadingAnchor.constraint(
+                equalTo: navigationBarContainer.leadingAnchor),
+            gradientController.view.heightAnchor.constraint(
+                equalToConstant: 40),
+        ]
         constraints.forEach { $0.isActive = true }
         gradientView = gradientController.view
-        
-        let dividerController = UIHostingController(rootView: Divider().ignoresSafeArea())
+
+        let dividerController = UIHostingController(
+            rootView: Divider().ignoresSafeArea())
         dividerController.view.translatesAutoresizingMaskIntoConstraints = false
         navigationBarContainer.addSubview(dividerController.view)
-        let dividerConstraints = [dividerController.view.bottomAnchor.constraint(equalTo: gradientController.view.bottomAnchor),
-                                  dividerController.view.widthAnchor.constraint(equalTo: gradientController.view.widthAnchor),
-                                  dividerController.view.leadingAnchor.constraint(equalTo: gradientController.view.leadingAnchor)]
+        let dividerConstraints = [
+            dividerController.view.bottomAnchor.constraint(
+                equalTo: gradientController.view.bottomAnchor),
+            dividerController.view.widthAnchor.constraint(
+                equalTo: gradientController.view.widthAnchor),
+            dividerController.view.leadingAnchor.constraint(
+                equalTo: gradientController.view.leadingAnchor),
+        ]
         dividerConstraints.forEach { $0.isActive = true }
         hairlineView = dividerController.view
     }
 
     private func updateBloomCenter() {
         guard let leftBarButtonView,
-              let bloomView,
-              let navigationBarContainer = bloomView.superview else {
+            let bloomView,
+            let navigationBarContainer = bloomView.superview
+        else {
             return
         }
-        
-        let center = leftBarButtonView.convert(leftBarButtonView.center, to: navigationBarContainer.coordinateSpace)
+
+        let center = leftBarButtonView.convert(
+            leftBarButtonView.center, to: navigationBarContainer.coordinateSpace
+        )
         bloomView.center = center
     }
-    
-  
+
     private var bloom: some View {
         BloomView(context: context)
     }
-    
+
     @ViewBuilder
     private var newRoomButton: some View {
         switch context.viewState.roomListMode {
@@ -203,13 +218,11 @@ struct HomeScreen: View {
             Button {
                 context.send(viewAction: .startChat)
             } label: {
-//                CompoundIcon(\.compose)
+                //                CompoundIcon(\.compose)
                 Image(asset: ImageAsset(name: "plus"))
-                        .resizable() // Ensures the image is resizable
-                        .frame(width: 30, height: 30) // Add size here
-               
-                       
-                
+                    .resizable()  // Ensures the image is resizable
+                    .frame(width: 30, height: 30)  // Add size here
+
             }
             .accessibilityLabel(L10n.actionStartChat)
             .accessibilityIdentifier(A11yIdentifiers.homeScreen.startChat)
@@ -217,16 +230,19 @@ struct HomeScreen: View {
             EmptyView()
         }
     }
-    
+
     @ViewBuilder
-    private func leaveRoomAlertActions(_ item: LeaveRoomAlertItem) -> some View {
-        Button(item.cancelTitle, role: .cancel) { }
+    private func leaveRoomAlertActions(_ item: LeaveRoomAlertItem) -> some View
+    {
+        Button(item.cancelTitle, role: .cancel) {}
         Button(item.confirmationTitle, role: .destructive) {
-            context.send(viewAction: .confirmLeaveRoom(roomIdentifier: item.roomID))
+            context.send(
+                viewAction: .confirmLeaveRoom(roomIdentifier: item.roomID))
         }
     }
-    
-    private func leaveRoomAlertMessage(_ item: LeaveRoomAlertItem) -> some View {
+
+    private func leaveRoomAlertMessage(_ item: LeaveRoomAlertItem) -> some View
+    {
         Text(item.subtitle)
     }
 }
@@ -258,14 +274,13 @@ struct CustomSettingsScreen: View {
     }
 }
 
-
 //// MARK: - Previews
 //
 //struct HomeScreen_Previews: PreviewProvider, TestablePreview {
 //    static let loadingViewModel = viewModel(.skeletons)
 //    static let emptyViewModel = viewModel(.empty)
 //    static let loadedViewModel = viewModel(.rooms)
-//    
+//
 //    static var previews: some View {
 //        NavigationStack {
 //            HomeScreen(context: loadingViewModel.context, settingsContext: loadingViewModel.context)
@@ -274,7 +289,7 @@ struct CustomSettingsScreen: View {
 //            state.roomListMode == .skeletons
 //        })
 //        .previewDisplayName("Loading")
-//        
+//
 //        NavigationStack {
 //            HomeScreen(context: emptyViewModel.context)
 //        }
@@ -282,7 +297,7 @@ struct CustomSettingsScreen: View {
 //            state.roomListMode == .empty
 //        })
 //        .previewDisplayName("Empty")
-//        
+//
 //        NavigationStack {
 //            HomeScreen(context: loadedViewModel.context)
 //        }
@@ -291,10 +306,10 @@ struct CustomSettingsScreen: View {
 //        })
 //        .previewDisplayName("Loaded")
 //    }
-//    
+//
 //    static func viewModel(_ mode: HomeScreenRoomListMode) -> HomeScreenViewModel {
 //        let userID = "@alice:example.com"
-//        
+//
 //        let roomSummaryProviderState: RoomSummaryProviderMockConfigurationState = switch mode {
 //        case .skeletons:
 //            .loading
@@ -303,12 +318,12 @@ struct CustomSettingsScreen: View {
 //        case .rooms:
 //            .loaded(.mockRooms)
 //        }
-//        
+//
 //        let clientProxy = ClientProxyMock(.init(userID: userID,
 //                                                roomSummaryProvider: RoomSummaryProviderMock(.init(state: roomSummaryProviderState))))
-//        
+//
 //        let userSession = UserSessionMock(.init(clientProxy: clientProxy))
-//        
+//
 //        return HomeScreenViewModel(userSession: userSession,
 //                                   analyticsService: ServiceLocator.shared.analytics,
 //                                   appSettings: ServiceLocator.shared.settings,
@@ -316,3 +331,17 @@ struct CustomSettingsScreen: View {
 //                                   userIndicatorController: ServiceLocator.shared.userIndicatorController)
 //    }
 //}
+
+//    var body: some View {
+//        HomeScreenContent(context: context, scrollViewAdapter: scrollViewAdapter)
+//                  .alert(item: $context.alertInfo)
+//                  .alert(item: $context.leaveRoomAlertItem,
+//                         actions: leaveRoomAlertActions,
+//                         message: leaveRoomAlertMessage)
+//                  .navigationTitle(L10n.screenRoomlistMainSpaceTitle)
+//                  .toolbar { toolbar }
+//                  .background(Color.compound.bgCanvasDefault.ignoresSafeArea())
+//                  .track(screen: .Home)
+//                  .sentryTrace("\(Self.self)")
+//    }
+//

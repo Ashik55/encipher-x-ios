@@ -138,6 +138,7 @@ class CallScreenViewModel: CallScreenViewModelType, CallScreenViewModelProtocol 
             actionsSubject.send(.pictureInPictureStopped)
         case .endCall:
             print("Process EndCall block running==>")
+            stop()
             Task {
                 let callEndResponse =  try await endCall(userId: state.urlUserId, callId: state.callId)
                 print("callEndResponse==>\(callEndResponse)")

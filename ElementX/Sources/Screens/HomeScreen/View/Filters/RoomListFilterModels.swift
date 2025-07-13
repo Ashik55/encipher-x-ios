@@ -31,7 +31,7 @@ enum RoomListFilter: Int, CaseIterable, Identifiable {
         case .people:
             return L10n.screenRoomlistFilterPeople
         case .rooms:
-            return L10n.screenRoomlistFilterRooms
+            return "Groups"
         case .unreads:
             return L10n.screenRoomlistFilterUnreads
         case .favourites:

@@ -78,6 +78,7 @@ final class NotificationManager: NSObject, NotificationManagerProtocol {
         guard let userSession else {
             return false
         }
+        print("register deviceToken to pusher==> \(deviceToken)")
         return await setPusher(with: deviceToken, clientProxy: userSession.clientProxy)
     }
 

@@ -44,6 +44,7 @@ struct AnalyticsPromptScreenStrings {
         linkString.bold()
         readTerms.replace(linkPlaceholder, with: linkString)
         
-        optInContent = content + "\n\n" + readTerms
+//        optInContent = content + "\n\n" + readTerms
+        optInContent = content
     }
 }

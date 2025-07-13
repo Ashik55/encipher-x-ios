@@ -29,6 +29,7 @@ struct Application: App {
     var body: some Scene {
         WindowGroup {
             appCoordinator.toPresentable()
+                .preferredColorScheme(.light)  // Add this line
                 .statusBarHidden(shouldHideStatusBar)
                 .environment(\.openURL, OpenURLAction { url in
                     if appCoordinator.handleDeepLink(url, isExternalURL: false) {

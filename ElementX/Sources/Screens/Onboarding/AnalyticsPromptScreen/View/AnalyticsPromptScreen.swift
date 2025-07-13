@@ -44,10 +44,10 @@ struct AnalyticsPromptScreen: View {
                 .foregroundColor(.compound.textPrimary)
                 .accessibilityIdentifier(A11yIdentifiers.analyticsPromptScreen.title)
             
-            Text(context.viewState.strings.optInContent)
-                .font(.compound.bodyMD)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.compound.textSecondary)
+//            Text(context.viewState.strings.optInContent)
+//                .font(.compound.bodyMD)
+//                .multilineTextAlignment(.center)
+//                .foregroundColor(.compound.textSecondary)
         }
     }
     
